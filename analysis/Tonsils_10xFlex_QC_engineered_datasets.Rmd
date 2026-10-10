@@ -1,0 +1,179 @@
+---
+title: "Tonsil 10x Flex: QC all engineered datasets after ambient correction"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown performs very lenient QC filtering on all ambient RNA corrected datasets. We are applying the same thresholds used for the original filtering.
+
+Our main goal here is to eliminate cells with a very low library size and/or number of genes detected, as well as cells with unusually high % mitochondrial reads as their presence may interfere with doublet calling. 10X flex does not have any probes for ribosomal genes. We are performing this on ambient RNA corrected data. We define the number of genes expressed as the number of genes that have a count >0.5. 
+
+Droplets that fall into the following filtering categories are generally viewed as "empty" and removed prior to doublet calling. 
+
+- lib size < 200
+
+- #genes detected < 150
+
+- %mito > 7%
+
+
+The result for this analysis is a *tsv file containing the filtered barcodes* which will be exported into the original 10x folder. 
+
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(SoupX)
+  library(qs2)
+  library(DropletUtils)
+  library(patchwork)
+})
+```
+
+
+## prepare paths
+
+```{r}
+files <- list.files(path = here("output/data/Tonsils_10xFlex/Engineered/"), 
+                    pattern = "Tonsils_10xFlex*.*s$", full.names = T)
+
+```
+
+
+## plotting shortcuts
+
+```{r}
+plot_sizing <- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = "black"),
+        plot.title = element_text(size = 22),
+         plot.subtitle= element_text(size = 18),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank())
+
+
+plot_sizing_keep_legend <- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = "black"),
+        plot.title = element_text(size = 22),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size=16)) 
+
+rotate_x <- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+strip_fix <- theme(strip.background = element_rect(fill = "white"), 
+                   strip.text = element_text(size = 14))
+
+title_size <- theme(plot.title = element_text(size = 22, face = "italic"))
+
+```
+
+
+
+
+
+# Make plots and export filtered barcode list
+
+## Write function
+
+This function creates plots for lib size, #genes and %mito for all ambient tools *per batch* and exports a tsv containing the filtered barcodes.
+
+```{r}
+run_make_filter_plots_barcode_export <- function(path_in){
+  
+  # MAKE PLOTS
+  
+  all_metas <- lapply(c("CellBender", "decontX", "decontX_BG", "soupX"), function(tool){
+    out <- read_tsv(paste0(path_in,"_", tool, "/metadata.tsv"), show_col_types = F)
+    out$ambient_tool <- tool
+    return(out)
+  }) %>% bind_rows()
+  
+  p1 <- all_metas %>% 
+    ggplot(., aes(x=ambient_tool, y=log10(ncount)))+
+    ggbeeswarm::geom_quasirandom(aes(color = factor(ambient_tool)), size = 1.5, alpha = 0.8)+
+    plot_sizing + rotate_x + ggtitle("Library size")+ xlab("")+
+    geom_hline(yintercept = log10(200))
+  
+  p2 <- all_metas %>% 
+    ggplot(., aes(x=ambient_tool, y=log10(nfeatures_rounded)))+
+    ggbeeswarm::geom_quasirandom(aes(color = factor(ambient_tool)), size = 1.5, alpha = 0.8)+
+    plot_sizing + rotate_x + ggtitle("#genes")+xlab("")+
+    geom_hline(yintercept = log10(150))
+  
+  p3 <- all_metas %>% 
+    ggplot(., aes(x=ambient_tool, y=subsets_mito_percent))+
+    ggbeeswarm::geom_quasirandom(aes(color = factor(ambient_tool)), size = 1.5, alpha = 0.8)+
+    plot_sizing + rotate_x + ggtitle("%mito")+xlab("")+
+    geom_hline(yintercept = 7)
+  
+  p_all <- p1+p2+p3 + plot_layout(guides = "collect") + plot_annotation(title=basename(path_in)) & title_size
+    
+  # FILTER 
+  all_metas$high_quality_cell <- (all_metas$ncount >= 200) & (all_metas$nfeatures >= 150)  & (all_metas$subsets_mito_percent <= 7) 
+  
+  removed_df <- all_metas %>% 
+    count(high_quality_cell, ambient_tool) %>%
+    tidyr::complete(
+        high_quality_cell,
+        ambient_tool,
+        fill = list(n = 0)
+    ) %>% 
+    group_by(ambient_tool) %>% 
+    mutate(., percent_removed = round(n/sum(n),5)) %>% 
+    filter(., high_quality_cell == "FALSE") %>% 
+    select(ambient_tool, n, percent_removed) %>% 
+    dplyr::rename(removed_cell=n) 
+  
+  # EXPORT
+  cap <- lapply(c("CellBender", "decontX", "decontX_BG", "soupX"), function(tool){
+    barcodes <- all_metas %>% 
+      filter(., ambient_tool == tool & high_quality_cell == TRUE) %>% 
+      pull(Barcode) %>% as.data.frame()
+    filename <- paste0(path_in,"_", tool, "/filtered_qc_barcodes.tsv")
+    write_tsv(x = barcodes, file = filename)
+    
+  })
+  
+  
+  #return the plot + export table
+  return(list(plot=p_all, DF=removed_df))
+  
+}
+```
+
+## Run for all seed batches
+
+```{r, message=FALSE, warning=FALSE}
+
+results <- lapply(files, run_make_filter_plots_barcode_export)
+names(results) <- basename(files)
+```
+
+Wrap plots
+
+```{r, fig.align='center', fig.height=25, fig.width=10}
+(wrap_elements(results[[1]]$plot) + wrap_elements(results[[2]]$plot) + wrap_elements(results[[3]]$plot) + wrap_elements(results[[4]]$plot) + wrap_elements(results[[5]]$plot)) +plot_layout(ncol = 1, guides = "collect")
+```
+
+Combine and print table of #cells that are being removed. 
+
+```{r}
+lapply(results, function(IN){
+  IN$DF 
+}) %>% bind_rows(., .id="batch") %>% knitr::kable()
+
+```
+
+
+

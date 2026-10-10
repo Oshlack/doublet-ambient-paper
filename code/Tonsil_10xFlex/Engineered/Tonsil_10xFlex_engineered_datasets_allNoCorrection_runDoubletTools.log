@@ -1,0 +1,1605 @@
+##########################################################################
+Start Sample Tonsils_10xFlex_engineered_12k_0.15p_9372s
+##########################################################################
+mkdir: /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s/doublet_calls: File exists
+##########################################################################
+Start doublet calling
+Inputs detected:
+  OUTPUT = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s/doublet_calls
+  COUNTS = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s
+##########################################################################
+##########################################################################
+Start cxds + bcds + scds
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s
+Start doublet calling: cxds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8782050 469.1   12943798  691.3         NA  12943798  691.3
+Vcells 51787074 395.2  161709209 1233.8      49152 161693159 1233.7
+Start doublet calling: bcds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8839199 472.1   12943798  691.3         NA  12943798  691.3
+Vcells 52006829 396.8  429257853 3275.0      49152 530350269 4046.3
+Start doublet calling: hybrid
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8839815 472.1   12943798  691.3         NA  12943798  691.3
+Vcells 52036059 397.1  343406283 2620.0      49152 530350269 4046.3
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_9372s_doublet_calling_scds_bcds_cxds.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [3] sp_2.2-0                    here_1.0.1                 
+ [5] lubridate_1.9.4             forcats_1.0.0              
+ [7] stringr_1.5.1               dplyr_1.1.4                
+ [9] purrr_1.2.0                 readr_2.1.5                
+[11] tidyr_1.3.1                 tibble_3.3.0               
+[13] ggplot2_4.0.1               tidyverse_2.0.0            
+[15] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[17] Biobase_2.68.0              GenomicRanges_1.60.0       
+[19] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[21] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[23] generics_0.1.4              MatrixGenerics_1.20.0      
+[25] matrixStats_1.5.0           scds_1.24.0                
+[27] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22        splines_4.5.0           later_1.4.2            
+  [4] R.oo_1.27.1             polyclip_1.10-7         pROC_1.18.5            
+  [7] fastDummies_1.7.5       lifecycle_1.0.4         rprojroot_2.0.4        
+ [10] globals_0.18.0          processx_3.8.6          lattice_0.22-6         
+ [13] vroom_1.6.5             MASS_7.3-65             magrittr_2.0.4         
+ [16] plotly_4.10.4           rmarkdown_2.29          yaml_2.3.10            
+ [19] httpuv_1.6.16           sctransform_0.4.2       spam_2.11-1            
+ [22] spatstat.sparse_3.1-0   reticulate_1.42.0       cowplot_1.1.3          
+ [25] pbapply_1.7-2           RColorBrewer_1.1-3      abind_1.4-8            
+ [28] Rtsne_0.17              R.utils_2.13.0          git2r_0.36.2           
+ [31] GenomeInfoDbData_1.2.14 ggrepel_0.9.6           irlba_2.3.5.1          
+ [34] listenv_0.9.1           spatstat.utils_3.1-4    goftest_1.2-3          
+ [37] RSpectra_0.16-2         spatstat.random_3.4-1   fitdistrplus_1.2-2     
+ [40] parallelly_1.45.0       codetools_0.2-20        DelayedArray_0.34.1    
+ [43] tidyselect_1.2.1        UCSC.utils_1.4.0        farver_2.1.2           
+ [46] spatstat.explore_3.4-3  jsonlite_2.0.0          progressr_0.15.1       
+ [49] ggridges_0.5.6          survival_3.8-3          tools_4.5.0            
+ [52] ica_1.0-3               Rcpp_1.0.14             glue_1.8.0             
+ [55] gridExtra_2.3           SparseArray_1.8.0       xfun_0.52              
+ [58] withr_3.0.2             BiocManager_1.30.26     fastmap_1.2.0          
+ [61] callr_3.7.6             digest_0.6.37           timechange_0.3.0       
+ [64] R6_2.6.1                mime_0.13               scattermore_1.2        
+ [67] tensor_1.5              spatstat.data_3.1-6     R.methodsS3_1.8.2      
+ [70] renv_1.1.4              data.table_1.17.4       httr_1.4.7             
+ [73] htmlwidgets_1.6.4       S4Arrays_1.8.1          whisker_0.4.1          
+ [76] uwot_0.2.3              pkgconfig_2.0.3         gtable_0.3.6           
+ [79] lmtest_0.9-40           S7_0.2.1                XVector_0.48.0         
+ [82] htmltools_0.5.8.1       dotCall64_1.2           scales_1.4.0           
+ [85] png_0.1-8               spatstat.univar_3.1-3   knitr_1.50             
+ [88] rstudioapi_0.17.1       tzdb_0.5.0              reshape2_1.4.4         
+ [91] nlme_3.1-168            zoo_1.8-14              KernSmooth_2.23-26     
+ [94] parallel_4.5.0          miniUI_0.1.2            pillar_1.10.2          
+ [97] grid_4.5.0              vctrs_0.6.5             RANN_2.6.2             
+[100] promises_1.3.3          xtable_1.8-4            cluster_2.1.8.1        
+[103] evaluate_1.0.3          cli_3.6.5               compiler_4.5.0         
+[106] rlang_1.1.6             crayon_1.5.3            future.apply_1.20.0    
+[109] ps_1.9.1                getPass_0.2-4           plyr_1.8.9             
+[112] fs_1.6.6                stringi_1.8.7           viridisLite_0.4.2      
+[115] deldir_2.0-4            lazyeval_0.2.2          spatstat.geom_3.4-1    
+[118] Matrix_1.7-3            RcppHNSW_0.6.0          hms_1.1.3              
+[121] patchwork_1.3.2         bit64_4.6.0-1           future_1.58.0          
+[124] shiny_1.10.0            ROCR_1.0-11             igraph_2.1.4           
+[127] bit_4.6.0               xgboost_1.7.11.1       
+##########################################################################
+Start scDblFinder
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s
+Run PCA and UMAP
+Run scDblFinder
+Clustering cells...
+10 clusters
+Creating ~9600 artificial doublets...
+Dimensional reduction
+Evaluating kNN...
+Training model...
+iter=0, 1500 cells excluded from training.
+iter=1, 1525 cells excluded from training.
+iter=2, 1540 cells excluded from training.
+Threshold found:0.405
+1633 (13.6%) doublets called
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  11926431  637.0   17394844  929.0         NA  17394844  929.0
+Vcells 140935154 1075.3  362472562 2765.5      49152 301992946 2304.1
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_9372s_doublet_calling_scDblFinder.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] scater_1.36.0               scuttle_1.18.0             
+ [3] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [5] sp_2.2-0                    here_1.0.1                 
+ [7] lubridate_1.9.4             forcats_1.0.0              
+ [9] stringr_1.5.1               dplyr_1.1.4                
+[11] purrr_1.2.0                 readr_2.1.5                
+[13] tidyr_1.3.1                 tibble_3.3.0               
+[15] ggplot2_4.0.1               tidyverse_2.0.0            
+[17] scDblFinder_1.22.0          SingleCellExperiment_1.30.1
+[19] SummarizedExperiment_1.38.1 Biobase_2.68.0             
+[21] GenomicRanges_1.60.0        GenomeInfoDb_1.44.0        
+[23] IRanges_2.42.0              S4Vectors_0.46.0           
+[25] BiocGenerics_0.54.0         generics_0.1.4             
+[27] MatrixGenerics_1.20.0       matrixStats_1.5.0          
+[29] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22         splines_4.5.0            later_1.4.2             
+  [4] BiocIO_1.18.0            bitops_1.0-9             R.oo_1.27.1             
+  [7] polyclip_1.10-7          XML_3.99-0.18            fastDummies_1.7.5       
+ [10] lifecycle_1.0.4          edgeR_4.6.2              rprojroot_2.0.4         
+ [13] vroom_1.6.5              globals_0.18.0           processx_3.8.6          
+ [16] lattice_0.22-6           MASS_7.3-65              magrittr_2.0.4          
+ [19] plotly_4.10.4            limma_3.64.1             rmarkdown_2.29          
+ [22] yaml_2.3.10              metapod_1.16.0           httpuv_1.6.16           
+ [25] sctransform_0.4.2        spam_2.11-1              spatstat.sparse_3.1-0   
+ [28] reticulate_1.42.0        pbapply_1.7-2            cowplot_1.1.3           
+ [31] RColorBrewer_1.1-3       abind_1.4-8              Rtsne_0.17              
+ [34] R.utils_2.13.0           RCurl_1.98-1.17          git2r_0.36.2            
+ [37] GenomeInfoDbData_1.2.14  ggrepel_0.9.6            irlba_2.3.5.1           
+ [40] spatstat.utils_3.1-4     listenv_0.9.1            goftest_1.2-3           
+ [43] RSpectra_0.16-2          spatstat.random_3.4-1    dqrng_0.4.1             
+ [46] fitdistrplus_1.2-2       parallelly_1.45.0        codetools_0.2-20        
+ [49] DelayedArray_0.34.1      tidyselect_1.2.1         UCSC.utils_1.4.0        
+ [52] farver_2.1.2             ScaledMatrix_1.16.0      viridis_0.6.5           
+ [55] spatstat.explore_3.4-3   GenomicAlignments_1.44.0 jsonlite_2.0.0          
+ [58] BiocNeighbors_2.2.0      progressr_0.15.1         ggridges_0.5.6          
+ [61] survival_3.8-3           tools_4.5.0              ica_1.0-3               
+ [64] Rcpp_1.0.14              glue_1.8.0               gridExtra_2.3           
+ [67] SparseArray_1.8.0        xfun_0.52                withr_3.0.2             
+ [70] BiocManager_1.30.26      fastmap_1.2.0            bluster_1.18.0          
+ [73] callr_3.7.6              digest_0.6.37            rsvd_1.0.5              
+ [76] mime_0.13                timechange_0.3.0         R6_2.6.1                
+ [79] scattermore_1.2          tensor_1.5               spatstat.data_3.1-6     
+ [82] R.methodsS3_1.8.2        renv_1.1.4               data.table_1.17.4       
+ [85] rtracklayer_1.68.0       htmlwidgets_1.6.4        httr_1.4.7              
+ [88] S4Arrays_1.8.1           whisker_0.4.1            uwot_0.2.3              
+ [91] pkgconfig_2.0.3          gtable_0.3.6             lmtest_0.9-40           
+ [94] S7_0.2.1                 XVector_0.48.0           htmltools_0.5.8.1       
+ [97] dotCall64_1.2            scales_1.4.0             png_0.1-8               
+[100] spatstat.univar_3.1-3    scran_1.36.0             knitr_1.50              
+[103] rstudioapi_0.17.1        reshape2_1.4.4           tzdb_0.5.0              
+[106] rjson_0.2.23             nlme_3.1-168             curl_7.0.0              
+[109] zoo_1.8-14               KernSmooth_2.23-26       parallel_4.5.0          
+[112] miniUI_0.1.2             vipor_0.4.7              restfulr_0.0.15         
+[115] pillar_1.10.2            grid_4.5.0               vctrs_0.6.5             
+[118] RANN_2.6.2               promises_1.3.3           BiocSingular_1.24.0     
+[121] beachmat_2.24.0          xtable_1.8-4             cluster_2.1.8.1         
+[124] beeswarm_0.4.0           evaluate_1.0.3           cli_3.6.5               
+[127] locfit_1.5-9.12          compiler_4.5.0           Rsamtools_2.24.0        
+[130] rlang_1.1.6              crayon_1.5.3             future.apply_1.20.0     
+[133] ps_1.9.1                 plyr_1.8.9               getPass_0.2-4           
+[136] fs_1.6.6                 ggbeeswarm_0.7.2         stringi_1.8.7           
+[139] deldir_2.0-4             viridisLite_0.4.2        BiocParallel_1.42.1     
+[142] Biostrings_2.76.0        lazyeval_0.2.2           spatstat.geom_3.4-1     
+[145] Matrix_1.7-3             RcppHNSW_0.6.0           patchwork_1.3.2         
+[148] hms_1.1.3                bit64_4.6.0-1            future_1.58.0           
+[151] statmod_1.5.0            shiny_1.10.0             ROCR_1.0-11             
+[154] igraph_2.1.4             bit_4.6.0                xgboost_1.7.11.1        
+
+ArgumentError: activate does not accept more than one argument:
+['/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s', '/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s/doublet_calls']
+
+
+##########################################################################
+Start scrublet
+##########################################################################
+Counts matrix shape: 12000 rows, 18082 columns
+Preprocessing...
+Simulating doublets...
+Embedding transcriptomes using PCA...
+Calculating doublet scores...
+Automatically set threshold at doublet score = 0.23
+Detected doublet rate = 9.0%
+Estimated detectable doublet fraction = 50.4%
+Overall doublet rate:
+	Expected   = 10.0%
+	Estimated  = 18.0%
+Elapsed time: 3.9 seconds
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_9372s_doublet_calling_scrublet.csv
+##########################################################################
+Start DoubletDetection
+##########################################################################
+/Users/meiermichelle/miniforge3/envs/DoubletDetection/lib/python3.14/site-packages/doubletdetection/doubletdetection.py:106: UserWarning: Leiden clustering is experimental and results have not been validated.
+  warnings.warn("Leiden clustering is experimental and results have not been validated.")
+Counts matrix shape: 12000 rows, 18082 columns
+Counts matrix shape after filtering: 12000 rows, 15709 columns
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:14<02:06, 14.10s/it] 20%|██        | 2/10 [00:16<00:57,  7.14s/it] 30%|███       | 3/10 [00:18<00:34,  4.87s/it] 40%|████      | 4/10 [00:20<00:22,  3.79s/it] 50%|█████     | 5/10 [00:22<00:16,  3.20s/it] 60%|██████    | 6/10 [00:24<00:11,  2.85s/it] 70%|███████   | 7/10 [00:27<00:07,  2.59s/it] 80%|████████  | 8/10 [00:29<00:04,  2.43s/it] 90%|█████████ | 9/10 [00:31<00:02,  2.31s/it]100%|██████████| 10/10 [00:33<00:00,  2.25s/it]100%|██████████| 10/10 [00:33<00:00,  3.33s/it]
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_9372s_doublet_calling_DoubletDetection.csv
+Print threshold and convergence plots
+##########################################################################
+Combine all doublet calling results
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s/doublet_calls
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+[1] TRUE
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_9372s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_9372s_doublet_calling_consensus.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+ [5] purrr_1.2.0     readr_2.1.5     tidyr_1.3.1     tibble_3.3.0   
+ [9] ggplot2_4.0.1   tidyverse_2.0.0 workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4      renv_1.1.4          stringi_1.8.7      
+ [4] hms_1.1.3           digest_0.6.37       magrittr_2.0.4     
+ [7] timechange_0.3.0    evaluate_1.0.3      grid_4.5.0         
+[10] RColorBrewer_1.1-3  fastmap_1.2.0       rprojroot_2.0.4    
+[13] processx_3.8.6      whisker_0.4.1       ps_1.9.1           
+[16] promises_1.3.3      BiocManager_1.30.26 httr_1.4.7         
+[19] scales_1.4.0        cli_3.6.5           crayon_1.5.3       
+[22] rlang_1.1.6         bit64_4.6.0-1       withr_3.0.2        
+[25] yaml_2.3.10         parallel_4.5.0      tools_4.5.0        
+[28] tzdb_0.5.0          httpuv_1.6.16       vctrs_0.6.5        
+[31] R6_2.6.1            lifecycle_1.0.4     git2r_0.36.2       
+[34] bit_4.6.0           fs_1.6.6            vroom_1.6.5        
+[37] pkgconfig_2.0.3     callr_3.7.6         pillar_1.10.2      
+[40] later_1.4.2         gtable_0.3.6        glue_1.8.0         
+[43] Rcpp_1.0.14         xfun_0.52           tidyselect_1.2.1   
+[46] rstudioapi_0.17.1   knitr_1.50          farver_2.1.2       
+[49] htmltools_0.5.8.1   rmarkdown_2.29      compiler_4.5.0     
+[52] S7_0.2.1            getPass_0.2-4      
+##########################################################################
+Doublet calling completed
+##########################################################################
+##########################################################################
+Start Sample Tonsils_10xFlex_engineered_12k_0.15p_1542s
+##########################################################################
+mkdir: /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s/doublet_calls: File exists
+##########################################################################
+Start doublet calling
+Inputs detected:
+  OUTPUT = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s/doublet_calls
+  COUNTS = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s
+##########################################################################
+##########################################################################
+Start cxds + bcds + scds
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s
+Start doublet calling: cxds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8782047 469.1   12949261  691.6         NA  12949261  691.6
+Vcells 51784945 395.1  161702110 1233.7      49152 161694159 1233.7
+Start doublet calling: bcds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8839196 472.1   12949261  691.6         NA  12949261  691.6
+Vcells 52005237 396.8  429336008 3275.6      49152 530358406 4046.4
+Start doublet calling: hybrid
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8839812 472.1   12949261  691.6         NA  12949261  691.6
+Vcells 52034467 397.0  343468807 2620.5      49152 530358406 4046.4
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_1542s_doublet_calling_scds_bcds_cxds.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [3] sp_2.2-0                    here_1.0.1                 
+ [5] lubridate_1.9.4             forcats_1.0.0              
+ [7] stringr_1.5.1               dplyr_1.1.4                
+ [9] purrr_1.2.0                 readr_2.1.5                
+[11] tidyr_1.3.1                 tibble_3.3.0               
+[13] ggplot2_4.0.1               tidyverse_2.0.0            
+[15] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[17] Biobase_2.68.0              GenomicRanges_1.60.0       
+[19] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[21] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[23] generics_0.1.4              MatrixGenerics_1.20.0      
+[25] matrixStats_1.5.0           scds_1.24.0                
+[27] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22        splines_4.5.0           later_1.4.2            
+  [4] R.oo_1.27.1             polyclip_1.10-7         pROC_1.18.5            
+  [7] fastDummies_1.7.5       lifecycle_1.0.4         rprojroot_2.0.4        
+ [10] globals_0.18.0          processx_3.8.6          lattice_0.22-6         
+ [13] vroom_1.6.5             MASS_7.3-65             magrittr_2.0.4         
+ [16] plotly_4.10.4           rmarkdown_2.29          yaml_2.3.10            
+ [19] httpuv_1.6.16           sctransform_0.4.2       spam_2.11-1            
+ [22] spatstat.sparse_3.1-0   reticulate_1.42.0       cowplot_1.1.3          
+ [25] pbapply_1.7-2           RColorBrewer_1.1-3      abind_1.4-8            
+ [28] Rtsne_0.17              R.utils_2.13.0          git2r_0.36.2           
+ [31] GenomeInfoDbData_1.2.14 ggrepel_0.9.6           irlba_2.3.5.1          
+ [34] listenv_0.9.1           spatstat.utils_3.1-4    goftest_1.2-3          
+ [37] RSpectra_0.16-2         spatstat.random_3.4-1   fitdistrplus_1.2-2     
+ [40] parallelly_1.45.0       codetools_0.2-20        DelayedArray_0.34.1    
+ [43] tidyselect_1.2.1        UCSC.utils_1.4.0        farver_2.1.2           
+ [46] spatstat.explore_3.4-3  jsonlite_2.0.0          progressr_0.15.1       
+ [49] ggridges_0.5.6          survival_3.8-3          tools_4.5.0            
+ [52] ica_1.0-3               Rcpp_1.0.14             glue_1.8.0             
+ [55] gridExtra_2.3           SparseArray_1.8.0       xfun_0.52              
+ [58] withr_3.0.2             BiocManager_1.30.26     fastmap_1.2.0          
+ [61] callr_3.7.6             digest_0.6.37           timechange_0.3.0       
+ [64] R6_2.6.1                mime_0.13               scattermore_1.2        
+ [67] tensor_1.5              spatstat.data_3.1-6     R.methodsS3_1.8.2      
+ [70] renv_1.1.4              data.table_1.17.4       httr_1.4.7             
+ [73] htmlwidgets_1.6.4       S4Arrays_1.8.1          whisker_0.4.1          
+ [76] uwot_0.2.3              pkgconfig_2.0.3         gtable_0.3.6           
+ [79] lmtest_0.9-40           S7_0.2.1                XVector_0.48.0         
+ [82] htmltools_0.5.8.1       dotCall64_1.2           scales_1.4.0           
+ [85] png_0.1-8               spatstat.univar_3.1-3   knitr_1.50             
+ [88] rstudioapi_0.17.1       tzdb_0.5.0              reshape2_1.4.4         
+ [91] nlme_3.1-168            zoo_1.8-14              KernSmooth_2.23-26     
+ [94] parallel_4.5.0          miniUI_0.1.2            pillar_1.10.2          
+ [97] grid_4.5.0              vctrs_0.6.5             RANN_2.6.2             
+[100] promises_1.3.3          xtable_1.8-4            cluster_2.1.8.1        
+[103] evaluate_1.0.3          cli_3.6.5               compiler_4.5.0         
+[106] rlang_1.1.6             crayon_1.5.3            future.apply_1.20.0    
+[109] ps_1.9.1                getPass_0.2-4           plyr_1.8.9             
+[112] fs_1.6.6                stringi_1.8.7           viridisLite_0.4.2      
+[115] deldir_2.0-4            lazyeval_0.2.2          spatstat.geom_3.4-1    
+[118] Matrix_1.7-3            RcppHNSW_0.6.0          hms_1.1.3              
+[121] patchwork_1.3.2         bit64_4.6.0-1           future_1.58.0          
+[124] shiny_1.10.0            ROCR_1.0-11             igraph_2.1.4           
+[127] bit_4.6.0               xgboost_1.7.11.1       
+##########################################################################
+Start scDblFinder
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s
+Run PCA and UMAP
+Run scDblFinder
+Clustering cells...
+11 clusters
+Creating ~9600 artificial doublets...
+Dimensional reduction
+Evaluating kNN...
+Training model...
+iter=0, 1410 cells excluded from training.
+iter=1, 1497 cells excluded from training.
+iter=2, 1514 cells excluded from training.
+Threshold found:0.425
+1625 (13.5%) doublets called
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  11926840  637.0   17394844  929.0         NA  17394844  929.0
+Vcells 140945277 1075.4  362457702 2765.4      49152 351747110 2683.7
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_1542s_doublet_calling_scDblFinder.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] scater_1.36.0               scuttle_1.18.0             
+ [3] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [5] sp_2.2-0                    here_1.0.1                 
+ [7] lubridate_1.9.4             forcats_1.0.0              
+ [9] stringr_1.5.1               dplyr_1.1.4                
+[11] purrr_1.2.0                 readr_2.1.5                
+[13] tidyr_1.3.1                 tibble_3.3.0               
+[15] ggplot2_4.0.1               tidyverse_2.0.0            
+[17] scDblFinder_1.22.0          SingleCellExperiment_1.30.1
+[19] SummarizedExperiment_1.38.1 Biobase_2.68.0             
+[21] GenomicRanges_1.60.0        GenomeInfoDb_1.44.0        
+[23] IRanges_2.42.0              S4Vectors_0.46.0           
+[25] BiocGenerics_0.54.0         generics_0.1.4             
+[27] MatrixGenerics_1.20.0       matrixStats_1.5.0          
+[29] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22         splines_4.5.0            later_1.4.2             
+  [4] BiocIO_1.18.0            bitops_1.0-9             R.oo_1.27.1             
+  [7] polyclip_1.10-7          XML_3.99-0.18            fastDummies_1.7.5       
+ [10] lifecycle_1.0.4          edgeR_4.6.2              rprojroot_2.0.4         
+ [13] vroom_1.6.5              globals_0.18.0           processx_3.8.6          
+ [16] lattice_0.22-6           MASS_7.3-65              magrittr_2.0.4          
+ [19] plotly_4.10.4            limma_3.64.1             rmarkdown_2.29          
+ [22] yaml_2.3.10              metapod_1.16.0           httpuv_1.6.16           
+ [25] sctransform_0.4.2        spam_2.11-1              spatstat.sparse_3.1-0   
+ [28] reticulate_1.42.0        pbapply_1.7-2            cowplot_1.1.3           
+ [31] RColorBrewer_1.1-3       abind_1.4-8              Rtsne_0.17              
+ [34] R.utils_2.13.0           RCurl_1.98-1.17          git2r_0.36.2            
+ [37] GenomeInfoDbData_1.2.14  ggrepel_0.9.6            irlba_2.3.5.1           
+ [40] spatstat.utils_3.1-4     listenv_0.9.1            goftest_1.2-3           
+ [43] RSpectra_0.16-2          spatstat.random_3.4-1    dqrng_0.4.1             
+ [46] fitdistrplus_1.2-2       parallelly_1.45.0        codetools_0.2-20        
+ [49] DelayedArray_0.34.1      tidyselect_1.2.1         UCSC.utils_1.4.0        
+ [52] farver_2.1.2             ScaledMatrix_1.16.0      viridis_0.6.5           
+ [55] spatstat.explore_3.4-3   GenomicAlignments_1.44.0 jsonlite_2.0.0          
+ [58] BiocNeighbors_2.2.0      progressr_0.15.1         ggridges_0.5.6          
+ [61] survival_3.8-3           tools_4.5.0              ica_1.0-3               
+ [64] Rcpp_1.0.14              glue_1.8.0               gridExtra_2.3           
+ [67] SparseArray_1.8.0        xfun_0.52                withr_3.0.2             
+ [70] BiocManager_1.30.26      fastmap_1.2.0            bluster_1.18.0          
+ [73] callr_3.7.6              digest_0.6.37            rsvd_1.0.5              
+ [76] mime_0.13                timechange_0.3.0         R6_2.6.1                
+ [79] scattermore_1.2          tensor_1.5               spatstat.data_3.1-6     
+ [82] R.methodsS3_1.8.2        renv_1.1.4               data.table_1.17.4       
+ [85] rtracklayer_1.68.0       htmlwidgets_1.6.4        httr_1.4.7              
+ [88] S4Arrays_1.8.1           whisker_0.4.1            uwot_0.2.3              
+ [91] pkgconfig_2.0.3          gtable_0.3.6             lmtest_0.9-40           
+ [94] S7_0.2.1                 XVector_0.48.0           htmltools_0.5.8.1       
+ [97] dotCall64_1.2            scales_1.4.0             png_0.1-8               
+[100] spatstat.univar_3.1-3    scran_1.36.0             knitr_1.50              
+[103] rstudioapi_0.17.1        reshape2_1.4.4           tzdb_0.5.0              
+[106] rjson_0.2.23             nlme_3.1-168             curl_7.0.0              
+[109] zoo_1.8-14               KernSmooth_2.23-26       parallel_4.5.0          
+[112] miniUI_0.1.2             vipor_0.4.7              restfulr_0.0.15         
+[115] pillar_1.10.2            grid_4.5.0               vctrs_0.6.5             
+[118] RANN_2.6.2               promises_1.3.3           BiocSingular_1.24.0     
+[121] beachmat_2.24.0          xtable_1.8-4             cluster_2.1.8.1         
+[124] beeswarm_0.4.0           evaluate_1.0.3           cli_3.6.5               
+[127] locfit_1.5-9.12          compiler_4.5.0           Rsamtools_2.24.0        
+[130] rlang_1.1.6              crayon_1.5.3             future.apply_1.20.0     
+[133] ps_1.9.1                 plyr_1.8.9               getPass_0.2-4           
+[136] fs_1.6.6                 ggbeeswarm_0.7.2         stringi_1.8.7           
+[139] deldir_2.0-4             viridisLite_0.4.2        BiocParallel_1.42.1     
+[142] Biostrings_2.76.0        lazyeval_0.2.2           spatstat.geom_3.4-1     
+[145] Matrix_1.7-3             RcppHNSW_0.6.0           patchwork_1.3.2         
+[148] hms_1.1.3                bit64_4.6.0-1            future_1.58.0           
+[151] statmod_1.5.0            shiny_1.10.0             ROCR_1.0-11             
+[154] igraph_2.1.4             bit_4.6.0                xgboost_1.7.11.1        
+
+ArgumentError: activate does not accept more than one argument:
+['/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s', '/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s/doublet_calls']
+
+
+##########################################################################
+Start scrublet
+##########################################################################
+Counts matrix shape: 12000 rows, 18082 columns
+Preprocessing...
+Simulating doublets...
+Embedding transcriptomes using PCA...
+Calculating doublet scores...
+Automatically set threshold at doublet score = 0.24
+Detected doublet rate = 8.8%
+Estimated detectable doublet fraction = 49.8%
+Overall doublet rate:
+	Expected   = 10.0%
+	Estimated  = 17.6%
+Elapsed time: 4.3 seconds
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_1542s_doublet_calling_scrublet.csv
+##########################################################################
+Start DoubletDetection
+##########################################################################
+/Users/meiermichelle/miniforge3/envs/DoubletDetection/lib/python3.14/site-packages/doubletdetection/doubletdetection.py:106: UserWarning: Leiden clustering is experimental and results have not been validated.
+  warnings.warn("Leiden clustering is experimental and results have not been validated.")
+Counts matrix shape: 12000 rows, 18082 columns
+Counts matrix shape after filtering: 12000 rows, 15761 columns
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:13<02:00, 13.40s/it] 20%|██        | 2/10 [00:15<00:55,  6.91s/it] 30%|███       | 3/10 [00:17<00:33,  4.73s/it] 40%|████      | 4/10 [00:20<00:22,  3.71s/it] 50%|█████     | 5/10 [00:22<00:15,  3.15s/it] 60%|██████    | 6/10 [00:24<00:11,  2.78s/it] 70%|███████   | 7/10 [00:26<00:07,  2.61s/it] 80%|████████  | 8/10 [00:28<00:04,  2.49s/it] 90%|█████████ | 9/10 [00:30<00:02,  2.41s/it]100%|██████████| 10/10 [00:33<00:00,  2.32s/it]100%|██████████| 10/10 [00:33<00:00,  3.31s/it]
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_1542s_doublet_calling_DoubletDetection.csv
+Print threshold and convergence plots
+##########################################################################
+Combine all doublet calling results
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s/doublet_calls
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+[1] TRUE
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_1542s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_1542s_doublet_calling_consensus.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+ [5] purrr_1.2.0     readr_2.1.5     tidyr_1.3.1     tibble_3.3.0   
+ [9] ggplot2_4.0.1   tidyverse_2.0.0 workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4      renv_1.1.4          stringi_1.8.7      
+ [4] hms_1.1.3           digest_0.6.37       magrittr_2.0.4     
+ [7] timechange_0.3.0    evaluate_1.0.3      grid_4.5.0         
+[10] RColorBrewer_1.1-3  fastmap_1.2.0       rprojroot_2.0.4    
+[13] processx_3.8.6      whisker_0.4.1       ps_1.9.1           
+[16] promises_1.3.3      BiocManager_1.30.26 httr_1.4.7         
+[19] scales_1.4.0        cli_3.6.5           crayon_1.5.3       
+[22] rlang_1.1.6         bit64_4.6.0-1       withr_3.0.2        
+[25] yaml_2.3.10         parallel_4.5.0      tools_4.5.0        
+[28] tzdb_0.5.0          httpuv_1.6.16       vctrs_0.6.5        
+[31] R6_2.6.1            lifecycle_1.0.4     git2r_0.36.2       
+[34] bit_4.6.0           fs_1.6.6            vroom_1.6.5        
+[37] pkgconfig_2.0.3     callr_3.7.6         pillar_1.10.2      
+[40] later_1.4.2         gtable_0.3.6        glue_1.8.0         
+[43] Rcpp_1.0.14         xfun_0.52           tidyselect_1.2.1   
+[46] rstudioapi_0.17.1   knitr_1.50          farver_2.1.2       
+[49] htmltools_0.5.8.1   rmarkdown_2.29      compiler_4.5.0     
+[52] S7_0.2.1            getPass_0.2-4      
+##########################################################################
+Doublet calling completed
+##########################################################################
+##########################################################################
+Start Sample Tonsils_10xFlex_engineered_12k_0.15p_8140s
+##########################################################################
+mkdir: /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s/doublet_calls: File exists
+##########################################################################
+Start doublet calling
+Inputs detected:
+  OUTPUT = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s/doublet_calls
+  COUNTS = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s
+##########################################################################
+##########################################################################
+Start cxds + bcds + scds
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s
+Start doublet calling: cxds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8782050 469.1   12949281  691.6         NA  12949281  691.6
+Vcells 51760087 394.9  161619646 1233.1      49152 161520925 1232.4
+Start doublet calling: bcds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8839199 472.1   12949281  691.6         NA  12949281  691.6
+Vcells 51979356 396.6  429012594 3273.2      49152 529941693 4043.2
+Start doublet calling: hybrid
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8839815 472.1   12949281  691.6         NA  12949281  691.6
+Vcells 52008586 396.8  343210076 2618.5      49152 529941693 4043.2
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_8140s_doublet_calling_scds_bcds_cxds.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [3] sp_2.2-0                    here_1.0.1                 
+ [5] lubridate_1.9.4             forcats_1.0.0              
+ [7] stringr_1.5.1               dplyr_1.1.4                
+ [9] purrr_1.2.0                 readr_2.1.5                
+[11] tidyr_1.3.1                 tibble_3.3.0               
+[13] ggplot2_4.0.1               tidyverse_2.0.0            
+[15] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[17] Biobase_2.68.0              GenomicRanges_1.60.0       
+[19] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[21] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[23] generics_0.1.4              MatrixGenerics_1.20.0      
+[25] matrixStats_1.5.0           scds_1.24.0                
+[27] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22        splines_4.5.0           later_1.4.2            
+  [4] R.oo_1.27.1             polyclip_1.10-7         pROC_1.18.5            
+  [7] fastDummies_1.7.5       lifecycle_1.0.4         rprojroot_2.0.4        
+ [10] globals_0.18.0          processx_3.8.6          lattice_0.22-6         
+ [13] vroom_1.6.5             MASS_7.3-65             magrittr_2.0.4         
+ [16] plotly_4.10.4           rmarkdown_2.29          yaml_2.3.10            
+ [19] httpuv_1.6.16           sctransform_0.4.2       spam_2.11-1            
+ [22] spatstat.sparse_3.1-0   reticulate_1.42.0       cowplot_1.1.3          
+ [25] pbapply_1.7-2           RColorBrewer_1.1-3      abind_1.4-8            
+ [28] Rtsne_0.17              R.utils_2.13.0          git2r_0.36.2           
+ [31] GenomeInfoDbData_1.2.14 ggrepel_0.9.6           irlba_2.3.5.1          
+ [34] listenv_0.9.1           spatstat.utils_3.1-4    goftest_1.2-3          
+ [37] RSpectra_0.16-2         spatstat.random_3.4-1   fitdistrplus_1.2-2     
+ [40] parallelly_1.45.0       codetools_0.2-20        DelayedArray_0.34.1    
+ [43] tidyselect_1.2.1        UCSC.utils_1.4.0        farver_2.1.2           
+ [46] spatstat.explore_3.4-3  jsonlite_2.0.0          progressr_0.15.1       
+ [49] ggridges_0.5.6          survival_3.8-3          tools_4.5.0            
+ [52] ica_1.0-3               Rcpp_1.0.14             glue_1.8.0             
+ [55] gridExtra_2.3           SparseArray_1.8.0       xfun_0.52              
+ [58] withr_3.0.2             BiocManager_1.30.26     fastmap_1.2.0          
+ [61] callr_3.7.6             digest_0.6.37           timechange_0.3.0       
+ [64] R6_2.6.1                mime_0.13               scattermore_1.2        
+ [67] tensor_1.5              spatstat.data_3.1-6     R.methodsS3_1.8.2      
+ [70] renv_1.1.4              data.table_1.17.4       httr_1.4.7             
+ [73] htmlwidgets_1.6.4       S4Arrays_1.8.1          whisker_0.4.1          
+ [76] uwot_0.2.3              pkgconfig_2.0.3         gtable_0.3.6           
+ [79] lmtest_0.9-40           S7_0.2.1                XVector_0.48.0         
+ [82] htmltools_0.5.8.1       dotCall64_1.2           scales_1.4.0           
+ [85] png_0.1-8               spatstat.univar_3.1-3   knitr_1.50             
+ [88] rstudioapi_0.17.1       tzdb_0.5.0              reshape2_1.4.4         
+ [91] nlme_3.1-168            zoo_1.8-14              KernSmooth_2.23-26     
+ [94] parallel_4.5.0          miniUI_0.1.2            pillar_1.10.2          
+ [97] grid_4.5.0              vctrs_0.6.5             RANN_2.6.2             
+[100] promises_1.3.3          xtable_1.8-4            cluster_2.1.8.1        
+[103] evaluate_1.0.3          cli_3.6.5               compiler_4.5.0         
+[106] rlang_1.1.6             crayon_1.5.3            future.apply_1.20.0    
+[109] ps_1.9.1                getPass_0.2-4           plyr_1.8.9             
+[112] fs_1.6.6                stringi_1.8.7           viridisLite_0.4.2      
+[115] deldir_2.0-4            lazyeval_0.2.2          spatstat.geom_3.4-1    
+[118] Matrix_1.7-3            RcppHNSW_0.6.0          hms_1.1.3              
+[121] patchwork_1.3.2         bit64_4.6.0-1           future_1.58.0          
+[124] shiny_1.10.0            ROCR_1.0-11             igraph_2.1.4           
+[127] bit_4.6.0               xgboost_1.7.11.1       
+##########################################################################
+Start scDblFinder
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s
+Run PCA and UMAP
+Run scDblFinder
+Clustering cells...
+10 clusters
+Creating ~9600 artificial doublets...
+Dimensional reduction
+Evaluating kNN...
+Training model...
+iter=0, 1406 cells excluded from training.
+iter=1, 1483 cells excluded from training.
+iter=2, 1517 cells excluded from training.
+Threshold found:0.355
+1665 (13.9%) doublets called
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  11926617  637.0   17394844  929.0         NA  17394844  929.0
+Vcells 140862144 1074.7  362286814 2764.1      49152 301108311 2297.3
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_8140s_doublet_calling_scDblFinder.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] scater_1.36.0               scuttle_1.18.0             
+ [3] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [5] sp_2.2-0                    here_1.0.1                 
+ [7] lubridate_1.9.4             forcats_1.0.0              
+ [9] stringr_1.5.1               dplyr_1.1.4                
+[11] purrr_1.2.0                 readr_2.1.5                
+[13] tidyr_1.3.1                 tibble_3.3.0               
+[15] ggplot2_4.0.1               tidyverse_2.0.0            
+[17] scDblFinder_1.22.0          SingleCellExperiment_1.30.1
+[19] SummarizedExperiment_1.38.1 Biobase_2.68.0             
+[21] GenomicRanges_1.60.0        GenomeInfoDb_1.44.0        
+[23] IRanges_2.42.0              S4Vectors_0.46.0           
+[25] BiocGenerics_0.54.0         generics_0.1.4             
+[27] MatrixGenerics_1.20.0       matrixStats_1.5.0          
+[29] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22         splines_4.5.0            later_1.4.2             
+  [4] BiocIO_1.18.0            bitops_1.0-9             R.oo_1.27.1             
+  [7] polyclip_1.10-7          XML_3.99-0.18            fastDummies_1.7.5       
+ [10] lifecycle_1.0.4          edgeR_4.6.2              rprojroot_2.0.4         
+ [13] vroom_1.6.5              globals_0.18.0           processx_3.8.6          
+ [16] lattice_0.22-6           MASS_7.3-65              magrittr_2.0.4          
+ [19] plotly_4.10.4            limma_3.64.1             rmarkdown_2.29          
+ [22] yaml_2.3.10              metapod_1.16.0           httpuv_1.6.16           
+ [25] sctransform_0.4.2        spam_2.11-1              spatstat.sparse_3.1-0   
+ [28] reticulate_1.42.0        pbapply_1.7-2            cowplot_1.1.3           
+ [31] RColorBrewer_1.1-3       abind_1.4-8              Rtsne_0.17              
+ [34] R.utils_2.13.0           RCurl_1.98-1.17          git2r_0.36.2            
+ [37] GenomeInfoDbData_1.2.14  ggrepel_0.9.6            irlba_2.3.5.1           
+ [40] spatstat.utils_3.1-4     listenv_0.9.1            goftest_1.2-3           
+ [43] RSpectra_0.16-2          spatstat.random_3.4-1    dqrng_0.4.1             
+ [46] fitdistrplus_1.2-2       parallelly_1.45.0        codetools_0.2-20        
+ [49] DelayedArray_0.34.1      tidyselect_1.2.1         UCSC.utils_1.4.0        
+ [52] farver_2.1.2             ScaledMatrix_1.16.0      viridis_0.6.5           
+ [55] spatstat.explore_3.4-3   GenomicAlignments_1.44.0 jsonlite_2.0.0          
+ [58] BiocNeighbors_2.2.0      progressr_0.15.1         ggridges_0.5.6          
+ [61] survival_3.8-3           tools_4.5.0              ica_1.0-3               
+ [64] Rcpp_1.0.14              glue_1.8.0               gridExtra_2.3           
+ [67] SparseArray_1.8.0        xfun_0.52                withr_3.0.2             
+ [70] BiocManager_1.30.26      fastmap_1.2.0            bluster_1.18.0          
+ [73] callr_3.7.6              digest_0.6.37            rsvd_1.0.5              
+ [76] mime_0.13                timechange_0.3.0         R6_2.6.1                
+ [79] scattermore_1.2          tensor_1.5               spatstat.data_3.1-6     
+ [82] R.methodsS3_1.8.2        renv_1.1.4               data.table_1.17.4       
+ [85] rtracklayer_1.68.0       htmlwidgets_1.6.4        httr_1.4.7              
+ [88] S4Arrays_1.8.1           whisker_0.4.1            uwot_0.2.3              
+ [91] pkgconfig_2.0.3          gtable_0.3.6             lmtest_0.9-40           
+ [94] S7_0.2.1                 XVector_0.48.0           htmltools_0.5.8.1       
+ [97] dotCall64_1.2            scales_1.4.0             png_0.1-8               
+[100] spatstat.univar_3.1-3    scran_1.36.0             knitr_1.50              
+[103] rstudioapi_0.17.1        reshape2_1.4.4           tzdb_0.5.0              
+[106] rjson_0.2.23             nlme_3.1-168             curl_7.0.0              
+[109] zoo_1.8-14               KernSmooth_2.23-26       parallel_4.5.0          
+[112] miniUI_0.1.2             vipor_0.4.7              restfulr_0.0.15         
+[115] pillar_1.10.2            grid_4.5.0               vctrs_0.6.5             
+[118] RANN_2.6.2               promises_1.3.3           BiocSingular_1.24.0     
+[121] beachmat_2.24.0          xtable_1.8-4             cluster_2.1.8.1         
+[124] beeswarm_0.4.0           evaluate_1.0.3           cli_3.6.5               
+[127] locfit_1.5-9.12          compiler_4.5.0           Rsamtools_2.24.0        
+[130] rlang_1.1.6              crayon_1.5.3             future.apply_1.20.0     
+[133] ps_1.9.1                 plyr_1.8.9               getPass_0.2-4           
+[136] fs_1.6.6                 ggbeeswarm_0.7.2         stringi_1.8.7           
+[139] deldir_2.0-4             viridisLite_0.4.2        BiocParallel_1.42.1     
+[142] Biostrings_2.76.0        lazyeval_0.2.2           spatstat.geom_3.4-1     
+[145] Matrix_1.7-3             RcppHNSW_0.6.0           patchwork_1.3.2         
+[148] hms_1.1.3                bit64_4.6.0-1            future_1.58.0           
+[151] statmod_1.5.0            shiny_1.10.0             ROCR_1.0-11             
+[154] igraph_2.1.4             bit_4.6.0                xgboost_1.7.11.1        
+
+ArgumentError: activate does not accept more than one argument:
+['/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s', '/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s/doublet_calls']
+
+
+##########################################################################
+Start scrublet
+##########################################################################
+Counts matrix shape: 12000 rows, 18082 columns
+Preprocessing...
+Simulating doublets...
+Embedding transcriptomes using PCA...
+Calculating doublet scores...
+Automatically set threshold at doublet score = 0.23
+Detected doublet rate = 9.4%
+Estimated detectable doublet fraction = 51.1%
+Overall doublet rate:
+	Expected   = 10.0%
+	Estimated  = 18.4%
+Elapsed time: 4.4 seconds
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_8140s_doublet_calling_scrublet.csv
+##########################################################################
+Start DoubletDetection
+##########################################################################
+/Users/meiermichelle/miniforge3/envs/DoubletDetection/lib/python3.14/site-packages/doubletdetection/doubletdetection.py:106: UserWarning: Leiden clustering is experimental and results have not been validated.
+  warnings.warn("Leiden clustering is experimental and results have not been validated.")
+Counts matrix shape: 12000 rows, 18082 columns
+Counts matrix shape after filtering: 12000 rows, 15676 columns
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:13<02:04, 13.79s/it] 20%|██        | 2/10 [00:15<00:55,  6.97s/it] 30%|███       | 3/10 [00:18<00:33,  4.81s/it] 40%|████      | 4/10 [00:20<00:22,  3.83s/it] 50%|█████     | 5/10 [00:22<00:16,  3.25s/it] 60%|██████    | 6/10 [00:25<00:11,  2.94s/it] 70%|███████   | 7/10 [00:27<00:07,  2.65s/it] 80%|████████  | 8/10 [00:29<00:04,  2.49s/it] 90%|█████████ | 9/10 [00:31<00:02,  2.47s/it]100%|██████████| 10/10 [00:33<00:00,  2.37s/it]100%|██████████| 10/10 [00:33<00:00,  3.39s/it]
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_8140s_doublet_calling_DoubletDetection.csv
+Print threshold and convergence plots
+##########################################################################
+Combine all doublet calling results
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s/doublet_calls
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+[1] TRUE
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8140s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_8140s_doublet_calling_consensus.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+ [5] purrr_1.2.0     readr_2.1.5     tidyr_1.3.1     tibble_3.3.0   
+ [9] ggplot2_4.0.1   tidyverse_2.0.0 workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4      renv_1.1.4          stringi_1.8.7      
+ [4] hms_1.1.3           digest_0.6.37       magrittr_2.0.4     
+ [7] timechange_0.3.0    evaluate_1.0.3      grid_4.5.0         
+[10] RColorBrewer_1.1-3  fastmap_1.2.0       rprojroot_2.0.4    
+[13] processx_3.8.6      whisker_0.4.1       ps_1.9.1           
+[16] promises_1.3.3      BiocManager_1.30.26 httr_1.4.7         
+[19] scales_1.4.0        cli_3.6.5           crayon_1.5.3       
+[22] rlang_1.1.6         bit64_4.6.0-1       withr_3.0.2        
+[25] yaml_2.3.10         parallel_4.5.0      tools_4.5.0        
+[28] tzdb_0.5.0          httpuv_1.6.16       vctrs_0.6.5        
+[31] R6_2.6.1            lifecycle_1.0.4     git2r_0.36.2       
+[34] bit_4.6.0           fs_1.6.6            vroom_1.6.5        
+[37] pkgconfig_2.0.3     callr_3.7.6         pillar_1.10.2      
+[40] later_1.4.2         gtable_0.3.6        glue_1.8.0         
+[43] Rcpp_1.0.14         xfun_0.52           tidyselect_1.2.1   
+[46] rstudioapi_0.17.1   knitr_1.50          farver_2.1.2       
+[49] htmltools_0.5.8.1   rmarkdown_2.29      compiler_4.5.0     
+[52] S7_0.2.1            getPass_0.2-4      
+##########################################################################
+Doublet calling completed
+##########################################################################
+##########################################################################
+Start Sample Tonsils_10xFlex_engineered_12k_0.15p_8524s
+##########################################################################
+mkdir: /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s/doublet_calls: File exists
+##########################################################################
+Start doublet calling
+Inputs detected:
+  OUTPUT = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s/doublet_calls
+  COUNTS = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s
+##########################################################################
+##########################################################################
+Start cxds + bcds + scds
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s
+Start doublet calling: cxds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8782047 469.1   12943808  691.3         NA  12943808  691.3
+Vcells 51949678 396.4  162248679 1237.9      49152 162220798 1237.7
+Start doublet calling: bcds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8839196 472.1   12943808  691.3         NA  12943808  691.3
+Vcells 52169340 398.1  430114930 3281.6      49152 531116306 4052.1
+Start doublet calling: hybrid
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8839812 472.1   12943808  691.3         NA  12943808  691.3
+Vcells 52198570 398.3  344091944 2625.3      49152 531116306 4052.1
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_8524s_doublet_calling_scds_bcds_cxds.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [3] sp_2.2-0                    here_1.0.1                 
+ [5] lubridate_1.9.4             forcats_1.0.0              
+ [7] stringr_1.5.1               dplyr_1.1.4                
+ [9] purrr_1.2.0                 readr_2.1.5                
+[11] tidyr_1.3.1                 tibble_3.3.0               
+[13] ggplot2_4.0.1               tidyverse_2.0.0            
+[15] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[17] Biobase_2.68.0              GenomicRanges_1.60.0       
+[19] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[21] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[23] generics_0.1.4              MatrixGenerics_1.20.0      
+[25] matrixStats_1.5.0           scds_1.24.0                
+[27] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22        splines_4.5.0           later_1.4.2            
+  [4] R.oo_1.27.1             polyclip_1.10-7         pROC_1.18.5            
+  [7] fastDummies_1.7.5       lifecycle_1.0.4         rprojroot_2.0.4        
+ [10] globals_0.18.0          processx_3.8.6          lattice_0.22-6         
+ [13] vroom_1.6.5             MASS_7.3-65             magrittr_2.0.4         
+ [16] plotly_4.10.4           rmarkdown_2.29          yaml_2.3.10            
+ [19] httpuv_1.6.16           sctransform_0.4.2       spam_2.11-1            
+ [22] spatstat.sparse_3.1-0   reticulate_1.42.0       cowplot_1.1.3          
+ [25] pbapply_1.7-2           RColorBrewer_1.1-3      abind_1.4-8            
+ [28] Rtsne_0.17              R.utils_2.13.0          git2r_0.36.2           
+ [31] GenomeInfoDbData_1.2.14 ggrepel_0.9.6           irlba_2.3.5.1          
+ [34] listenv_0.9.1           spatstat.utils_3.1-4    goftest_1.2-3          
+ [37] RSpectra_0.16-2         spatstat.random_3.4-1   fitdistrplus_1.2-2     
+ [40] parallelly_1.45.0       codetools_0.2-20        DelayedArray_0.34.1    
+ [43] tidyselect_1.2.1        UCSC.utils_1.4.0        farver_2.1.2           
+ [46] spatstat.explore_3.4-3  jsonlite_2.0.0          progressr_0.15.1       
+ [49] ggridges_0.5.6          survival_3.8-3          tools_4.5.0            
+ [52] ica_1.0-3               Rcpp_1.0.14             glue_1.8.0             
+ [55] gridExtra_2.3           SparseArray_1.8.0       xfun_0.52              
+ [58] withr_3.0.2             BiocManager_1.30.26     fastmap_1.2.0          
+ [61] callr_3.7.6             digest_0.6.37           timechange_0.3.0       
+ [64] R6_2.6.1                mime_0.13               scattermore_1.2        
+ [67] tensor_1.5              spatstat.data_3.1-6     R.methodsS3_1.8.2      
+ [70] renv_1.1.4              data.table_1.17.4       httr_1.4.7             
+ [73] htmlwidgets_1.6.4       S4Arrays_1.8.1          whisker_0.4.1          
+ [76] uwot_0.2.3              pkgconfig_2.0.3         gtable_0.3.6           
+ [79] lmtest_0.9-40           S7_0.2.1                XVector_0.48.0         
+ [82] htmltools_0.5.8.1       dotCall64_1.2           scales_1.4.0           
+ [85] png_0.1-8               spatstat.univar_3.1-3   knitr_1.50             
+ [88] rstudioapi_0.17.1       tzdb_0.5.0              reshape2_1.4.4         
+ [91] nlme_3.1-168            zoo_1.8-14              KernSmooth_2.23-26     
+ [94] parallel_4.5.0          miniUI_0.1.2            pillar_1.10.2          
+ [97] grid_4.5.0              vctrs_0.6.5             RANN_2.6.2             
+[100] promises_1.3.3          xtable_1.8-4            cluster_2.1.8.1        
+[103] evaluate_1.0.3          cli_3.6.5               compiler_4.5.0         
+[106] rlang_1.1.6             crayon_1.5.3            future.apply_1.20.0    
+[109] ps_1.9.1                getPass_0.2-4           plyr_1.8.9             
+[112] fs_1.6.6                stringi_1.8.7           viridisLite_0.4.2      
+[115] deldir_2.0-4            lazyeval_0.2.2          spatstat.geom_3.4-1    
+[118] Matrix_1.7-3            RcppHNSW_0.6.0          hms_1.1.3              
+[121] patchwork_1.3.2         bit64_4.6.0-1           future_1.58.0          
+[124] shiny_1.10.0            ROCR_1.0-11             igraph_2.1.4           
+[127] bit_4.6.0               xgboost_1.7.11.1       
+##########################################################################
+Start scDblFinder
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s
+Run PCA and UMAP
+Run scDblFinder
+Clustering cells...
+9 clusters
+Creating ~9600 artificial doublets...
+Dimensional reduction
+Evaluating kNN...
+Training model...
+iter=0, 1291 cells excluded from training.
+iter=1, 1355 cells excluded from training.
+iter=2, 1388 cells excluded from training.
+Threshold found:0.411
+1519 (12.7%) doublets called
+            used   (Mb) gc trigger (Mb) limit (Mb)  max used   (Mb)
+Ncells  11926790  637.0   17394840  929         NA  17394840  929.0
+Vcells 141497581 1079.6  363591062 2774      49152 306669801 2339.8
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_8524s_doublet_calling_scDblFinder.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] scater_1.36.0               scuttle_1.18.0             
+ [3] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [5] sp_2.2-0                    here_1.0.1                 
+ [7] lubridate_1.9.4             forcats_1.0.0              
+ [9] stringr_1.5.1               dplyr_1.1.4                
+[11] purrr_1.2.0                 readr_2.1.5                
+[13] tidyr_1.3.1                 tibble_3.3.0               
+[15] ggplot2_4.0.1               tidyverse_2.0.0            
+[17] scDblFinder_1.22.0          SingleCellExperiment_1.30.1
+[19] SummarizedExperiment_1.38.1 Biobase_2.68.0             
+[21] GenomicRanges_1.60.0        GenomeInfoDb_1.44.0        
+[23] IRanges_2.42.0              S4Vectors_0.46.0           
+[25] BiocGenerics_0.54.0         generics_0.1.4             
+[27] MatrixGenerics_1.20.0       matrixStats_1.5.0          
+[29] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22         splines_4.5.0            later_1.4.2             
+  [4] BiocIO_1.18.0            bitops_1.0-9             R.oo_1.27.1             
+  [7] polyclip_1.10-7          XML_3.99-0.18            fastDummies_1.7.5       
+ [10] lifecycle_1.0.4          edgeR_4.6.2              rprojroot_2.0.4         
+ [13] vroom_1.6.5              globals_0.18.0           processx_3.8.6          
+ [16] lattice_0.22-6           MASS_7.3-65              magrittr_2.0.4          
+ [19] plotly_4.10.4            limma_3.64.1             rmarkdown_2.29          
+ [22] yaml_2.3.10              metapod_1.16.0           httpuv_1.6.16           
+ [25] sctransform_0.4.2        spam_2.11-1              spatstat.sparse_3.1-0   
+ [28] reticulate_1.42.0        pbapply_1.7-2            cowplot_1.1.3           
+ [31] RColorBrewer_1.1-3       abind_1.4-8              Rtsne_0.17              
+ [34] R.utils_2.13.0           RCurl_1.98-1.17          git2r_0.36.2            
+ [37] GenomeInfoDbData_1.2.14  ggrepel_0.9.6            irlba_2.3.5.1           
+ [40] spatstat.utils_3.1-4     listenv_0.9.1            goftest_1.2-3           
+ [43] RSpectra_0.16-2          spatstat.random_3.4-1    dqrng_0.4.1             
+ [46] fitdistrplus_1.2-2       parallelly_1.45.0        codetools_0.2-20        
+ [49] DelayedArray_0.34.1      tidyselect_1.2.1         UCSC.utils_1.4.0        
+ [52] farver_2.1.2             ScaledMatrix_1.16.0      viridis_0.6.5           
+ [55] spatstat.explore_3.4-3   GenomicAlignments_1.44.0 jsonlite_2.0.0          
+ [58] BiocNeighbors_2.2.0      progressr_0.15.1         ggridges_0.5.6          
+ [61] survival_3.8-3           tools_4.5.0              ica_1.0-3               
+ [64] Rcpp_1.0.14              glue_1.8.0               gridExtra_2.3           
+ [67] SparseArray_1.8.0        xfun_0.52                withr_3.0.2             
+ [70] BiocManager_1.30.26      fastmap_1.2.0            bluster_1.18.0          
+ [73] callr_3.7.6              digest_0.6.37            rsvd_1.0.5              
+ [76] mime_0.13                timechange_0.3.0         R6_2.6.1                
+ [79] scattermore_1.2          tensor_1.5               spatstat.data_3.1-6     
+ [82] R.methodsS3_1.8.2        renv_1.1.4               data.table_1.17.4       
+ [85] rtracklayer_1.68.0       htmlwidgets_1.6.4        httr_1.4.7              
+ [88] S4Arrays_1.8.1           whisker_0.4.1            uwot_0.2.3              
+ [91] pkgconfig_2.0.3          gtable_0.3.6             lmtest_0.9-40           
+ [94] S7_0.2.1                 XVector_0.48.0           htmltools_0.5.8.1       
+ [97] dotCall64_1.2            scales_1.4.0             png_0.1-8               
+[100] spatstat.univar_3.1-3    scran_1.36.0             knitr_1.50              
+[103] rstudioapi_0.17.1        reshape2_1.4.4           tzdb_0.5.0              
+[106] rjson_0.2.23             nlme_3.1-168             curl_7.0.0              
+[109] zoo_1.8-14               KernSmooth_2.23-26       parallel_4.5.0          
+[112] miniUI_0.1.2             vipor_0.4.7              restfulr_0.0.15         
+[115] pillar_1.10.2            grid_4.5.0               vctrs_0.6.5             
+[118] RANN_2.6.2               promises_1.3.3           BiocSingular_1.24.0     
+[121] beachmat_2.24.0          xtable_1.8-4             cluster_2.1.8.1         
+[124] beeswarm_0.4.0           evaluate_1.0.3           cli_3.6.5               
+[127] locfit_1.5-9.12          compiler_4.5.0           Rsamtools_2.24.0        
+[130] rlang_1.1.6              crayon_1.5.3             future.apply_1.20.0     
+[133] ps_1.9.1                 plyr_1.8.9               getPass_0.2-4           
+[136] fs_1.6.6                 ggbeeswarm_0.7.2         stringi_1.8.7           
+[139] deldir_2.0-4             viridisLite_0.4.2        BiocParallel_1.42.1     
+[142] Biostrings_2.76.0        lazyeval_0.2.2           spatstat.geom_3.4-1     
+[145] Matrix_1.7-3             RcppHNSW_0.6.0           patchwork_1.3.2         
+[148] hms_1.1.3                bit64_4.6.0-1            future_1.58.0           
+[151] statmod_1.5.0            shiny_1.10.0             ROCR_1.0-11             
+[154] igraph_2.1.4             bit_4.6.0                xgboost_1.7.11.1        
+
+ArgumentError: activate does not accept more than one argument:
+['/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s', '/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s/doublet_calls']
+
+
+##########################################################################
+Start scrublet
+##########################################################################
+Counts matrix shape: 12000 rows, 18082 columns
+Preprocessing...
+Simulating doublets...
+Embedding transcriptomes using PCA...
+Calculating doublet scores...
+Automatically set threshold at doublet score = 0.25
+Detected doublet rate = 8.7%
+Estimated detectable doublet fraction = 48.0%
+Overall doublet rate:
+	Expected   = 10.0%
+	Estimated  = 18.1%
+Elapsed time: 4.0 seconds
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_8524s_doublet_calling_scrublet.csv
+##########################################################################
+Start DoubletDetection
+##########################################################################
+/Users/meiermichelle/miniforge3/envs/DoubletDetection/lib/python3.14/site-packages/doubletdetection/doubletdetection.py:106: UserWarning: Leiden clustering is experimental and results have not been validated.
+  warnings.warn("Leiden clustering is experimental and results have not been validated.")
+Counts matrix shape: 12000 rows, 18082 columns
+Counts matrix shape after filtering: 12000 rows, 15739 columns
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:13<02:00, 13.40s/it] 20%|██        | 2/10 [00:15<00:54,  6.82s/it] 30%|███       | 3/10 [00:17<00:33,  4.72s/it] 40%|████      | 4/10 [00:19<00:22,  3.70s/it] 50%|█████     | 5/10 [00:22<00:16,  3.21s/it] 60%|██████    | 6/10 [00:24<00:11,  2.92s/it] 70%|███████   | 7/10 [00:26<00:08,  2.69s/it] 80%|████████  | 8/10 [00:29<00:05,  2.56s/it] 90%|█████████ | 9/10 [00:31<00:02,  2.44s/it]100%|██████████| 10/10 [00:33<00:00,  2.37s/it]100%|██████████| 10/10 [00:33<00:00,  3.36s/it]
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_8524s_doublet_calling_DoubletDetection.csv
+Print threshold and convergence plots
+##########################################################################
+Combine all doublet calling results
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s/doublet_calls
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+[1] TRUE
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_8524s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_8524s_doublet_calling_consensus.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+ [5] purrr_1.2.0     readr_2.1.5     tidyr_1.3.1     tibble_3.3.0   
+ [9] ggplot2_4.0.1   tidyverse_2.0.0 workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4      renv_1.1.4          stringi_1.8.7      
+ [4] hms_1.1.3           digest_0.6.37       magrittr_2.0.4     
+ [7] timechange_0.3.0    evaluate_1.0.3      grid_4.5.0         
+[10] RColorBrewer_1.1-3  fastmap_1.2.0       rprojroot_2.0.4    
+[13] processx_3.8.6      whisker_0.4.1       ps_1.9.1           
+[16] promises_1.3.3      BiocManager_1.30.26 httr_1.4.7         
+[19] scales_1.4.0        cli_3.6.5           crayon_1.5.3       
+[22] rlang_1.1.6         bit64_4.6.0-1       withr_3.0.2        
+[25] yaml_2.3.10         parallel_4.5.0      tools_4.5.0        
+[28] tzdb_0.5.0          httpuv_1.6.16       vctrs_0.6.5        
+[31] R6_2.6.1            lifecycle_1.0.4     git2r_0.36.2       
+[34] bit_4.6.0           fs_1.6.6            vroom_1.6.5        
+[37] pkgconfig_2.0.3     callr_3.7.6         pillar_1.10.2      
+[40] later_1.4.2         gtable_0.3.6        glue_1.8.0         
+[43] Rcpp_1.0.14         xfun_0.52           tidyselect_1.2.1   
+[46] rstudioapi_0.17.1   knitr_1.50          farver_2.1.2       
+[49] htmltools_0.5.8.1   rmarkdown_2.29      compiler_4.5.0     
+[52] S7_0.2.1            getPass_0.2-4      
+##########################################################################
+Doublet calling completed
+##########################################################################
+##########################################################################
+Start Sample Tonsils_10xFlex_engineered_12k_0.15p_7537s
+##########################################################################
+mkdir: /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s/doublet_calls: File exists
+##########################################################################
+Start doublet calling
+Inputs detected:
+  OUTPUT = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s/doublet_calls
+  COUNTS = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s
+##########################################################################
+##########################################################################
+Start cxds + bcds + scds
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s
+Start doublet calling: cxds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8782047 469.1   12946838  691.5         NA  12946838  691.5
+Vcells 51533840 393.2  160869016 1227.4      49152 160848640 1227.2
+Start doublet calling: bcds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8839196 472.1   12946838  691.5         NA  12946838  691.5
+Vcells 51754122 394.9  428287236 3267.6      49152 528866671 4035.0
+Start doublet calling: hybrid
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+           used  (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  8839812 472.1   12946838  691.5         NA  12946838  691.5
+Vcells 51783352 395.1  342629789 2614.1      49152 528866671 4035.0
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_7537s_doublet_calling_scds_bcds_cxds.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [3] sp_2.2-0                    here_1.0.1                 
+ [5] lubridate_1.9.4             forcats_1.0.0              
+ [7] stringr_1.5.1               dplyr_1.1.4                
+ [9] purrr_1.2.0                 readr_2.1.5                
+[11] tidyr_1.3.1                 tibble_3.3.0               
+[13] ggplot2_4.0.1               tidyverse_2.0.0            
+[15] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[17] Biobase_2.68.0              GenomicRanges_1.60.0       
+[19] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[21] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[23] generics_0.1.4              MatrixGenerics_1.20.0      
+[25] matrixStats_1.5.0           scds_1.24.0                
+[27] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22        splines_4.5.0           later_1.4.2            
+  [4] R.oo_1.27.1             polyclip_1.10-7         pROC_1.18.5            
+  [7] fastDummies_1.7.5       lifecycle_1.0.4         rprojroot_2.0.4        
+ [10] globals_0.18.0          processx_3.8.6          lattice_0.22-6         
+ [13] vroom_1.6.5             MASS_7.3-65             magrittr_2.0.4         
+ [16] plotly_4.10.4           rmarkdown_2.29          yaml_2.3.10            
+ [19] httpuv_1.6.16           sctransform_0.4.2       spam_2.11-1            
+ [22] spatstat.sparse_3.1-0   reticulate_1.42.0       cowplot_1.1.3          
+ [25] pbapply_1.7-2           RColorBrewer_1.1-3      abind_1.4-8            
+ [28] Rtsne_0.17              R.utils_2.13.0          git2r_0.36.2           
+ [31] GenomeInfoDbData_1.2.14 ggrepel_0.9.6           irlba_2.3.5.1          
+ [34] listenv_0.9.1           spatstat.utils_3.1-4    goftest_1.2-3          
+ [37] RSpectra_0.16-2         spatstat.random_3.4-1   fitdistrplus_1.2-2     
+ [40] parallelly_1.45.0       codetools_0.2-20        DelayedArray_0.34.1    
+ [43] tidyselect_1.2.1        UCSC.utils_1.4.0        farver_2.1.2           
+ [46] spatstat.explore_3.4-3  jsonlite_2.0.0          progressr_0.15.1       
+ [49] ggridges_0.5.6          survival_3.8-3          tools_4.5.0            
+ [52] ica_1.0-3               Rcpp_1.0.14             glue_1.8.0             
+ [55] gridExtra_2.3           SparseArray_1.8.0       xfun_0.52              
+ [58] withr_3.0.2             BiocManager_1.30.26     fastmap_1.2.0          
+ [61] callr_3.7.6             digest_0.6.37           timechange_0.3.0       
+ [64] R6_2.6.1                mime_0.13               scattermore_1.2        
+ [67] tensor_1.5              spatstat.data_3.1-6     R.methodsS3_1.8.2      
+ [70] renv_1.1.4              data.table_1.17.4       httr_1.4.7             
+ [73] htmlwidgets_1.6.4       S4Arrays_1.8.1          whisker_0.4.1          
+ [76] uwot_0.2.3              pkgconfig_2.0.3         gtable_0.3.6           
+ [79] lmtest_0.9-40           S7_0.2.1                XVector_0.48.0         
+ [82] htmltools_0.5.8.1       dotCall64_1.2           scales_1.4.0           
+ [85] png_0.1-8               spatstat.univar_3.1-3   knitr_1.50             
+ [88] rstudioapi_0.17.1       tzdb_0.5.0              reshape2_1.4.4         
+ [91] nlme_3.1-168            zoo_1.8-14              KernSmooth_2.23-26     
+ [94] parallel_4.5.0          miniUI_0.1.2            pillar_1.10.2          
+ [97] grid_4.5.0              vctrs_0.6.5             RANN_2.6.2             
+[100] promises_1.3.3          xtable_1.8-4            cluster_2.1.8.1        
+[103] evaluate_1.0.3          cli_3.6.5               compiler_4.5.0         
+[106] rlang_1.1.6             crayon_1.5.3            future.apply_1.20.0    
+[109] ps_1.9.1                getPass_0.2-4           plyr_1.8.9             
+[112] fs_1.6.6                stringi_1.8.7           viridisLite_0.4.2      
+[115] deldir_2.0-4            lazyeval_0.2.2          spatstat.geom_3.4-1    
+[118] Matrix_1.7-3            RcppHNSW_0.6.0          hms_1.1.3              
+[121] patchwork_1.3.2         bit64_4.6.0-1           future_1.58.0          
+[124] shiny_1.10.0            ROCR_1.0-11             igraph_2.1.4           
+[127] bit_4.6.0               xgboost_1.7.11.1       
+##########################################################################
+Start scDblFinder
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s
+Run PCA and UMAP
+Run scDblFinder
+Clustering cells...
+10 clusters
+Creating ~9600 artificial doublets...
+Dimensional reduction
+Evaluating kNN...
+Training model...
+iter=0, 1383 cells excluded from training.
+iter=1, 1452 cells excluded from training.
+iter=2, 1476 cells excluded from training.
+Threshold found:0.434
+1544 (12.9%) doublets called
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  11926522  637.0   17394844  929.0         NA  17394844  929.0
+Vcells 140101394 1068.9  360730265 2752.2      49152 300325329 2291.4
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_7537s_doublet_calling_scDblFinder.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] scater_1.36.0               scuttle_1.18.0             
+ [3] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [5] sp_2.2-0                    here_1.0.1                 
+ [7] lubridate_1.9.4             forcats_1.0.0              
+ [9] stringr_1.5.1               dplyr_1.1.4                
+[11] purrr_1.2.0                 readr_2.1.5                
+[13] tidyr_1.3.1                 tibble_3.3.0               
+[15] ggplot2_4.0.1               tidyverse_2.0.0            
+[17] scDblFinder_1.22.0          SingleCellExperiment_1.30.1
+[19] SummarizedExperiment_1.38.1 Biobase_2.68.0             
+[21] GenomicRanges_1.60.0        GenomeInfoDb_1.44.0        
+[23] IRanges_2.42.0              S4Vectors_0.46.0           
+[25] BiocGenerics_0.54.0         generics_0.1.4             
+[27] MatrixGenerics_1.20.0       matrixStats_1.5.0          
+[29] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22         splines_4.5.0            later_1.4.2             
+  [4] BiocIO_1.18.0            bitops_1.0-9             R.oo_1.27.1             
+  [7] polyclip_1.10-7          XML_3.99-0.18            fastDummies_1.7.5       
+ [10] lifecycle_1.0.4          edgeR_4.6.2              rprojroot_2.0.4         
+ [13] vroom_1.6.5              globals_0.18.0           processx_3.8.6          
+ [16] lattice_0.22-6           MASS_7.3-65              magrittr_2.0.4          
+ [19] plotly_4.10.4            limma_3.64.1             rmarkdown_2.29          
+ [22] yaml_2.3.10              metapod_1.16.0           httpuv_1.6.16           
+ [25] sctransform_0.4.2        spam_2.11-1              spatstat.sparse_3.1-0   
+ [28] reticulate_1.42.0        pbapply_1.7-2            cowplot_1.1.3           
+ [31] RColorBrewer_1.1-3       abind_1.4-8              Rtsne_0.17              
+ [34] R.utils_2.13.0           RCurl_1.98-1.17          git2r_0.36.2            
+ [37] GenomeInfoDbData_1.2.14  ggrepel_0.9.6            irlba_2.3.5.1           
+ [40] spatstat.utils_3.1-4     listenv_0.9.1            goftest_1.2-3           
+ [43] RSpectra_0.16-2          spatstat.random_3.4-1    dqrng_0.4.1             
+ [46] fitdistrplus_1.2-2       parallelly_1.45.0        codetools_0.2-20        
+ [49] DelayedArray_0.34.1      tidyselect_1.2.1         UCSC.utils_1.4.0        
+ [52] farver_2.1.2             ScaledMatrix_1.16.0      viridis_0.6.5           
+ [55] spatstat.explore_3.4-3   GenomicAlignments_1.44.0 jsonlite_2.0.0          
+ [58] BiocNeighbors_2.2.0      progressr_0.15.1         ggridges_0.5.6          
+ [61] survival_3.8-3           tools_4.5.0              ica_1.0-3               
+ [64] Rcpp_1.0.14              glue_1.8.0               gridExtra_2.3           
+ [67] SparseArray_1.8.0        xfun_0.52                withr_3.0.2             
+ [70] BiocManager_1.30.26      fastmap_1.2.0            bluster_1.18.0          
+ [73] callr_3.7.6              digest_0.6.37            rsvd_1.0.5              
+ [76] mime_0.13                timechange_0.3.0         R6_2.6.1                
+ [79] scattermore_1.2          tensor_1.5               spatstat.data_3.1-6     
+ [82] R.methodsS3_1.8.2        renv_1.1.4               data.table_1.17.4       
+ [85] rtracklayer_1.68.0       htmlwidgets_1.6.4        httr_1.4.7              
+ [88] S4Arrays_1.8.1           whisker_0.4.1            uwot_0.2.3              
+ [91] pkgconfig_2.0.3          gtable_0.3.6             lmtest_0.9-40           
+ [94] S7_0.2.1                 XVector_0.48.0           htmltools_0.5.8.1       
+ [97] dotCall64_1.2            scales_1.4.0             png_0.1-8               
+[100] spatstat.univar_3.1-3    scran_1.36.0             knitr_1.50              
+[103] rstudioapi_0.17.1        reshape2_1.4.4           tzdb_0.5.0              
+[106] rjson_0.2.23             nlme_3.1-168             curl_7.0.0              
+[109] zoo_1.8-14               KernSmooth_2.23-26       parallel_4.5.0          
+[112] miniUI_0.1.2             vipor_0.4.7              restfulr_0.0.15         
+[115] pillar_1.10.2            grid_4.5.0               vctrs_0.6.5             
+[118] RANN_2.6.2               promises_1.3.3           BiocSingular_1.24.0     
+[121] beachmat_2.24.0          xtable_1.8-4             cluster_2.1.8.1         
+[124] beeswarm_0.4.0           evaluate_1.0.3           cli_3.6.5               
+[127] locfit_1.5-9.12          compiler_4.5.0           Rsamtools_2.24.0        
+[130] rlang_1.1.6              crayon_1.5.3             future.apply_1.20.0     
+[133] ps_1.9.1                 plyr_1.8.9               getPass_0.2-4           
+[136] fs_1.6.6                 ggbeeswarm_0.7.2         stringi_1.8.7           
+[139] deldir_2.0-4             viridisLite_0.4.2        BiocParallel_1.42.1     
+[142] Biostrings_2.76.0        lazyeval_0.2.2           spatstat.geom_3.4-1     
+[145] Matrix_1.7-3             RcppHNSW_0.6.0           patchwork_1.3.2         
+[148] hms_1.1.3                bit64_4.6.0-1            future_1.58.0           
+[151] statmod_1.5.0            shiny_1.10.0             ROCR_1.0-11             
+[154] igraph_2.1.4             bit_4.6.0                xgboost_1.7.11.1        
+
+ArgumentError: activate does not accept more than one argument:
+['/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s', '/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s/doublet_calls']
+
+
+##########################################################################
+Start scrublet
+##########################################################################
+Counts matrix shape: 12000 rows, 18082 columns
+Preprocessing...
+Simulating doublets...
+Embedding transcriptomes using PCA...
+Calculating doublet scores...
+Automatically set threshold at doublet score = 0.23
+Detected doublet rate = 9.5%
+Estimated detectable doublet fraction = 51.6%
+Overall doublet rate:
+	Expected   = 10.0%
+	Estimated  = 18.3%
+Elapsed time: 4.0 seconds
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_7537s_doublet_calling_scrublet.csv
+##########################################################################
+Start DoubletDetection
+##########################################################################
+/Users/meiermichelle/miniforge3/envs/DoubletDetection/lib/python3.14/site-packages/doubletdetection/doubletdetection.py:106: UserWarning: Leiden clustering is experimental and results have not been validated.
+  warnings.warn("Leiden clustering is experimental and results have not been validated.")
+Counts matrix shape: 12000 rows, 18082 columns
+Counts matrix shape after filtering: 12000 rows, 15732 columns
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:13<02:03, 13.71s/it] 20%|██        | 2/10 [00:16<00:56,  7.04s/it] 30%|███       | 3/10 [00:18<00:33,  4.83s/it] 40%|████      | 4/10 [00:20<00:23,  3.87s/it] 50%|█████     | 5/10 [00:22<00:16,  3.22s/it] 60%|██████    | 6/10 [00:25<00:11,  2.93s/it] 70%|███████   | 7/10 [00:27<00:08,  2.72s/it] 80%|████████  | 8/10 [00:29<00:05,  2.53s/it] 90%|█████████ | 9/10 [00:31<00:02,  2.51s/it]100%|██████████| 10/10 [00:34<00:00,  2.40s/it]100%|██████████| 10/10 [00:34<00:00,  3.41s/it]
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_7537s_doublet_calling_DoubletDetection.csv
+Print threshold and convergence plots
+##########################################################################
+Combine all doublet calling results
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s/doublet_calls
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+[1] TRUE
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s/doublet_calls/Tonsils_10xFlex_engineered_12k_0.15p_7537s_doublet_calling_consensus.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+ [5] purrr_1.2.0     readr_2.1.5     tidyr_1.3.1     tibble_3.3.0   
+ [9] ggplot2_4.0.1   tidyverse_2.0.0 workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4      renv_1.1.4          stringi_1.8.7      
+ [4] hms_1.1.3           digest_0.6.37       magrittr_2.0.4     
+ [7] timechange_0.3.0    evaluate_1.0.3      grid_4.5.0         
+[10] RColorBrewer_1.1-3  fastmap_1.2.0       rprojroot_2.0.4    
+[13] processx_3.8.6      whisker_0.4.1       ps_1.9.1           
+[16] promises_1.3.3      BiocManager_1.30.26 httr_1.4.7         
+[19] scales_1.4.0        cli_3.6.5           crayon_1.5.3       
+[22] rlang_1.1.6         bit64_4.6.0-1       withr_3.0.2        
+[25] yaml_2.3.10         parallel_4.5.0      tools_4.5.0        
+[28] tzdb_0.5.0          httpuv_1.6.16       vctrs_0.6.5        
+[31] R6_2.6.1            lifecycle_1.0.4     git2r_0.36.2       
+[34] bit_4.6.0           fs_1.6.6            vroom_1.6.5        
+[37] pkgconfig_2.0.3     callr_3.7.6         pillar_1.10.2      
+[40] later_1.4.2         gtable_0.3.6        glue_1.8.0         
+[43] Rcpp_1.0.14         xfun_0.52           tidyselect_1.2.1   
+[46] rstudioapi_0.17.1   knitr_1.50          farver_2.1.2       
+[49] htmltools_0.5.8.1   rmarkdown_2.29      compiler_4.5.0     
+[52] S7_0.2.1            getPass_0.2-4      
+##########################################################################
+Doublet calling completed
+##########################################################################

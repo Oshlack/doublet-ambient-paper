@@ -1,0 +1,269 @@
+---
+title: "Tonsil 10x Flex: Make engineered empty droplet objects "
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown will generate an empty droplet object that can be used as background for ambient RNA correction tools, such as `soupX` and `decontX`. 
+
+To avoid confusion, please review the following table for commonly used terminology in this markdown"
+
+
+| Term(s) | Description | 
+| :------: | :------: | 
+| cell/pseudo-GEM/pseudo_droplet   | We use these terms interchangeably with barcodes. It describes a unique combination of sample and droplet barcode, which ideally would be one single-cell, and corresponds to a GEM in regular single-cell | 
+| droplet/GEM| We refer to a droplet/GEM as the combination of all cells that carry the same droplet barcode. These cells were co-captured in GEMs during the sequencing process and are therefore true multiplets that we can re-create   | 
+| empty cell | cells/barcodes which are considered empty by both `cellranger multi` and `DropletUtils::emptyDrops()`  | 
+| empty droplet | droplets which do not contain any non-empty cells | 
+
+In 10xFlex data, the raw count matrix is presented as cell x gene matrices. In regular droplet based approaches, this is equivalent of saying it represents a droplet x gene matrix. All ambient RNA correction tools were designed under the assumption that each column in the matrix is a *droplet* - however, this assumption is not met in 10x Flex data. There is no general recommendation for whether the background should be provided as empty *droplets* (so cells combined based on their droplet barcode) or empty *cells* (matrix as is). The distribution of ambient RNA in 10xFlex is not fully understood. 
+
+For the purpose of we therefore clarify in detail how we define the background in detail here as well as in the methods.
+
+- determine empty cells using both `cellranger multi` as well as `DropletUtils::emptyDrops()`
+
+- only keep "empty cells" that come from droplets where no cells were called
+
+- Combine resulting "empty cells" into their respective "empty droplets" based on their droplet barcode. *The resulting background object will be in droplet x gene format*
+
+
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(here)
+  library(glue)
+  library(DropletUtils)
+  library(scran)
+  library(scater)
+  library(scuttle)
+  library(scales)
+  library(readr)
+  library(Seurat)
+  library(scDblFinder)
+  library(scMerge)
+  library(ggpubr)
+  library(BiocParallel)
+  library(clustree)
+  library(SingleCellExperiment)
+  library(scMerge)
+  library(Matrix)
+  library(SeuratDisk)
+  library(qs2)
+  library(patchwork)
+  library(decontX)
+})
+
+
+```
+
+
+## Load data
+
+```{r}
+#raw output
+raw_sce <- read10xCounts(here("data/Tonsils_10xFlex/raw_feature_bc_matrix"), row.names = "symbol", col.names = T)
+
+#cellranger filtered output 
+sce <- readRDS(here("data/Tonsils_10xFlex/G000231_Neeland_batch9_Tonsils.CellRanger_filtered.SCE.rds"))
+# we really only need the barcodes for this - get those and then clean up
+cellranger_barcodes <- colnames(sce)
+rm(sce)
+```
+
+```{r, include=FALSE}
+gc()
+
+```
+
+
+# Add cell information to empty object
+
+As a first step, we will be adding information on whether or not a barcode is considered a non-empty cell using both `cellranger multi` as well as `DropletUtils::emptyDrops()`. 
+
+## `cellranger multi`
+
+This is the easier step, we can just use all the barcodes detected in the filtered cellranger output matrix.
+
+```{r}
+raw_sce$is_cell_cellranger <- ifelse(raw_sce$Barcode %in% cellranger_barcodes, "yes", "no")
+raw_sce$is_cell_cellranger %>% table()
+```
+
+```{r, include=FALSE}
+rm(cellranger_barcodes);gc()
+
+```
+
+
+## `DropletUtils::emptyDrops()`
+
+```{r}
+# follow basic vignette: https://www.bioconductor.org/packages/devel/bioc//vignettes/DropletUtils/inst/doc/DropletUtils.html#detecting-empty-droplets
+set.seed(100)
+e.out <- emptyDrops(counts(raw_sce))
+is.cell <- e.out$FDR <= 0.01 
+is.cell[is.na(is.cell)] <- FALSE #NAs are not cells
+non_emptydrops <- raw_sce$Barcode[is.cell]
+
+#add to raw object
+raw_sce$is_cell_emptyDrops <- ifelse(raw_sce$Barcode %in% non_emptydrops, "yes", "no")
+raw_sce$is_cell_emptyDrops %>% table()
+
+```
+
+
+## Compare cell calling for both methods
+
+Simple table to quantify. This is just an overview. 
+
+```{r}
+table(raw_sce$is_cell_cellranger,raw_sce$is_cell_emptyDrops , dnn=c("cellranger", "emptyDrops"))
+```
+
+Essentially we're interested in the no - no cells. 
+
+Add that information to the object. Only consider cells that are called in both. 
+
+```{r}
+raw_sce$is_cell <- ifelse(raw_sce$is_cell_cellranger == "no" & raw_sce$is_cell_emptyDrops == "no", "no", "yes")
+
+raw_sce$is_cell %>% table()
+```
+
+```{r, include=FALSE}
+rm(e.out, non_emptydrops, is.cell);gc()
+```
+
+
+# Determine droplets with no cells - empty droplets
+
+Next, we will find droplets (based on barcode) for which no non-empty cells were identified. 
+
+```{r}
+#add droplet barcode
+raw_sce$GEM_barcode <- substring(raw_sce$Barcode, first = 1, last = 17)
+
+
+filter_GEMs <- table(raw_sce$GEM_barcode, raw_sce$is_cell) %>% as.data.frame() %>%
+  pivot_wider(., names_from = "Var2", values_from = "Freq") %>%
+  dplyr::rename(Barcode=Var1, empty_count=no, cell_count=yes) %>% 
+  mutate(., select = ifelse(cell_count == 0, T, F)) %>%
+  filter(., select == T)  #select the ones with no cell count 
+
+knitr::kable(head(filter_GEMs)) 
+
+```
+
+
+# create empty cells only object
+
+Finally, lets subset to generate this new, empty cells only object. 
+
+```{r}
+raw_sce_subset <- raw_sce[, raw_sce$GEM_barcode %in% filter_GEMs$Barcode]
+raw_sce_subset
+```
+
+# create empty *droplets* object
+
+Only keep cells that are considered empty by both cellranger multi as well as `DropletUtils::emptyDrops()`, then only keep empty cells that come from droplets with no cells in them. Re-combine into empty droplets using George’s function.
+
+```{r}
+# function written by George Howitt
+makeGEMMatrix <- function(sce) {
+  counts_matrix <- counts(sce)
+  dimnames(counts_matrix)[[2]] <- substring(dimnames(counts_matrix)[[2]], first = 1, last = 17) #first 17 bases are droplet barcodes
+  counts_matrix <- as(counts_matrix, "TsparseMatrix")
+  nms <- colnames(counts_matrix)
+  uniquenms <- unique(nms)
+  GEM_counts <- sparseMatrix(i = counts_matrix@i+1,
+                             j = match(nms, uniquenms)[counts_matrix@j + 1],
+                             x = counts_matrix@x,
+                             dimnames = list(rownames(counts_matrix), uniquenms),
+                             repr = 'T')
+  return(as(GEM_counts, "CsparseMatrix"))
+}
+```
+
+
+```{r}
+# make sure to remove genes with no expression across the board as this breaks the function
+empty_droplet <- SingleCellExperiment(assays = list(counts=makeGEMMatrix(raw_sce_subset[rowSums(counts(raw_sce_subset)) > 0,])))
+empty_droplet
+```
+
+
+```{r, include=FALSE}
+#hidden clean up 
+rm(raw_sce_subset);gc()
+```
+
+
+
+## Look at summary metrics
+
+Let's look at summary metrics for this set of empty cells 
+
+```{r}
+is.mito <- grepl(pattern = "^MT", rownames(empty_droplet))
+empty_droplet <- addPerCellQCMetrics(empty_droplet, subsets = list(mito = is.mito))
+```
+
+```{r}
+df_summary_cells <- empty_droplet@colData %>% as.data.frame() %>% 
+  select(., c("sum", "detected", "subsets_mito_detected")) %>% 
+  pivot_longer(cols=c("sum", "detected", "subsets_mito_detected"), names_to = "metric", values_to = "entry") %>% 
+  group_by(metric) %>% 
+  summarise(., 
+            min=min(entry), 
+            q25 = quantile(entry, 0.25),
+            mean = mean(entry), 
+            median =median(entry),
+            q75 = quantile(entry, 0.75),
+            q90=quantile(entry, 0.9),
+            max = max(entry)
+            ) 
+
+
+knitr::kable(df_summary_cells)
+  
+```
+
+
+
+
+How many empty cells have a library count > 1000?
+
+```{r}
+#absolute number
+sum(empty_droplet$sum > 1000)
+
+#proportion
+sum(empty_droplet$sum > 1000)/ncol(empty_droplet)
+
+```
+
+A very small proportion of empty cells has a weirdly high library size. However, as it is a very small fraction (~0.1%), this should be okay. 
+
+
+## export 
+
+Let's export the empty object!
+
+```{r}
+filename <- here("output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_emptyObject")
+
+DropletUtils::write10xCounts(path = filename,
+                             x = counts(empty_droplet),
+                             version = "3", 
+                             overwrite = T)
+
+```

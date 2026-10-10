@@ -1,0 +1,134 @@
+---
+title: "Lung Cancer 10x CMO: Determine CellBender input parameters "
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+`CellBender` performs a lot better when provided with the input parameters `expected-cells` and `total-droplets-included`. We can estimate both of these input parameters from the resulting knee plot. 
+
+Please note also that there are multiple issues open on `CellBender` github suggesting that it may struggle on multiplexed data as its designed to be run on a per-sample basis. [issue1](https://github.com/broadinstitute/CellBender/issues/421), [issue2](https://github.com/broadinstitute/CellBender/issues/373).
+
+In addition, while not officially documented in their documentations, the authors do not recommend running it on the HTO features [issue3](https://github.com/broadinstitute/CellBender/issues/223)
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(here)
+  library(glue)
+  library(DropletUtils)
+  library(scran)
+  library(scater)
+  library(scuttle)
+  library(scales)
+  library(readr)
+  library(Seurat)
+  library(scDblFinder)
+  library(scMerge)
+  library(ggpubr)
+  library(BiocParallel)
+  library(clustree)
+  library(SingleCellExperiment)
+  library(scMerge)
+  library(Matrix)
+  library(SeuratDisk)
+  library(qs2)
+  library(patchwork)
+})
+
+
+```
+
+## Load data
+
+
+```{r}
+#load empty cells
+counts_raw <- Read10X_h5(here("data/LungCancer_10x/20k_NSCLC_DTC_3p_nextgem_intron_Multiplex_count_raw_feature_bc_matrix.h5"))$`Gene Expression`
+
+#load raw metadata
+meta_raw <- read_tsv(here("output/data/LungCancer_10x/LungCancer_10x_raw_metadata.tsv"), show_col_types = F)
+```
+
+
+# Make Kneeplot
+
+Let's make a kneeplot and highlight potential thresholds for `-total-droplet-included`. The `-total-droplet-included` does not have to be exact- every droplet/barcode past that threshold will however be treated as an empty droplet. 
+
+Make a function. This will show the first knee and inflection point (for cell calls), and second knee and inflection point (for ambient).
+
+```{r}
+run_kneeplot <- function(counts, 
+                         label_df, 
+                         name){
+  bcrank <- barcodeRanks(counts) #using DropletUtils function
+  bcrank_filtered <- bcrank[!duplicated(bcrank$rank), ]# only show unique points for plotting speed
+  
+  #re-run compute ranks with bounds
+  #higher bound based on previous inflection point, lower at 0
+  bounds_for_ambient <- c(0,
+                        bcrank@metadata$inflection)
+  
+  bcrank_ambient <- barcodeRanks(counts_raw, 
+                               fit.bounds=bounds_for_ambient) 
+  
+  y_lines <- data.frame(name=c("knee","inflection", "knee_ambient"),
+                                         num=c(bcrank@metadata$knee,
+                                               bcrank@metadata$inflection,
+                                               bcrank_ambient@metadata$knee))
+  
+  plot <- ggplot(data = bcrank_filtered, aes(x = log10(rank), log10(total))) + geom_point()+
+    geom_vline(data= label_df, mapping = aes(xintercept = log10(num), colour = name)) +
+    geom_hline(data= y_lines, mapping = aes(yintercept = log10(num), colour = name)) +
+    theme_bw() +
+    scale_colour_manual(values = unname(Polychrome::alphabet.colors(nrow(label_df) + nrow(y_lines))))+
+    theme_bw() + theme(legend.title = element_blank(), legend.text = element_text(size=15), 
+                       legend.spacing.y = unit(0.5, "cm"), legend.key.spacing.y = unit(0.5, "cm"))+
+    guides(colour = guide_legend(override.aes = list(linewidth = 2)))+
+    ggtitle(sprintf('Knee plot:\n%s', name))
+  
+  
+  return(list(plot=plot,metric=y_lines))
+  
+}
+
+```
+
+So from the exported metadata, we can get an estimate for the number of cells we're expecting. 
+
+```{r}
+meta_raw$type %>% table()
+```
+
+In this case, we can sum up doublet, multiplet and singlet. 
+
+```{r}
+meta_raw$type[meta_raw$type %in% c("doublet", "singlet", "multiplet")] %>% length()
+```
+
+So that's approximately 19k cells. 
+
+
+```{r, fig.align='center', fig.height=4, fig.width=6}
+
+#set same test thresholds for all
+label_df <- data.frame(name=c("cells_19k", "droplet_40k"),
+                       num = c(19000, 40000))
+
+out <- run_kneeplot(count = counts_raw, label_df = label_df, name="Lung Cancer Dataset")
+
+
+out$plot
+```
+
+```{r}
+DT::datatable(out$metric)
+```
+ 
+

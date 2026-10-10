@@ -1,0 +1,204 @@
+---
+title: "Supplementary Figure 3: Unique doublets and singlets across engineered dataset batches"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Introduction
+
+This markdown makes the plots for Supplementary Figure 3: Unique doublets and singlets across engineered dataset batches. This shows the overlap of true doublets and singlets across batches in the engineered datasets and highlights the selection used for the analysis in Figure 4. 
+
+Plots shown in this figure support figure 4.
+
+
+# Set-up
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+  library(patchwork)
+  library(ComplexHeatmap)
+})
+
+knitr::opts_chunk$set(fig.align = "center")
+```
+
+## Load data
+
+```{r}
+files <- list.dirs(path = here("output/data/Tonsils_10xFlex/Engineered/"), full.names = T, recursive = F)
+files <- files[grepl("Tonsils_10xFlex_engineered_12k_0.15p", files)]
+```
+
+```{r}
+run_read_data_all_cells <- function(path){
+  meta <- read_tsv(paste0(str_match(path, "^(.*?\\d+s)(?:_.*)?$")[,2], "/metadata.tsv"), show_col_types = F)
+  doublet_file <- list.files(path = paste0(path, "/doublet_calls/"),
+                             pattern = "scDblFinder",
+                             full.names = T)
+  dbl_res <- read_csv(doublet_file, show_col_types = F)
+  if ("Barcode" %in% names(meta)){
+    combined_res <- full_join(dbl_res, meta)
+  } else {
+    combined_res <- full_join(dbl_res, meta %>% mutate(., Barcode=GEM_barcode))
+  }
+  meta_current <- read_tsv(paste0(path, "/metadata.tsv"), show_col_types = F)
+  if ("ncount_frac_removed" %in% colnames(meta_current)){
+    ambient_tool_name <- str_match(basename(path), "\\d+s(?:_(.+))?$")[,2]
+    meta_current <- meta_current %>% select(., Barcode, ncount, nfeatures_rounded, nfeature_frac_removed, ncount_frac_removed)
+    colnames(meta_current)[2:5] <- paste0(ambient_tool_name, "_",colnames(meta_current)[2:5])
+    combined_res <- full_join(combined_res, meta_current)
+  }
+  if (is.na(str_match(basename(path), "\\d+s(?:_(.+))?$")[,2])){
+    combined_res$ambient_tool <- "uncorrected"
+  } else {
+    combined_res$ambient_tool <- str_match(basename(path), "\\d+s(?:_(.+))?$")[,2]
+  }
+  combined_res$batch <- stringr::str_extract(basename(path), "\\d+s(?=($|_))")
+  return(combined_res)
+}
+```
+
+```{r, message=FALSE}
+list_results <- lapply(files, run_read_data_all_cells) %>% bind_rows()
+list_results$scDblFinder_DropletType[is.na(list_results$scDblFinder_DropletType)] <- "Missing"
+```
+
+## Plotting shortcuts
+
+```{r}
+title_size <- theme(plot.title = element_text(size = 22, face = "italic"))
+```
+
+## Directory names
+
+```{r}
+save_dir <- here("output/figures/v4")
+```
+
+
+# Upset plots
+
+## Doublets overlap across batches
+
+```{r, fig.height=5, fig.width=10}
+list_doublet_barcodes <- list_results %>%
+  filter(., doublet_class == "doublet") %>%
+  split(., .$batch) %>%
+  lapply(., function(IN) IN %>% pull(Barcode))
+
+m_dist <- make_comb_mat(list_doublet_barcodes)
+
+top_anno <- HeatmapAnnotation(
+    "Intersection size" = anno_barplot(
+        comb_size(m_dist),
+        add_numbers = TRUE,
+        gp = gpar(fill = "black"),
+        numbers_gp = gpar(fontsize = 13),
+        numbers_rot = 90,
+        border = FALSE
+    ),
+    annotation_height = unit.c(unit(30, "mm")),
+    border = FALSE
+)
+
+upset_doublets_overlap <- UpSet(m_dist, comb_order = order(-comb_size(m_dist)), top_annotation = top_anno)
+n_comb_doublets <- length(comb_size(m_dist))
+name_doublets <- upset_doublets_overlap@name
+
+upset_doublets_overlap
+```
+
+## Singlets overlap across batches
+
+```{r, fig.height=5, fig.width=10}
+list_singlet_barcodes <- list_results %>%
+  filter(., doublet_class == "singlet") %>%
+  split(., .$batch) %>%
+  lapply(., function(IN) IN %>% pull(Barcode))
+
+m_dist <- make_comb_mat(list_singlet_barcodes)
+
+top_anno <- HeatmapAnnotation(
+    "Intersection size" = anno_barplot(
+        comb_size(m_dist),
+        add_numbers = TRUE,
+        gp = gpar(fill = "black"),
+        numbers_gp = gpar(fontsize = 13),
+        numbers_rot = 90,
+        border = FALSE
+    ),
+    annotation_height = unit.c(unit(30, "mm")),
+    border = FALSE
+)
+
+upset_singlets_overlap <- UpSet(m_dist, comb_order = order(-comb_size(m_dist)), top_annotation = top_anno)
+n_comb_singlets <- length(comb_size(m_dist))
+name_singlets <- upset_singlets_overlap@name
+
+upset_singlets_overlap
+```
+
+
+# Make supp figure
+
+```{r, fig.height=10, fig.width=10}
+upset_doublets <- grid::grid.grabExpr({
+  ComplexHeatmap::draw(upset_doublets_overlap)
+  ComplexHeatmap::decorate_heatmap_body(name_doublets, {
+    grid::grid.rect(x = unit(0, "npc"), width = unit(5 / n_comb_doublets, "npc"),
+                     y = unit(0, "npc"), height = unit(1, "npc"),
+                     just = c("left", "bottom"),
+                     gp = grid::gpar(fill = NA, col = "black", lwd = 4))
+  })
+  grid::grid.text("Overlap doublets across batches",
+                   x = 0.5, y = 0.95,
+                   gp = grid::gpar(fontsize = 20, fontface = "bold"))
+})
+
+upset_singlets <- grid::grid.grabExpr({
+  ComplexHeatmap::draw(upset_singlets_overlap)
+  ComplexHeatmap::decorate_heatmap_body(name_singlets, {
+    grid::grid.rect(x = unit(0, "npc"), width = unit(5 / n_comb_singlets, "npc"),
+                     y = unit(0, "npc"), height = unit(1, "npc"),
+                     just = c("left", "bottom"),
+                     gp = grid::gpar(fill = NA, col = "black", lwd = 4))
+  })
+  grid::grid.text("Overlap singlets across batches",
+                   x = 0.5, y = 0.95,
+                   gp = grid::gpar(fontsize = 20, fontface = "bold"))
+})
+
+supp <- wrap_plots(list(upset_doublets)) +
+  wrap_plots(list(upset_singlets)) +
+  plot_layout(nrow=2) &
+  plot_annotation(tag_levels ="A") &
+    title_size &
+  theme(
+    plot.tag = element_text(size = 20, face = "bold")
+  )
+
+
+ggsave(plot = supp,
+       filename = "Supp_Figure_03_EngineeredDataset_InDepthCharacterisation.png",
+       path = save_dir,
+       device = "png",
+       width = 12,
+       height = 10,
+       dpi = 1200,
+       bg = "transparent")
+
+supp
+```

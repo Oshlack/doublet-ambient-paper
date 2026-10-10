@@ -1,0 +1,245 @@
+---
+title: "Supplementary Figure 2: Doublet detection performance for each batch of the engineered tonsil dataset"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Introduction
+
+This markdown makes the plots for Supplementary Figure 2: Doublet detection performance for each batch of the engineered tonsil dataset. This includes per batch results for doublet specificity and MCC.
+
+Plots shown in this figure support figure 3.
+
+
+# Set-up
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+  library(patchwork)
+  library(rstatix)
+  library(yardstick)
+  library(caret)
+  library(ComplexHeatmap)
+  library(ggrepel)
+  library(png)
+})
+```
+
+
+## Load data
+
+```{r}
+files <- list.dirs(path = here("output/data/Tonsils_10xFlex/Engineered/"), full.names = T, recursive = F)
+files <- files[grepl("Tonsils_10xFlex_engineered_12k_0.15p", files)]
+```
+
+```{r}
+
+run_read_data <- function(path){
+  #original metadata (from uncorrected) 
+  meta <- read_tsv(paste0(str_match(path, "^(.*?\\d+s)(?:_.*)?$")[,2], "/metadata.tsv"), show_col_types = F)
+  #doublet calling results 
+  doublet_file <- list.files(path = paste0(path, "/doublet_calls/"),
+                             pattern = "scDblFinder",
+                             full.names = T)
+  dbl_res <- read_csv(doublet_file, show_col_types = F)
+  #combine, full
+  if ("Barcode" %in% names(meta)){
+    combined_res <- full_join(dbl_res, meta)
+  } else {
+    combined_res <- full_join(dbl_res, meta %>% mutate(., Barcode=GEM_barcode))
+  }
+  #replace NAs in doublet calling with "Missing"
+  combined_res$scDblFinder_DropletType[is.na(combined_res$scDblFinder_DropletType)] <- "Missing"
+  
+  #add metadata
+  if (is.na(str_match(basename(path), "\\d+s(?:_(.+))?$")[,2])){
+    combined_res$ambient_tool <- "uncorrected"
+  } else {
+    combined_res$ambient_tool <- str_match(basename(path), "\\d+s(?:_(.+))?$")[,2]
+  }
+  combined_res$batch <- stringr::str_extract(basename(path), "\\d+s(?=($|_))")
+  
+    
+  return(combined_res)
+} 
+
+
+```
+
+Run for all.
+
+
+```{r, message=FALSE}
+list_results <- lapply(files, run_read_data)
+names(list_results) <- basename(files)
+```
+
+
+## get performance results
+
+These performance metrics were computed in [this file]().
+
+```{r}
+performance_results <- read_tsv(here("output/results/Tonsils_10xFlex/Engineered/DoubletCallingPerformance/Tonsils_10xFlex_engineered_12k_0.15p_AllBatches_correctAssignments_MCC.csv"), show_col_types = F, col_types = c("ccnnnnnnnnnnnn"))
+```
+
+
+
+## plotting shortcuts
+
+```{r}
+plot_sizing <- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = "black"),
+        plot.title = element_text(size = 22),
+         plot.subtitle= element_text(size = 18),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank())
+
+
+plot_sizing_keep_legend <- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = "black"),
+        plot.title = element_text(size = 22),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size=16)) 
+
+rotate_x <- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+strip_fix <- theme(strip.background = element_rect(fill = "white"), 
+                   strip.text = element_text(size = 14))
+
+title_size <- theme(plot.title = element_text(size = 22, face = "italic"))
+
+```
+
+## Colours 
+
+```{r}
+# method colours
+ambient_tools_colours <- c( "#67BF5C", "#AD8BC9", 
+                     "#A8786E", "#CDCC5D", "#6DCCDA")
+
+names(ambient_tools_colours) <- c("uncorrected", "decontX", "decontX_BG",
+                                            "soupX", "CellBender")
+
+ambient_tool_levels <- c("uncorrected", "CellBender", "soupX", "decontX", "decontX_BG")
+
+# doublet/singlet colours
+doublet_colours <- c("#2E91E5", "#EB663B"); names(doublet_colours) <- c("singlet", "doublet")
+
+```
+
+## Directory names
+
+```{r}
+save_dir <- here("output/figures/v4")
+```
+
+
+## Initiate list
+
+Initate list used to store plots for the figures. 
+
+```{r}
+main_figure <- list()
+supp_figure <- list()
+```
+
+
+
+# Proportion of correctly assigned classes
+
+### Per batch
+
+```{r, fig.align='center', fig.height=5, fig.width=15}
+plot_list <- lapply(unique(performance_results$batch), function(BATCH){
+  performance_results %>% 
+    filter(., batch == BATCH) %>% 
+    ggplot(., aes(y = doublet_Sensitivity, x= factor(ambient_tool, levels = ambient_tool_levels), fill=ambient_tool)) +
+    geom_bar(stat="identity") +
+  plot_sizing+ rotate_x + ylab("proportion of\nall doublets") + xlab("") + ggtitle(BATCH) +
+    geom_text(aes(label=round(doublet_Sensitivity, 2)), vjust=1, size=5)+
+    scale_fill_manual(values = ambient_tools_colours) + theme(legend.position = "none")
+})
+
+supp_figure$batch_retained_doublet <-wrap_plots(plot_list, guides = "collect", axis_titles = "collect", nrow=1) + plot_annotation("Proportion of true doublets setection (doublet sensitivity) per batch", theme = theme(plot.title = element_text(hjust = 0.05))) & title_size
+
+supp_figure$batch_retained_doublet
+```
+
+
+# MCC
+
+### Per batch
+
+```{r, fig.align='center', fig.height=5, fig.width=15}
+
+plot_list <- lapply(unique(performance_results$batch), function(BATCH){
+  performance_results %>% 
+    filter(., batch == BATCH) %>% 
+    ggplot(., aes(y = mcc, x= factor(ambient_tool, levels = ambient_tool_levels), fill=ambient_tool)) +
+    geom_bar(stat="identity") +
+  plot_sizing+ rotate_x + ylab("MCC") + xlab("") + ggtitle(BATCH) +
+    geom_text(aes(label=round(mcc, 2)), vjust=1, size=5)+
+    scale_fill_manual(values = ambient_tools_colours) + theme(legend.position = "none")
+})
+
+supp_figure$batch_MCC <- wrap_plots(plot_list, guides = "collect", axis_titles = "collect", nrow=1) + plot_annotation("MCC per batch", theme = theme(plot.title = element_text(hjust = 0.05))) & title_size
+
+supp_figure$batch_MCC
+
+```
+
+
+# Make supp figure
+
+```{r, fig.align='center', fig.height=12, fig.width=15}
+
+row1 <- wrap_elements(full = supp_figure$batch_retained_doublet)
+row2 <- wrap_elements(full = supp_figure$batch_MCC)
+
+supp_patch <- row1 + row2 + plot_layout(ncol=1)+
+  plot_annotation(tag_levels = "A") &
+  theme(
+    plot.tag = element_text(size = 20, face = "bold")
+  )
+
+ggsave(plot = supp_patch,
+       filename = "Supp_Figure_02_EngineeredDataset_DoubletEvaluation_perBatch.png",
+       path = save_dir,
+       device = "png",
+       width = 15,
+       height =8,
+       dpi = 1200,
+       bg = "transparent")
+
+supp_patch
+
+```
+
+# Make supp table 
+
+Exporting a excel spreadsheet with all performance metrics for all datasets. 
+
+```{r}
+writexl::write_xlsx(
+  list(Sheet1 = performance_results),   # list names become the sheet names
+  path = here(save_dir ,"SupplementaryTable_01_allPerformanceMetrics_engineeredDataset_all_batches.xlsx")
+)
+
+```
+
+

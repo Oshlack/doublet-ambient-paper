@@ -1,0 +1,17 @@
+name: "ambient_doublet_singlecell"
+output_dir: ../docs
+navbar:
+  title: "ambient_doublet_singlecell"
+  left:
+  - text: Home
+    href: index.html
+  - text: About
+    href: about.html
+  - text: License
+    href: license.html
+output:
+  workflowr::wflow_html:
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+    highlight: textmate

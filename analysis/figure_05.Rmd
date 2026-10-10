@@ -1,0 +1,415 @@
+---
+title: "Figure 5: Doublet detection performs best on uncorrected or CellBender corrected data"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Introduction
+
+This markdown makes the plots for Figure 5: Doublet detection performs best on uncorrected or CellBender corrected data. This will contain results from the following three dataset: The lung cancer dataset, the BAL dataset and the brain cortex dataset.
+
+# Set-up
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+  library(patchwork)
+})
+```
+
+
+# Dataset configuration
+
+This function helps collect all information needed for each dataset to load + plot later on. 
+
+```{r}
+dataset_config <- function(data_dir,
+                           uncorrected_dir,
+                           sample_grep = uncorrected_dir,
+                           performance_file,
+                           dataset_label = data_dir,
+                           filter_remove = FALSE) {
+
+  list(data_dir         = data_dir,        # subfolder under output/data/
+       uncorrected_dir  = uncorrected_dir, # basename of the folder holding the uncorrected/ground-truth data
+       sample_grep      = sample_grep,     # regex used to find this dataset's ambient-tool subfolders
+       performance_file = performance_file,# path (relative to output/results/) to the *_correctAssignments_MCC.csv
+       dataset_label    = dataset_label   # human-readable label used in headings/plot subtitles)   
+  )
+}
+```
+
+
+```{r}
+dataset_registry <- list(
+  dataset_config(
+    data_dir         = "LungCancer_10x",
+    uncorrected_dir  = "LungCancer_10x_cellranger_allmultiplets",
+    performance_file = "LungCancer_10x/DoubletCallingPerformance/LungCancer_10x_correctAssignments_MCC.csv",
+    dataset_label    = "Lung Cancer Dataset"
+  ), 
+  dataset_config(
+    data_dir         = "BAL_inflammation_10x",
+    uncorrected_dir  = "BAL_inflammation_10x_cellranger",
+    performance_file = "BAL_inflammation_10x/DoubletCallingPerformance/BAL_inflammation_10x_correctAssignments_MCC.csv",
+    dataset_label    = "BAL Dataset"
+  ),
+  dataset_config(
+    data_dir         = "BrainCortex_nuclei_10x",
+    uncorrected_dir  = "BrainCortex_nuclei_10x_cellranger",
+    performance_file = "BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_correctAssignments_MCC.csv",
+    dataset_label    = "Brain Cortex Dataset"
+  )
+
+  )
+
+names(dataset_registry) <- vapply(dataset_registry, function(x) x$dataset_label, character(1))
+
+```
+
+
+
+# Data loading functions
+
+```{r}
+# Read+combine one ambient-tool subfolder's doublet calls with the dataset's ground-truth metadata.
+load_ambient_results <- function(path, uncorrected_dir, filter_remove = FALSE) {
+
+  # ground-truth metadata always comes from the uncorrected/base folder for this dataset,
+  # regardless of which ambient-tool subfolder is currently being processed
+  meta <- read_tsv(file.path(dirname(path), uncorrected_dir, "metadata.tsv"), show_col_types = FALSE)
+  meta$doublet_class[meta$doublet_class == "multiplet"] <- "doublet"
+  
+  #filter metadata based on uncorrected qc filtered barcodes - these are droplets that pass QC (based on RNA reads) AND have a doublet/singlet assignment based on demultiplexing
+  barcodes_to_keep <- read_tsv(file.path(dirname(path), uncorrected_dir, "filtered_qc_barcodes.tsv"), show_col_types = F) %>% pull(.)
+  
+  meta <- meta %>% 
+    filter(., Barcode %in% barcodes_to_keep)
+
+  # doublet calling results for this ambient-tool setting
+  doublet_file <- list.files(path = file.path(path, "doublet_calls"),
+                             pattern = "consensus", full.names = TRUE)
+  dbl_res <- read_csv(doublet_file, show_col_types = FALSE)
+  combined_res <- right_join(dbl_res, meta)
+
+  #replace missing doublet (NAs) labels with "removed_cell"- using scDblFinder to guide but will be the same with all tools
+  combined_res$cells_kept <- ifelse(is.na(combined_res$scDblFinder_DropletType), "removed_cell", "kept_cell")
+
+  #if this setting is ambient-corrected, bring in its ncount/nfeature "removed" columns too,
+  # prefixed with the tool name so they sit side by side once every setting is combined
+  meta_current <- read_tsv(file.path(path, "metadata.tsv"), show_col_types = FALSE)
+  if ("ncount_frac_removed" %in% colnames(meta_current)) {
+    ambient_tool_name <- gsub(paste0(uncorrected_dir, "_"), "", basename(path), fixed = TRUE)
+    meta_current <- meta_current %>%
+      select(Barcode, ncount, nfeatures_rounded, nfeature_frac_removed, ncount_frac_removed)
+    colnames(meta_current)[2:5] <- paste0(ambient_tool_name, "_", colnames(meta_current)[2:5])
+    combined_res <- left_join(combined_res, meta_current)
+  }
+
+  combined_res$ambient_tool <- if (basename(path) == uncorrected_dir) {
+    "uncorrected"
+  } else {
+    gsub(paste0(uncorrected_dir, "_"), "", basename(path), fixed = TRUE)
+  }
+
+  return(combined_res)
+}
+
+# Load and combine every ambient-tool setting for one dataset (as described by its dataset_config()).
+load_dataset_results <- function(cfg) {
+  files <- list.dirs(path = here("output/data", cfg$data_dir), full.names = TRUE, recursive = FALSE)
+  files <- files[grepl(cfg$sample_grep, files)]
+
+  list_results <- lapply(files, load_ambient_results,
+                         uncorrected_dir = cfg$uncorrected_dir)
+  names(list_results) <- basename(files)
+
+  df <- bind_rows(list_results)
+  df$dataset <- cfg$dataset_label
+  return(df)
+}
+
+# Load a dataset's precomputed doublet-calling performance metrics (see *_evaluate_doublet_calling.Rmd).
+load_performance_results <- function(cfg) {
+  perf <- read_csv(here("output/results", cfg$performance_file),
+                   show_col_types = FALSE, col_types = c("ccnnnnnnnnnnnn"))
+  perf[is.na(perf)] <- 0
+
+  perf <- perf %>%
+    mutate(doublet_tool = factor(doublet_tool,
+                                 levels = c("scDblFinder", "scds", "cxds", "bcds", "scrublet", "DoubletDetection")),
+           ambient_tool = factor(ambient_tool,
+                                 levels = rev(c("uncorrected", "CellBender", "soupX", "decontX", "decontX_BG"))))
+  perf$dataset <- cfg$dataset_label
+  return(perf)
+}
+```
+
+
+## plotting shortcuts
+
+```{r}
+plot_sizing <- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = "black"),
+        plot.title = element_text(size = 22),
+         plot.subtitle= element_text(size = 18),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank())
+
+
+plot_sizing_keep_legend <- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = "black"),
+        plot.title = element_text(size = 22),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size=16))
+
+rotate_x <- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+strip_fix <- theme(strip.background = element_rect(fill = "white"),
+                   strip.text = element_text(size = 14))
+
+title_size <- theme(plot.title = element_text(size = 22, face = "italic"),
+                    plot.subtitle = element_text(size=18, face="bold.italic"))
+
+```
+
+## Colours
+
+```{r}
+# method colours
+ambient_tools_colours <- c( "#67BF5C", "#AD8BC9",
+                     "#A8786E", "#CDCC5D", "#6DCCDA", "#EB663B", "grey80" )
+
+names(ambient_tools_colours) <- c("uncorrected", "decontX", "decontX_BG",
+                                            "soupX", "CellBender", "consensus doublet", "missed all")
+
+# doublet/singlet colours
+doublet_colours <- c("#2E91E5", "#EB663B"); names(doublet_colours) <- c("singlet", "doublet")
+
+```
+
+
+## Directory names
+
+```{r}
+save_dir <- here("output/figures/v4")
+```
+
+# Make all plots
+
+## Make plotting function
+
+There are many plots to plot, so we've written a function.  
+
+```{r}
+# doublet proportion predicted - stacked barplots with true labels
+plot_predicted_proportions <- function(df_plot,
+                                       dataset_label){
+  #get true doublet proportion
+  doublet_count_true <- df_plot %>%
+    filter(., ambient_tool == "uncorrected" & doublet_class == "doublet") %>% #could be any setting, but need to filter down
+    nrow()
+
+  df_plot %>%
+    pivot_longer(., cols = ends_with("_DropletType"), names_to = "doublet_tool", values_to = "call") %>%
+    mutate(., doublet_tool = gsub("_DropletType", "", doublet_tool)) %>%
+    filter(., call == "doublet") %>%
+    group_by(., doublet_tool, call, doublet_class, ambient_tool) %>%
+    summarise(., counts = n())  %>%
+    mutate(doublet_tool = factor(doublet_tool,
+                                 levels = rev(c("scDblFinder", "scds", "cxds", "bcds", "scrublet", "DoubletDetection"))),
+           ambient_tool = factor(ambient_tool,
+                                 levels = c("uncorrected", "CellBender", "soupX", "decontX", "decontX_BG"))) %>% 
+    dplyr::rename(`true label`=doublet_class) %>% 
+    ggplot(., aes(x=doublet_tool, y = counts, fill=`true label`)) +
+      geom_bar(stat="identity", position = "stack") +
+      facet_wrap(~ambient_tool, nrow=1) +
+      plot_sizing_keep_legend + strip_fix + rotate_x +
+    scale_fill_manual(values = doublet_colours) +
+    geom_hline(aes(yintercept = doublet_count_true, colour = "true #doublets"), linewidth=1) +
+    scale_colour_manual(values = c("true #doublets" = "black"),
+                        labels = paste0("true #doublets\nn = ", doublet_count_true),
+                        name = NULL) +
+    ggtitle(dataset_label, subtitle = "Predicted doublets per combination") + xlab("doublet tool") + ylab("pred doublets") + title_size
+
+}
+
+# heatmap, mean-across-tools barplot, and per-doublet-tool "winner" barplot for one performance metric.
+run_assignment_evaluation_heatmap <- function(results_df,
+                                      plotting_metric,
+                                      name_metric,
+                                      name_scale,
+                                      dataset_label,
+                                      limits = NULL) {
+  results_df <- results_df %>%
+    dplyr::rename(plotting_metric = plotting_metric)
+
+  heatmap <- results_df %>%
+    ggplot() +
+    geom_tile(aes(x = doublet_tool, y = ambient_tool, fill = plotting_metric), color = "black", size = 0.1) +
+    geom_text(aes(x = doublet_tool, y = ambient_tool, label = round(plotting_metric, 2)), size = 5) +
+    theme_bw() + plot_sizing_keep_legend + rotate_x + title_size +
+    ylab("ambient setting") + xlab("doublet tool") +
+    scale_fill_distiller(palette = "RdBu", direction = -1, name = name_scale, limits = limits) +
+    ggtitle(dataset_label, subtitle = name_metric) + title_size
+
+  return(heatmap)
+}
+
+
+run_assignment_means <- function(results_df, 
+                                 plotting_metric,
+                                 y_axis_label,
+                                 dataset_label,
+                                 name_metric) {
+  results_df <- results_df %>%
+    dplyr::rename(plotting_metric = plotting_metric)
+
+  barplot <- results_df %>%
+    mutate(., ambient_tool = factor(ambient_tool, levels = rev(levels(results_df$ambient_tool)))) %>% 
+    group_by(ambient_tool) %>%
+    summarise(mean_plotting_metric = mean(plotting_metric)) %>%
+    ggplot(aes(x = ambient_tool, y = mean_plotting_metric)) +
+    geom_bar(stat = "identity", fill = "#546E7A", alpha = 0.8) +
+    geom_text(aes(label = round(mean_plotting_metric, 3), y = 0), size = 6, angle = 90, hjust = -0.3) +
+    plot_sizing + rotate_x +
+    ylab(y_axis_label) +
+    xlab("") +
+    ggtitle(dataset_label, subtitle = paste0(name_metric, " (mean)")) +
+    title_size
+  
+  return(barplot)
+  
+  }
+
+
+```
+
+
+## Generate panels for figure
+
+
+```{r}
+generate_dataset_figures <- function(cfg) {
+  df_plot <- load_dataset_results(cfg)
+  performance_results <- load_performance_results(cfg)
+
+  list(
+    dataset_label = cfg$dataset_label,
+    df_plot = df_plot,
+    performance_results = performance_results,
+    pred_prop = plot_predicted_proportions(df_plot, cfg$dataset_label),
+    performance_plot_true_doublet = run_assignment_evaluation_heatmap(results_df = performance_results,
+                                                                      plotting_metric = "Sensitivity",
+                                                                      name_metric = "Doublet Sensitivity",
+                                                                      dataset_label = cfg$dataset_label,
+                                                                      name_scale = "prop"),
+    means_mcc = run_assignment_means(results_df = performance_results,
+                                     dataset_label = cfg$dataset_label,
+                                     plotting_metric = "mcc",
+                                     y_axis_label = "mean MCC",
+                                     name_metric = "MCC")
+  )
+}
+```
+
+
+```{r, message=FALSE}
+results_by_dataset <- lapply(dataset_registry, generate_dataset_figures)
+
+# Shared colour scale for sensitivity heatmaps
+all_perf <- lapply(results_by_dataset, `[[`, "performance_results") %>% bind_rows()
+limits_sensitivity <- range(all_perf$Sensitivity, na.rm = TRUE)
+
+results_by_dataset <- lapply(results_by_dataset, function(res) {
+  res$performance_plot_true_doublet <- run_assignment_evaluation_heatmap(
+    results_df = res$performance_results, plotting_metric = "Sensitivity",
+    name_metric = "Doublet Sensitivity", name_scale = "prop",
+    dataset_label = res$dataset_label, limits = limits_sensitivity)
+  res
+})
+
+```
+
+
+
+# Main Figure
+
+
+```{r, fig.align='center', fig.height=15, fig.width=20}
+make_row_label <- function(label, fill = "#CFE2F3") {
+  ggplot() +
+    annotate("text", x = 0.5, y = 0.15, label = label,
+             size = 8, fontface = "bold", hjust = 0.5, vjust = 0.5, angle = 90) +
+    scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+    theme_void() +
+    theme(plot.background = element_rect(fill = fill, color = NA),
+          plot.margin     = margin(0, 0, 0, 0)) +
+    coord_cartesian(clip = "off")
+}
+
+close_title <- theme(
+  plot.title.position = "plot",
+  plot.title          = element_text(margin = margin(b = 2))
+)
+
+# column-major tags via labs(tag=): A-C = col1, D-F = col2, G-I = col3
+n <- length(results_by_dataset)
+dataset_rows <- lapply(seq_along(results_by_dataset), function(idx) {
+  res <- results_by_dataset[[idx]]
+  list(
+    make_row_label(res$dataset_label),
+    res$pred_prop                     + labs(title = "Predicted doublets per combination", subtitle = NULL, tag = LETTERS[idx])       + close_title,
+    res$performance_plot_true_doublet + labs(title = "Doublet Sensitivity",                subtitle = NULL, tag = LETTERS[n + idx])   + close_title,
+    res$means_mcc                     + labs(title = "MCC",                         subtitle = "mean across doublet tools", tag = LETTERS[2*n + idx]) + close_title
+  )
+})
+
+# interleave spacer rows between datasets so coloured labels are separate entries
+spacer_row <- replicate(4, plot_spacer(), simplify = FALSE)
+all_plots <- unlist(
+  lapply(seq_len(n), function(i) {
+    if (i < n) c(dataset_rows[[i]], spacer_row) else dataset_rows[[i]]
+  }),
+  recursive = FALSE
+)
+
+row_heights <- rep(c(1, 0.08), n)
+row_heights <- row_heights[seq_len(2 * n - 1)]
+
+main_figure <- wrap_plots(all_plots, ncol = 4, byrow = TRUE) +
+  plot_layout(widths = c(0.2, 3, 1.5, 1.25), heights = row_heights) &
+  theme(plot.tag = element_text(size = 18, face = "bold", margin = margin(t = 6, r = 10, b = 6, l = 6)))
+
+
+ggsave(plot = main_figure,
+       filename = "Figure_05_EvaluationComplexDatasets.png",
+       path = save_dir,
+       device = "png",
+       width = 20,
+       height =15,
+       dpi = 1200,
+       bg = "transparent")
+
+
+main_figure
+```
+
+
+
+
+
+

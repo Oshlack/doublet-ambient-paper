@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Michelle Meier" />
+
+
+<title>BrainCortex nuclei 10x: evaluate doublet calling (all doublet detection tools)</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="site_libs/datatables-binding-0.33/datatables.js"></script>
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ambient_doublet_singlecell</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">BrainCortex nuclei 10x: evaluate doublet
+calling (all doublet detection tools)</h1>
+<h4 class="author">Michelle Meier</h4>
+<h4 class="date">06. October 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-10-06
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>ambient_doublet_singlecell/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260605code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260605)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260605code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260605)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommichellemeier27ambientdoubletsinglecelltreeeed64e5d5d245c360f4a9b6d89e1ce28ea4054f6targetblankeed64e5a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/tree/eed64e5d5d245c360f4a9b6d89e1ce28ea4054f6" target="_blank">eed64e5</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcommichellemeier27ambientdoubletsinglecelltreeeed64e5d5d245c360f4a9b6d89e1ce28ea4054f6targetblankeed64e5a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/tree/eed64e5d5d245c360f4a9b6d89e1ce28ea4054f6" target="_blank">eed64e5</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .RData
+    Ignored:    .Renviron
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    CLAUDE.md
+    Ignored:    analysis/figures_v1/
+    Ignored:    analysis/figures_v2/
+    Ignored:    analysis/figures_v3/
+    Ignored:    analysis/obsolete/
+    Ignored:    analysis/qc_filtered_ambient/
+    Ignored:    analysis/untracked_BAL_inflammation_10x_HTO_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BAL_inflammation_10x_HTO_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_QC_filtering_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x__LungCancer_10x_CMO_check_CMO_ADT_distribution.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_evaluate_doublet_calling_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_inspect_SampleOfOrigin_false_singlets.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_run_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_LungCancer_10x_CMO_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_LungCancer_10x_CMO_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_figure_05.Rmd
+    Ignored:    claude_logs/
+    Ignored:    output/.DS_Store
+    Ignored:    output/data/
+    Ignored:    output/data_zenodo/
+    Ignored:    output/figures/
+    Ignored:    output/package_refs/
+    Ignored:    output/results/.DS_Store
+    Ignored:    output/results/BAL_inflammation_10x/.DS_Store
+    Ignored:    output/results/BrainCortex_nuclei_10x/.DS_Store
+    Ignored:    output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/.DS_Store
+    Ignored:    output/results/LungCancer_10x/.DS_Store
+    Ignored:    output/results/LungCancer_10x/DoubletCallingPerformance/.DS_Store
+    Ignored:    output/results/Tonsils_10xFlex/.DS_Store
+    Ignored:    output/results/Tonsils_10xFlex/Engineered/.DS_Store
+    Ignored:    renv/
+    Ignored:    scp_file.txt
+
+Untracked files:
+    Untracked:  code/make_figures.R
+    Untracked:  output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_TESTING_deMULTIplex2_correctAssignments_MCC.csv
+    Untracked:  output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_correctAssignments_MCC_qc_filtered_ambient.csv
+    Untracked:  output/results/LungCancer_10x/DoubletCallingPerformance/LungCancer_10x_correctAssignments_MCC_qc_filtered_ambient.csv
+    Untracked:  tmp.R
+
+Unstaged changes:
+    Modified:   .gitignore
+    Modified:   analysis/figure_01.Rmd
+    Modified:   analysis/figure_03.Rmd
+    Modified:   analysis/figure_04.Rmd
+    Modified:   analysis/figure_05.Rmd
+    Modified:   analysis/supp_figure_01.Rmd
+    Modified:   analysis/supp_figure_02.Rmd
+    Modified:   analysis/supp_figure_03.Rmd
+    Modified:   analysis/supp_figure_04.Rmd
+    Modified:   output/results/BAL_inflammation_10x/DoubletCallingPerformance/BAL_inflammation_10x_correctAssignments_MCC.csv
+    Modified:   output/results/LungCancer_10x/DoubletCallingPerformance/LungCancer_10x_correctAssignments_MCC.csv
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/BrainCortex_nuclei_10x_evaluate_doublet_calling.Rmd</code>)
+and HTML
+(<code>docs/BrainCortex_nuclei_10x_evaluate_doublet_calling.html</code>)
+files. If you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table
+below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/eed64e5d5d245c360f4a9b6d89e1ce28ea4054f6/analysis/BrainCortex_nuclei_10x_evaluate_doublet_calling.Rmd" target="_blank">eed64e5</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-06
+</td>
+<td>
+wflow_publish(c("analysis/LungCancer_10x_CMO_evaluate_doublet_calling.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/0872684eeaf7a65ee5b0abaea36d0cc0da71f7b5/docs/BrainCortex_nuclei_10x_evaluate_doublet_calling.html" target="_blank">0872684</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/1797e20e728fab2e9410e8ba2d09132d34b702c6/docs/BrainCortex_nuclei_10x_evaluate_doublet_calling.html" target="_blank">1797e20</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/30e63cb3760e2a63af2e9c550badb68a25f76510/analysis/BrainCortex_nuclei_10x_evaluate_doublet_calling.Rmd" target="_blank">30e63cb</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-19
+</td>
+<td>
+wflow_publish(c("analysis/BAL_inflammation_10x_HTO_evaluate_doublet_calling.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/edc02d60aa9b120a2b9f277b1827e01c0afa5db9/docs/BrainCortex_nuclei_10x_evaluate_doublet_calling.html" target="_blank">edc02d6</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/755d25a03248e61731d7f10e83a2524ef800aee7/analysis/BrainCortex_nuclei_10x_evaluate_doublet_calling.Rmd" target="_blank">755d25a</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-17
+</td>
+<td>
+wflow_publish("analysis/BrainCortex_nuclei_10x_evaluate_doublet_calling.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/f222a44aed5049f9fa9aea6369ea55ad9316a340/docs/BrainCortex_nuclei_10x_evaluate_doublet_calling.html" target="_blank">f222a44</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/f0946d01ed842c1f34b4fc814b4c6aaf1d78930e/analysis/BrainCortex_nuclei_10x_evaluate_doublet_calling.Rmd" target="_blank">f0946d0</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+wflow_publish(c("analysis/BAL_inflammation_10x_HTO_evaluate_doublet_calling.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/ae564820093ded96959e5c360b35f7486dd7727f/docs/BrainCortex_nuclei_10x_evaluate_doublet_calling.html" target="_blank">ae56482</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/734b4d13490882053d2f4d35745cfedf6e1b0120/analysis/BrainCortex_nuclei_10x_evaluate_doublet_calling.Rmd" target="_blank">734b4d1</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+wflow_publish(c("analysis/BAL_inflammation_10x_HTO_evaluate_doublet_calling.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/b7b1012c0d90e8ca8a2a894556f3109cdbb44386/docs/BrainCortex_nuclei_10x_evaluate_doublet_calling.html" target="_blank">b7b1012</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/2728565ac673093e0ebc9335c09995e95f52f95c/analysis/BrainCortex_nuclei_10x_evaluate_doublet_calling.Rmd" target="_blank">2728565</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+wflow_publish(c("analysis/BAL_inflammation_10x_HTO_evaluate_doublet_calling.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/abdea881a49b1194f32779631d0efa31035b7512/docs/BrainCortex_nuclei_10x_evaluate_doublet_calling.html" target="_blank">abdea88</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/8fc45e430eb08e436fb434c54ab49a24578ec0dd/analysis/BrainCortex_nuclei_10x_evaluate_doublet_calling.Rmd" target="_blank">8fc45e4</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+wflow_publish("analysis/BrainCortex_nuclei_10x_evaluate_doublet_calling.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="set-up" class="section level1">
+<h1>Set-up</h1>
+<p>In this markdown, we will evaluate the performance of doublet calling
+using a selection of doublet detection tools (<code>scDblFinder</code>,
+<code>scrublet</code>, <code>DoubletDetection</code>, <code>scds</code>,
+<code>bcds</code>, <code>cxds</code>) on the BrainCortex nuclei 10x
+dataset, both uncorrected as well as ambient corrected
+(<code>decontX BG</code>, <code>decontX</code>, <code>soupX</code>,
+<code>CellBender</code>).</p>
+<p>We treat the demultiplexed result as the ground truth. We will
+calculate performance metrics using <code>caret</code> and
+<code>yardstick</code> (AUPRC, MCC) packages.</p>
+<div id="load-libraries" class="section level2">
+<h2>Load libraries</h2>
+<pre class="r"><code>suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+  library(patchwork)
+  library(rstatix)
+  library(yardstick)
+  library(caret)
+  library(ComplexHeatmap)
+  library(ggrepel)
+})</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 4.5.2</code></pre>
+</div>
+<div id="load-data" class="section level2">
+<h2>Load data</h2>
+<pre class="r"><code>files &lt;- list.dirs(path = here(&quot;output/data/BrainCortex_nuclei_10x/&quot;), full.names = T, recursive = F)
+files &lt;- files[grepl(&quot;BrainCortex_nuclei_10x_cellranger&quot;, files)]</code></pre>
+<pre class="r"><code>run_read_data &lt;- function(path){
+  #original metadata (from UNFILTERED uncorrected) - this will contain ALL info
+  meta &lt;- read_tsv(paste0(here(&quot;output/data/BrainCortex_nuclei_10x//BrainCortex_nuclei_10x_cellranger&quot;), &quot;/metadata.tsv&quot;), show_col_types = F)
+    
+  #converting multiplet hits to doublets for now
+  meta$doublet_class[meta$doublet_class == &quot;multiplet&quot;] &lt;- &quot;doublet&quot; 
+  
+  #filter metadata based on uncorrected qc filtered barcodes - these are droplets that pass QC (based on RNA reads) AND have a doublet/singlet assignment based on demultiplexing
+  barcodes_to_keep &lt;- read_tsv(here(&quot;output/data/BrainCortex_nuclei_10x//BrainCortex_nuclei_10x_cellranger/filtered_qc_barcodes.tsv&quot;), show_col_types = F) %&gt;% pull(.)
+  
+  meta &lt;- meta %&gt;% 
+    filter(., Barcode %in% barcodes_to_keep)
+  
+  #doublet calling results 
+  doublet_file &lt;- list.files(path = paste0(path, &quot;/doublet_calls/&quot;),
+                             pattern = &quot;consensus&quot;,
+                             full.names = T)
+  dbl_res &lt;- read_csv(doublet_file, show_col_types = F)
+  #combine, full
+  combined_res &lt;- right_join(dbl_res, meta)
+  
+
+  #add metadata
+  if (basename(path) == &quot;BrainCortex_nuclei_10x_cellranger&quot;){
+    combined_res$ambient_tool &lt;- &quot;uncorrected&quot;
+  } else {
+    combined_res$ambient_tool &lt;- gsub(&quot;BrainCortex_nuclei_10x_cellranger_&quot;, &quot;&quot;,basename(path))
+  }
+  return(combined_res)
+} </code></pre>
+<p>Run for all.</p>
+<pre class="r"><code>list_results &lt;- lapply(files, run_read_data)
+names(list_results) &lt;- basename(files)</code></pre>
+</div>
+</div>
+<div id="compute-metrics-using-caret-package" class="section level1">
+<h1>Compute metrics using <code>caret</code> package</h1>
+<p>Write a function that computes all confusion matrix performance
+metrics using the <code>caret::confusionMatrix()</code> function. Note
+that we consider doublets the positive class in this analysis.</p>
+<pre class="r"><code>run_evaluation_confusion_matrix &lt;- function(entry){
+  #convert for all doublet detection tools
+  df_tmp &lt;- entry %&gt;% 
+    pivot_longer(., cols=ends_with(&quot;DropletType&quot;), names_to = &quot;doublet_tool&quot;, values_to = &quot;call&quot;) %&gt;% 
+    mutate(., doublet_tool = gsub(&quot;_DropletType&quot;, &quot;&quot;, doublet_tool)) %&gt;% 
+    mutate(., call = ifelse(is.na(call), &quot;Missing&quot;, call)) %&gt;% #NAs indicate this droplet was removed due to QC, we consider it missing
+    select(call, doublet_tool, ambient_tool, doublet_class) 
+  
+  list_res &lt;- lapply(df_tmp$doublet_tool %&gt;% unique(), function(TOOL){
+    CM &lt;- df_tmp %&gt;% 
+    filter(., doublet_tool == TOOL) %&gt;% 
+    select(doublet_class, call) %&gt;% 
+    mutate(., doublet_class = factor(doublet_class, levels = c(&quot;singlet&quot;, &quot;doublet&quot;, &quot;Missing&quot;)),
+           call = factor(call, levels = c(&quot;singlet&quot;, &quot;doublet&quot;, &quot;Missing&quot;))) %&gt;% 
+    table() %&gt;% t() #transform because confusionMatrix makes assumption of which is col and row
+    
+    dimnames(CM) &lt;- list( Predicted = c(&quot;singlet&quot;, &quot;doublet&quot;, &quot;Missing&quot;),
+                             Actual = c(&quot;singlet&quot;, &quot;doublet&quot;, &quot;Missing&quot;))
+    
+    stats &lt;- caret::confusionMatrix(data = CM, mode = &quot;everything&quot;)
+    
+    res &lt;- stats$byClass %&gt;% as.data.frame() %&gt;% 
+      filter(rownames(.) == &quot;Class: doublet&quot;) %&gt;% #we consider detecting a doublet a &quot;positive&quot; event 
+      mutate(., ambient_tool = unique(df_tmp$ambient_tool),
+                doublet_tool = TOOL) %&gt;% 
+      select(doublet_tool, ambient_tool, everything())
+    
+    return(res)
+  })
+  
+  
+  OUT &lt;- bind_rows(list_res)
+  rownames(OUT) &lt;- NULL
+  
+  return(OUT)
+
+    
+}</code></pre>
+<pre class="r"><code>caret_metrics &lt;- lapply(list_results, run_evaluation_confusion_matrix) %&gt;% bind_rows()</code></pre>
+<pre class="r"><code>DT::datatable(caret_metrics, rownames = F)</code></pre>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-7761955bf323b2341c7d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7761955bf323b2341c7d">{"x":{"filter":"none","vertical":false,"data":[["DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet"],["uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","CellBender","CellBender","CellBender","CellBender","CellBender","CellBender","decontX","decontX","decontX","decontX","decontX","decontX","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","soupX","soupX","soupX","soupX","soupX","soupX"],[0.1375565610859729,0.6054298642533936,0.485972850678733,0.5529411764705883,0.5701357466063348,0.3638009049773755,0.1104072398190045,0.5936651583710407,0.5040723981900452,0.5547511312217195,0.5610859728506787,0.3384615384615385,0.06244343891402715,0.2932126696832579,0.469683257918552,0.285972850678733,0.4434389140271493,0.006334841628959276,0.118552036199095,0.4995475113122172,0.4497737556561086,0.3366515837104073,0.4615384615384616,0.2461538461538462,0.1411764705882353,0.5312217194570136,0.4298642533936652,0.4045248868778281,0.4705882352941176,0.2823529411764706],[0.9848608006502744,0.8845763056289372,0.7853078642552327,0.8618167039219671,0.8223938223938224,0.9388335704125178,0.9880105669579354,0.8802072749441171,0.7787035155456208,0.8562284088599879,0.8241211135947978,0.9415769152611257,0.9933956512903881,0.9354805933753302,0.7927250558829506,0.9139402560455192,0.8745173745173745,0.9980694980694981,0.9863848811217232,0.9024588498272709,0.8147734200365779,0.9194269457427352,0.8792928266612478,0.9612883560251981,0.9829302987197724,0.9021540337329811,0.8067465962202804,0.9162771794350741,0.8813249339565129,0.9544807965860598],[0.5049833887043195,0.3706371191135733,0.2026415094339623,0.3099949264332826,0.264928511354079,0.400398406374502,0.5083333333333344,0.3574931880108993,0.2036563071297989,0.3022682445759369,0.263717566992769,0.3940990516332981,0.5149253731343268,0.3378519290928049,0.2028135990621336,0.2717110920034394,0.2840579710144928,0.2692307692307697,0.4943396226415085,0.3650793650793651,0.2142241379310345,0.31931330472103,0.3003533568904594,0.4165390505359878,0.481481481481482,0.3787096774193548,0.1998317206562895,0.3516915814319432,0.3080568720379147,0.4105263157894739],[0.9104828104452376,0.9523080288777073,0.9315415210316982,0.9449643493761142,0.9445676274944568,0.929296992859298,0.9081909031474736,0.9507243195785777,0.9332683877252801,0.944836865119408,0.9435784085621219,0.9268853770754151,0.9041894016461667,0.9218061674008811,0.930138292799237,0.919358135731807,0.9333116460637605,0.899459756432561,0.90881857330088,0.9413884472708003,0.9295235887330474,0.9250664485790228,0.9356687209428046,0.9190790751894308,0.9106655370422668,0.9448760242630626,0.926487747957993,0.9319966928482845,0.9368182309104656,0.9221556886227545],[0.5049833887043189,0.3706371191135734,0.2026415094339623,0.3099949264332826,0.2649285113540791,0.400398406374502,0.5083333333333333,0.3574931880108992,0.2036563071297989,0.3022682445759369,0.263717566992769,0.3940990516332982,0.5149253731343284,0.337851929092805,0.2028135990621336,0.2717110920034394,0.2840579710144928,0.2692307692307692,0.4943396226415094,0.3650793650793651,0.2142241379310345,0.31931330472103,0.3003533568904594,0.4165390505359878,0.4814814814814815,0.3787096774193549,0.1998317206562894,0.3516915814319433,0.3080568720379147,0.4105263157894737],[0.1375565610859729,0.6054298642533936,0.485972850678733,0.5529411764705883,0.5701357466063348,0.3638009049773755,0.1104072398190045,0.5936651583710407,0.5040723981900452,0.5547511312217195,0.5610859728506787,0.3384615384615385,0.06244343891402715,0.2932126696832579,0.469683257918552,0.285972850678733,0.4434389140271493,0.006334841628959276,0.118552036199095,0.4995475113122172,0.4497737556561086,0.3366515837104073,0.4615384615384616,0.2461538461538462,0.1411764705882353,0.5312217194570136,0.4298642533936652,0.4045248868778281,0.4705882352941176,0.2823529411764706],[0.2162162162162162,0.4597938144329897,0.2860186418109188,0.3972691807542262,0.3617571059431525,0.3812233285917496,0.1814126394052044,0.4462585034013605,0.2901041666666667,0.3913182253431216,0.3587962962962963,0.3641674780915288,0.1113801452784504,0.313953488372093,0.283296943231441,0.2786596119929453,0.3462897526501767,0.01237842617152962,0.1912408759124087,0.4218570882690102,0.2902189781021898,0.3277533039647577,0.3638958259008206,0.3094425483503982,0.218334499650105,0.4421845574387947,0.2728317059161402,0.3762626262626262,0.372359470103831,0.3345844504021447],[0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199],[0.01388508267105143,0.0611126335982461,0.04905453548917511,0.05581437836850279,0.05755001370238422,0.03672238969580707,0.01114460582808075,0.0599250936329588,0.05088152005115557,0.05599707682470083,0.05663652142139399,0.03416461130903444,0.006303096738832557,0.02959714990408331,0.04741024938339271,0.02886635607929113,0.04476112176852105,0.000639444596693158,0.01196674888097196,0.05042477391066046,0.04540056636521422,0.03398191285283639,0.04658810633050151,0.02484699004293414,0.01425047958344752,0.05362199689412624,0.04339088334703572,0.04083310496026309,0.04750159861149173,0.02850095916689504],[0.02749611765780579,0.1648853567187357,0.2420754544624098,0.1800493285831735,0.2172284644194757,0.09171462501141865,0.02192381474376541,0.1676258335617064,0.2498401388508267,0.1852562345848178,0.214762035260802,0.08669041746597242,0.01224079656526902,0.08760390974696264,0.2337626747053987,0.1062391522791632,0.1575774184708139,0.002375079930574587,0.02420754544624098,0.1381200328857221,0.2119302091897323,0.1064218507353613,0.1551109893121403,0.05965104594866173,0.02959714990408331,0.141591303553485,0.2171371151913766,0.1161048689138577,0.1541974970311501,0.06942541335525715],[0.5612086808681236,0.7450030849411654,0.6356403574669829,0.7073789401962777,0.6962647845000787,0.6513172376949466,0.5492089033884699,0.7369362166575789,0.641387956867833,0.7054897700408537,0.6926035432227382,0.6400192268613321,0.5279195451022076,0.614346631529294,0.6312041569007514,0.5999565533621261,0.658978144272262,0.5022021698492287,0.5524684586604091,0.7010031805697441,0.6322735878463432,0.6280392647265712,0.6704156440998547,0.6037211010895221,0.5620533846540039,0.7166878765949973,0.6183054248069728,0.6604010331564512,0.6759565846253153,0.6184168688812652]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>doublet_tool<\/th>\n      <th>ambient_tool<\/th>\n      <th>Sensitivity<\/th>\n      <th>Specificity<\/th>\n      <th>Pos Pred Value<\/th>\n      <th>Neg Pred Value<\/th>\n      <th>Precision<\/th>\n      <th>Recall<\/th>\n      <th>F1<\/th>\n      <th>Prevalence<\/th>\n      <th>Detection Rate<\/th>\n      <th>Detection Prevalence<\/th>\n      <th>Balanced Accuracy<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6,7,8,9,10,11,12]},{"name":"doublet_tool","targets":0},{"name":"ambient_tool","targets":1},{"name":"Sensitivity","targets":2},{"name":"Specificity","targets":3},{"name":"Pos Pred Value","targets":4},{"name":"Neg Pred Value","targets":5},{"name":"Precision","targets":6},{"name":"Recall","targets":7},{"name":"F1","targets":8},{"name":"Prevalence","targets":9},{"name":"Detection Rate","targets":10},{"name":"Detection Prevalence","targets":11},{"name":"Balanced Accuracy","targets":12}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="compute-metrics-using-yardstick-package"
+class="section level1">
+<h1>Compute metrics using <code>yardstick</code> package</h1>
+<div id="compute-auprc" class="section level2">
+<h2>Compute AUPRC</h2>
+<p>Note that this metric does not take the Missing barcodes into
+account, but removes them as they do not have a doublet score. Also note
+that as DoubletDetection does not output a score, we cannot compute this
+metric for it.</p>
+<p>Write function.</p>
+<pre class="r"><code>run_evaluation_auprc &lt;- function(entry){
+  
+  all_tools &lt;- entry %&gt;% 
+    pivot_longer(., cols=ends_with(&quot;DropletType&quot;), names_to = &quot;doublet_tool&quot;, values_to = &quot;call&quot;) %&gt;%
+    mutate(., doublet_tool = gsub(&quot;_DropletType&quot;, &quot;&quot;,doublet_tool)) %&gt;% 
+    filter(., doublet_tool != &quot;DoubletDetection&quot;) %&gt;% #no score
+    pull(doublet_tool) %&gt;% unique()
+  
+  
+  list_res &lt;- lapply(all_tools, function(TOOL){
+      input &lt;- entry %&gt;%
+        select(doublet_class, starts_with(TOOL)) %&gt;% 
+        dplyr::rename(truth = doublet_class, doublet_score = contains(&quot;score&quot;, ignore.case = T), predicted= ends_with(&quot;Type&quot;)) %&gt;% 
+    mutate(., truth = factor(truth, levels = c(&quot;doublet&quot;, &quot;singlet&quot;)),
+           predicted = factor(predicted, levels =  c(&quot;doublet&quot;, &quot;singlet&quot;))) # doublet considered &quot;true&quot; event
+      
+      out_doubl &lt;- pr_auc(input, truth, doublet_score) %&gt;%
+        rename(.,pr_auc = `.estimate`) %&gt;% 
+        mutate(., ambient_tool = unique(entry$ambient_tool),
+                doublet_tool = TOOL) %&gt;% 
+      select(doublet_tool, ambient_tool, pr_auc)
+  
+    
+    return(out_doubl)
+  })
+  
+  
+  OUT &lt;- bind_rows(list_res)
+  rownames(OUT) &lt;- NULL
+  
+  return(OUT)
+
+    
+  }</code></pre>
+<pre class="r"><code>all_results_auprc &lt;- lapply(list_results, run_evaluation_auprc) %&gt;% bind_rows()</code></pre>
+<pre class="r"><code>DT::datatable(all_results_auprc, rownames = F)</code></pre>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-445ab8b2d4bba916a632" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-445ab8b2d4bba916a632">{"x":{"filter":"none","vertical":false,"data":[["scDblFinder","cxds","bcds","scds","scrublet","scDblFinder","cxds","bcds","scds","scrublet","scDblFinder","cxds","bcds","scds","scrublet","scDblFinder","cxds","bcds","scds","scrublet","scDblFinder","cxds","bcds","scds","scrublet"],["uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","CellBender","CellBender","CellBender","CellBender","CellBender","decontX","decontX","decontX","decontX","decontX","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","soupX","soupX","soupX","soupX","soupX"],[0.3368340100358329,0.2259398335934645,0.3434465382490995,0.306689108470725,0.3132807293447774,0.3366829606213317,0.2378015100812873,0.3540405536080581,0.3126713728520975,0.2892422248270444,0.262925811233258,0.2246359628069581,0.2255446968357157,0.2613646542455871,0.1495993103909251,0.3176717433159698,0.2280203286824793,0.2833162796736416,0.2907367248548646,0.2616217517352027,0.3204781062488949,0.2060303141769905,0.3043918932288188,0.2862638372623261,0.2933128596272664]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>doublet_tool<\/th>\n      <th>ambient_tool<\/th>\n      <th>pr_auc<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"name":"doublet_tool","targets":0},{"name":"ambient_tool","targets":1},{"name":"pr_auc","targets":2}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="compute-mcc" class="section level2">
+<h2>Compute MCC</h2>
+<p>Compute MCC, make sure to add Missing to the levels!</p>
+<pre class="r"><code>run_mcc &lt;- function(entry){
+  doublet_tools_loop &lt;- colnames(entry)[grepl(&quot;_DropletType&quot;, colnames(entry))]
+  truth_in &lt;- factor(entry$doublet_class, levels = c(&quot;singlet&quot;, &quot;doublet&quot;, &quot;Missing&quot;))
+  
+  OUT &lt;- lapply(doublet_tools_loop, function(TOOL){
+    predicted_in &lt;- entry %&gt;% pull(TOOL)
+    predicted_in[is.na(predicted_in)] &lt;- &quot;Missing&quot; #NAs indicate this droplet was removed due to QC, we consider it missing
+    
+    input &lt;- data.frame(truth = truth_in, 
+                      predicted = factor(predicted_in, levels = c(&quot;singlet&quot;, &quot;doublet&quot;, &quot;Missing&quot;)))
+    
+    tmp_out &lt;- data.frame(ambient_tool = unique(entry$ambient_tool),
+             doublet_tool = gsub(&quot;_DropletType&quot;,&quot;&quot;, TOOL),
+             mcc = mcc(input, truth, predicted)$`.estimate`)
+  } ) %&gt;% bind_rows()
+  
+  return(OUT)
+
+}</code></pre>
+<pre class="r"><code>all_MCC &lt;- lapply(list_results, run_mcc) %&gt;% bind_rows()</code></pre>
+<pre class="r"><code>DT::datatable(all_MCC, rownames = F)</code></pre>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1469ba099f484d05d1c1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1469ba099f484d05d1c1">{"x":{"filter":"none","vertical":false,"data":[["uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","CellBender","CellBender","CellBender","CellBender","CellBender","CellBender","decontX","decontX","decontX","decontX","decontX","decontX","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","soupX","soupX","soupX","soupX","soupX","soupX"],["DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet"],[0.2250551380217113,0.3978003457128839,0.1907911644619071,0.3251866676558654,0.2867637164799843,0.3156651084405966,0.1297679444423667,0.3522346975787863,0.1834416936579943,0.2948421247753214,0.2632572076418025,0.2585618908319909,0.1320471603184226,0.2396910795264557,0.1880226634131351,0.1943760531385207,0.2615267061674825,0.03113867371476654,0.09704214264708813,0.2854125605611589,0.1640903609417673,0.1909727406567407,0.2328467057084329,0.1759099540343061,0.2197898322458817,0.3744197132550429,0.1730303327394451,0.3016492495511263,0.2935874084767899,0.2803153807467738]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>ambient_tool<\/th>\n      <th>doublet_tool<\/th>\n      <th>mcc<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"name":"ambient_tool","targets":0},{"name":"doublet_tool","targets":1},{"name":"mcc","targets":2}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="export" class="section level1">
+<h1>Export</h1>
+<div id="combine-and-clean-up" class="section level2">
+<h2>Combine and clean up</h2>
+<pre class="r"><code>combined_results &lt;- full_join(full_join(caret_metrics, all_MCC, by=c(&quot;ambient_tool&quot;, &quot;doublet_tool&quot;)), 
+                              all_results_auprc, by=c(&quot;ambient_tool&quot;, &quot;doublet_tool&quot;))
+
+colnames(combined_results)</code></pre>
+<pre><code> [1] &quot;doublet_tool&quot;         &quot;ambient_tool&quot;         &quot;Sensitivity&quot;         
+ [4] &quot;Specificity&quot;          &quot;Pos Pred Value&quot;       &quot;Neg Pred Value&quot;      
+ [7] &quot;Precision&quot;            &quot;Recall&quot;               &quot;F1&quot;                  
+[10] &quot;Prevalence&quot;           &quot;Detection Rate&quot;       &quot;Detection Prevalence&quot;
+[13] &quot;Balanced Accuracy&quot;    &quot;mcc&quot;                  &quot;pr_auc&quot;              </code></pre>
+<pre class="r"><code>DT::datatable(combined_results, rownames = F)</code></pre>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c43200acd425ee7ea162" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c43200acd425ee7ea162">{"x":{"filter":"none","vertical":false,"data":[["DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet"],["uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","CellBender","CellBender","CellBender","CellBender","CellBender","CellBender","decontX","decontX","decontX","decontX","decontX","decontX","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","soupX","soupX","soupX","soupX","soupX","soupX"],[0.1375565610859729,0.6054298642533936,0.485972850678733,0.5529411764705883,0.5701357466063348,0.3638009049773755,0.1104072398190045,0.5936651583710407,0.5040723981900452,0.5547511312217195,0.5610859728506787,0.3384615384615385,0.06244343891402715,0.2932126696832579,0.469683257918552,0.285972850678733,0.4434389140271493,0.006334841628959276,0.118552036199095,0.4995475113122172,0.4497737556561086,0.3366515837104073,0.4615384615384616,0.2461538461538462,0.1411764705882353,0.5312217194570136,0.4298642533936652,0.4045248868778281,0.4705882352941176,0.2823529411764706],[0.9848608006502744,0.8845763056289372,0.7853078642552327,0.8618167039219671,0.8223938223938224,0.9388335704125178,0.9880105669579354,0.8802072749441171,0.7787035155456208,0.8562284088599879,0.8241211135947978,0.9415769152611257,0.9933956512903881,0.9354805933753302,0.7927250558829506,0.9139402560455192,0.8745173745173745,0.9980694980694981,0.9863848811217232,0.9024588498272709,0.8147734200365779,0.9194269457427352,0.8792928266612478,0.9612883560251981,0.9829302987197724,0.9021540337329811,0.8067465962202804,0.9162771794350741,0.8813249339565129,0.9544807965860598],[0.5049833887043195,0.3706371191135733,0.2026415094339623,0.3099949264332826,0.264928511354079,0.400398406374502,0.5083333333333344,0.3574931880108993,0.2036563071297989,0.3022682445759369,0.263717566992769,0.3940990516332981,0.5149253731343268,0.3378519290928049,0.2028135990621336,0.2717110920034394,0.2840579710144928,0.2692307692307697,0.4943396226415085,0.3650793650793651,0.2142241379310345,0.31931330472103,0.3003533568904594,0.4165390505359878,0.481481481481482,0.3787096774193548,0.1998317206562895,0.3516915814319432,0.3080568720379147,0.4105263157894739],[0.9104828104452376,0.9523080288777073,0.9315415210316982,0.9449643493761142,0.9445676274944568,0.929296992859298,0.9081909031474736,0.9507243195785777,0.9332683877252801,0.944836865119408,0.9435784085621219,0.9268853770754151,0.9041894016461667,0.9218061674008811,0.930138292799237,0.919358135731807,0.9333116460637605,0.899459756432561,0.90881857330088,0.9413884472708003,0.9295235887330474,0.9250664485790228,0.9356687209428046,0.9190790751894308,0.9106655370422668,0.9448760242630626,0.926487747957993,0.9319966928482845,0.9368182309104656,0.9221556886227545],[0.5049833887043189,0.3706371191135734,0.2026415094339623,0.3099949264332826,0.2649285113540791,0.400398406374502,0.5083333333333333,0.3574931880108992,0.2036563071297989,0.3022682445759369,0.263717566992769,0.3940990516332982,0.5149253731343284,0.337851929092805,0.2028135990621336,0.2717110920034394,0.2840579710144928,0.2692307692307692,0.4943396226415094,0.3650793650793651,0.2142241379310345,0.31931330472103,0.3003533568904594,0.4165390505359878,0.4814814814814815,0.3787096774193549,0.1998317206562894,0.3516915814319433,0.3080568720379147,0.4105263157894737],[0.1375565610859729,0.6054298642533936,0.485972850678733,0.5529411764705883,0.5701357466063348,0.3638009049773755,0.1104072398190045,0.5936651583710407,0.5040723981900452,0.5547511312217195,0.5610859728506787,0.3384615384615385,0.06244343891402715,0.2932126696832579,0.469683257918552,0.285972850678733,0.4434389140271493,0.006334841628959276,0.118552036199095,0.4995475113122172,0.4497737556561086,0.3366515837104073,0.4615384615384616,0.2461538461538462,0.1411764705882353,0.5312217194570136,0.4298642533936652,0.4045248868778281,0.4705882352941176,0.2823529411764706],[0.2162162162162162,0.4597938144329897,0.2860186418109188,0.3972691807542262,0.3617571059431525,0.3812233285917496,0.1814126394052044,0.4462585034013605,0.2901041666666667,0.3913182253431216,0.3587962962962963,0.3641674780915288,0.1113801452784504,0.313953488372093,0.283296943231441,0.2786596119929453,0.3462897526501767,0.01237842617152962,0.1912408759124087,0.4218570882690102,0.2902189781021898,0.3277533039647577,0.3638958259008206,0.3094425483503982,0.218334499650105,0.4421845574387947,0.2728317059161402,0.3762626262626262,0.372359470103831,0.3345844504021447],[0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199,0.1009408970494199],[0.01388508267105143,0.0611126335982461,0.04905453548917511,0.05581437836850279,0.05755001370238422,0.03672238969580707,0.01114460582808075,0.0599250936329588,0.05088152005115557,0.05599707682470083,0.05663652142139399,0.03416461130903444,0.006303096738832557,0.02959714990408331,0.04741024938339271,0.02886635607929113,0.04476112176852105,0.000639444596693158,0.01196674888097196,0.05042477391066046,0.04540056636521422,0.03398191285283639,0.04658810633050151,0.02484699004293414,0.01425047958344752,0.05362199689412624,0.04339088334703572,0.04083310496026309,0.04750159861149173,0.02850095916689504],[0.02749611765780579,0.1648853567187357,0.2420754544624098,0.1800493285831735,0.2172284644194757,0.09171462501141865,0.02192381474376541,0.1676258335617064,0.2498401388508267,0.1852562345848178,0.214762035260802,0.08669041746597242,0.01224079656526902,0.08760390974696264,0.2337626747053987,0.1062391522791632,0.1575774184708139,0.002375079930574587,0.02420754544624098,0.1381200328857221,0.2119302091897323,0.1064218507353613,0.1551109893121403,0.05965104594866173,0.02959714990408331,0.141591303553485,0.2171371151913766,0.1161048689138577,0.1541974970311501,0.06942541335525715],[0.5612086808681236,0.7450030849411654,0.6356403574669829,0.7073789401962777,0.6962647845000787,0.6513172376949466,0.5492089033884699,0.7369362166575789,0.641387956867833,0.7054897700408537,0.6926035432227382,0.6400192268613321,0.5279195451022076,0.614346631529294,0.6312041569007514,0.5999565533621261,0.658978144272262,0.5022021698492287,0.5524684586604091,0.7010031805697441,0.6322735878463432,0.6280392647265712,0.6704156440998547,0.6037211010895221,0.5620533846540039,0.7166878765949973,0.6183054248069728,0.6604010331564512,0.6759565846253153,0.6184168688812652],[0.2250551380217113,0.3978003457128839,0.1907911644619071,0.3251866676558654,0.2867637164799843,0.3156651084405966,0.1297679444423667,0.3522346975787863,0.1834416936579943,0.2948421247753214,0.2632572076418025,0.2585618908319909,0.1320471603184226,0.2396910795264557,0.1880226634131351,0.1943760531385207,0.2615267061674825,0.03113867371476654,0.09704214264708813,0.2854125605611589,0.1640903609417673,0.1909727406567407,0.2328467057084329,0.1759099540343061,0.2197898322458817,0.3744197132550429,0.1730303327394451,0.3016492495511263,0.2935874084767899,0.2803153807467738],[null,0.3368340100358329,0.2259398335934645,0.3434465382490995,0.306689108470725,0.3132807293447774,null,0.3366829606213317,0.2378015100812873,0.3540405536080581,0.3126713728520975,0.2892422248270444,null,0.262925811233258,0.2246359628069581,0.2255446968357157,0.2613646542455871,0.1495993103909251,null,0.3176717433159698,0.2280203286824793,0.2833162796736416,0.2907367248548646,0.2616217517352027,null,0.3204781062488949,0.2060303141769905,0.3043918932288188,0.2862638372623261,0.2933128596272664]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>doublet_tool<\/th>\n      <th>ambient_tool<\/th>\n      <th>Sensitivity<\/th>\n      <th>Specificity<\/th>\n      <th>Pos Pred Value<\/th>\n      <th>Neg Pred Value<\/th>\n      <th>Precision<\/th>\n      <th>Recall<\/th>\n      <th>F1<\/th>\n      <th>Prevalence<\/th>\n      <th>Detection Rate<\/th>\n      <th>Detection Prevalence<\/th>\n      <th>Balanced Accuracy<\/th>\n      <th>mcc<\/th>\n      <th>pr_auc<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6,7,8,9,10,11,12,13,14]},{"name":"doublet_tool","targets":0},{"name":"ambient_tool","targets":1},{"name":"Sensitivity","targets":2},{"name":"Specificity","targets":3},{"name":"Pos Pred Value","targets":4},{"name":"Neg Pred Value","targets":5},{"name":"Precision","targets":6},{"name":"Recall","targets":7},{"name":"F1","targets":8},{"name":"Prevalence","targets":9},{"name":"Detection Rate","targets":10},{"name":"Detection Prevalence","targets":11},{"name":"Balanced Accuracy","targets":12},{"name":"mcc","targets":13},{"name":"pr_auc","targets":14}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="write-to-file" class="section level2">
+<h2>Write to file</h2>
+<p>Export results for plotting for figures.</p>
+<pre class="r"><code>filename &lt;- here(&quot;output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_correctAssignments_MCC.csv&quot;)
+
+write_csv(x = combined_results, file = filename, col_names = TRUE)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.9
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] grid      stats4    stats     graphics  grDevices datasets  utils    
+[8] methods   base     
+
+other attached packages:
+ [1] ggrepel_0.9.6               ComplexHeatmap_2.24.0      
+ [3] caret_7.0-1                 lattice_0.22-6             
+ [5] yardstick_1.3.2             rstatix_0.7.2              
+ [7] patchwork_1.3.2             DropletUtils_1.28.0        
+ [9] qs2_0.1.5                   scater_1.36.0              
+[11] scuttle_1.18.0              Seurat_5.3.1.0000          
+[13] SeuratObject_5.1.0          sp_2.2-0                   
+[15] here_1.0.1                  lubridate_1.9.4            
+[17] forcats_1.0.0               stringr_1.5.1              
+[19] dplyr_1.1.4                 purrr_1.2.0                
+[21] readr_2.1.5                 tidyr_1.3.1                
+[23] tibble_3.3.0                ggplot2_4.0.3              
+[25] tidyverse_2.0.0             SingleCellExperiment_1.30.1
+[27] SummarizedExperiment_1.38.1 Biobase_2.68.0             
+[29] GenomicRanges_1.60.0        GenomeInfoDb_1.44.0        
+[31] IRanges_2.42.0              S4Vectors_0.46.0           
+[33] BiocGenerics_0.54.0         generics_0.1.4             
+[35] MatrixGenerics_1.20.0       matrixStats_1.5.0          
+[37] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] fs_2.1.0                  spatstat.sparse_3.1-0    
+  [3] doParallel_1.0.17         httr_1.4.7               
+  [5] RColorBrewer_1.1-3        tools_4.5.0              
+  [7] sctransform_0.4.2         backports_1.5.0          
+  [9] DT_0.33                   R6_2.6.1                 
+ [11] HDF5Array_1.36.0          lazyeval_0.2.2           
+ [13] uwot_0.2.3                GetoptLong_1.0.5         
+ [15] rhdf5filters_1.20.0       withr_3.0.2              
+ [17] gridExtra_2.3             progressr_0.15.1         
+ [19] cli_3.6.6                 spatstat.explore_3.4-3   
+ [21] fastDummies_1.7.5         sass_0.4.10              
+ [23] S7_0.2.1                  spatstat.data_3.1-6      
+ [25] proxy_0.4-27              ggridges_0.5.6           
+ [27] pbapply_1.7-2             R.utils_2.13.0           
+ [29] parallelly_1.45.0         limma_3.64.1             
+ [31] rstudioapi_0.17.1         shape_1.4.6.1            
+ [33] crosstalk_1.2.1           vroom_1.6.5              
+ [35] ica_1.0-3                 spatstat.random_3.4-1    
+ [37] car_3.1-3                 Matrix_1.7-3             
+ [39] ggbeeswarm_0.7.2          abind_1.4-8              
+ [41] R.methodsS3_1.8.2         lifecycle_1.0.5          
+ [43] whisker_0.4.1             yaml_2.3.10              
+ [45] edgeR_4.6.2               carData_3.0-5            
+ [47] rhdf5_2.52.1              recipes_1.3.1            
+ [49] SparseArray_1.8.0         Rtsne_0.17               
+ [51] promises_1.3.3            dqrng_0.4.1              
+ [53] crayon_1.5.3              miniUI_0.1.2             
+ [55] beachmat_2.24.0           cowplot_1.1.3            
+ [57] pillar_1.10.2             knitr_1.50               
+ [59] rjson_0.2.23              future.apply_1.20.0      
+ [61] codetools_0.2-20          glue_1.8.0               
+ [63] getPass_0.2-4             spatstat.univar_3.1-3    
+ [65] data.table_1.17.4         vctrs_0.6.5              
+ [67] png_0.1-8                 spam_2.11-1              
+ [69] gtable_0.3.6              cachem_1.1.0             
+ [71] gower_1.0.2               xfun_0.52                
+ [73] prodlim_2025.04.28        S4Arrays_1.8.1           
+ [75] mime_0.13                 survival_3.8-3           
+ [77] timeDate_4041.110         iterators_1.0.14         
+ [79] hardhat_1.4.2             lava_1.8.1               
+ [81] statmod_1.5.0             fitdistrplus_1.2-2       
+ [83] ipred_0.9-15              ROCR_1.0-11              
+ [85] nlme_3.1-168              bit64_4.6.0-1            
+ [87] RcppAnnoy_0.0.22          rprojroot_2.1.1          
+ [89] bslib_0.9.0               irlba_2.3.5.1            
+ [91] rpart_4.1.24              vipor_0.4.7              
+ [93] KernSmooth_2.23-26        colorspace_2.1-1         
+ [95] nnet_7.3-20               tidyselect_1.2.1         
+ [97] processx_3.8.6            bit_4.6.0                
+ [99] compiler_4.5.0            git2r_0.36.2             
+[101] BiocNeighbors_2.2.0       h5mread_1.0.1            
+[103] DelayedArray_0.34.1       plotly_4.10.4            
+[105] stringfish_0.17.0         scales_1.4.0             
+[107] lmtest_0.9-40             callr_3.7.6              
+[109] digest_0.6.37             goftest_1.2-3            
+[111] spatstat.utils_3.1-4      rmarkdown_2.29           
+[113] XVector_0.48.0            htmltools_0.5.8.1        
+[115] pkgconfig_2.0.3           sparseMatrixStats_1.20.0 
+[117] fastmap_1.2.0             GlobalOptions_0.1.2      
+[119] rlang_1.3.0               htmlwidgets_1.6.4        
+[121] UCSC.utils_1.4.0          shiny_1.10.0             
+[123] DelayedMatrixStats_1.30.0 farver_2.1.2             
+[125] jquerylib_0.1.4           zoo_1.8-14               
+[127] jsonlite_2.0.0            BiocParallel_1.42.1      
+[129] ModelMetrics_1.2.2.2      R.oo_1.27.1              
+[131] BiocSingular_1.24.0       magrittr_2.0.4           
+[133] Formula_1.2-5             GenomeInfoDbData_1.2.14  
+[135] dotCall64_1.2             Rhdf5lib_1.30.0          
+[137] Rcpp_1.1.2                viridis_0.6.5            
+[139] reticulate_1.42.0         pROC_1.18.5              
+[141] stringi_1.8.7             MASS_7.3-65              
+[143] plyr_1.8.9                parallel_4.5.0           
+[145] listenv_0.9.1             deldir_2.0-4             
+[147] splines_4.5.0             tensor_1.5               
+[149] circlize_0.4.16           hms_1.1.3                
+[151] locfit_1.5-9.12           ps_1.9.1                 
+[153] igraph_2.1.4              spatstat.geom_3.4-1      
+[155] RcppHNSW_0.6.0            reshape2_1.4.4           
+[157] ScaledMatrix_1.16.0       evaluate_1.0.5           
+[159] RcppParallel_5.1.10       renv_1.1.4               
+[161] BiocManager_1.30.26       tzdb_0.5.0               
+[163] foreach_1.5.2             httpuv_1.6.16            
+[165] RANN_2.6.2                polyclip_1.10-7          
+[167] clue_0.3-66               future_1.58.0            
+[169] scattermore_1.2           rsvd_1.0.5               
+[171] broom_1.0.8               xtable_1.8-4             
+[173] e1071_1.7-16              RSpectra_0.16-2          
+[175] later_1.4.2               class_7.3-23             
+[177] viridisLite_0.4.2         beeswarm_0.4.0           
+[179] cluster_2.1.8.1           timechange_0.3.0         
+[181] globals_0.18.0           </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

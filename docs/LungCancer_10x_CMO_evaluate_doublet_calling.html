@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Michelle Meier" />
+
+
+<title>Lung Cancer 10x CMO: evaluate doublet calling (all doublet detection tools)</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="site_libs/datatables-binding-0.33/datatables.js"></script>
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ambient_doublet_singlecell</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Lung Cancer 10x CMO: evaluate doublet
+calling (all doublet detection tools)</h1>
+<h4 class="author">Michelle Meier</h4>
+<h4 class="date">06. October 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-10-06
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>ambient_doublet_singlecell/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260605code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260605)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260605code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260605)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommichellemeier27ambientdoubletsinglecelltreeeed64e5d5d245c360f4a9b6d89e1ce28ea4054f6targetblankeed64e5a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/tree/eed64e5d5d245c360f4a9b6d89e1ce28ea4054f6" target="_blank">eed64e5</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcommichellemeier27ambientdoubletsinglecelltreeeed64e5d5d245c360f4a9b6d89e1ce28ea4054f6targetblankeed64e5a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/tree/eed64e5d5d245c360f4a9b6d89e1ce28ea4054f6" target="_blank">eed64e5</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .RData
+    Ignored:    .Renviron
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    CLAUDE.md
+    Ignored:    analysis/figure/
+    Ignored:    analysis/figures_v1/
+    Ignored:    analysis/figures_v2/
+    Ignored:    analysis/figures_v3/
+    Ignored:    analysis/obsolete/
+    Ignored:    analysis/qc_filtered_ambient/
+    Ignored:    analysis/untracked_BAL_inflammation_10x_HTO_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BAL_inflammation_10x_HTO_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_QC_filtering_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x__LungCancer_10x_CMO_check_CMO_ADT_distribution.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_evaluate_doublet_calling_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_inspect_SampleOfOrigin_false_singlets.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_run_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_LungCancer_10x_CMO_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_LungCancer_10x_CMO_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_figure_05.Rmd
+    Ignored:    claude_logs/
+    Ignored:    output/.DS_Store
+    Ignored:    output/data/
+    Ignored:    output/data_zenodo/
+    Ignored:    output/figures/
+    Ignored:    output/package_refs/
+    Ignored:    output/results/.DS_Store
+    Ignored:    output/results/BAL_inflammation_10x/.DS_Store
+    Ignored:    output/results/BrainCortex_nuclei_10x/.DS_Store
+    Ignored:    output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/.DS_Store
+    Ignored:    output/results/LungCancer_10x/.DS_Store
+    Ignored:    output/results/LungCancer_10x/DoubletCallingPerformance/.DS_Store
+    Ignored:    output/results/Tonsils_10xFlex/.DS_Store
+    Ignored:    output/results/Tonsils_10xFlex/Engineered/.DS_Store
+    Ignored:    renv/
+    Ignored:    scp_file.txt
+
+Untracked files:
+    Untracked:  code/make_figures.R
+    Untracked:  output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_TESTING_deMULTIplex2_correctAssignments_MCC.csv
+    Untracked:  output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_correctAssignments_MCC_qc_filtered_ambient.csv
+    Untracked:  output/results/LungCancer_10x/DoubletCallingPerformance/LungCancer_10x_correctAssignments_MCC_qc_filtered_ambient.csv
+    Untracked:  tmp.R
+
+Unstaged changes:
+    Modified:   .gitignore
+    Modified:   analysis/figure_01.Rmd
+    Modified:   analysis/figure_03.Rmd
+    Modified:   analysis/figure_04.Rmd
+    Modified:   analysis/figure_05.Rmd
+    Modified:   analysis/supp_figure_01.Rmd
+    Modified:   analysis/supp_figure_02.Rmd
+    Modified:   analysis/supp_figure_03.Rmd
+    Modified:   analysis/supp_figure_04.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/LungCancer_10x_CMO_evaluate_doublet_calling.Rmd</code>)
+and HTML
+(<code>docs/LungCancer_10x_CMO_evaluate_doublet_calling.html</code>)
+files. If you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table
+below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/eed64e5d5d245c360f4a9b6d89e1ce28ea4054f6/analysis/LungCancer_10x_CMO_evaluate_doublet_calling.Rmd" target="_blank">eed64e5</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-06
+</td>
+<td>
+wflow_publish(c("analysis/LungCancer_10x_CMO_evaluate_doublet_calling.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/1797e20e728fab2e9410e8ba2d09132d34b702c6/docs/LungCancer_10x_CMO_evaluate_doublet_calling.html" target="_blank">1797e20</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/30e63cb3760e2a63af2e9c550badb68a25f76510/analysis/LungCancer_10x_CMO_evaluate_doublet_calling.Rmd" target="_blank">30e63cb</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-19
+</td>
+<td>
+wflow_publish(c("analysis/BAL_inflammation_10x_HTO_evaluate_doublet_calling.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/0f9e08856f9f1b65732133cff56a73a1f09bd681/docs/LungCancer_10x_CMO_evaluate_doublet_calling.html" target="_blank">0f9e088</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/8f1fb7dcd0140253584d53553b6f94ff3e7939f3/analysis/LungCancer_10x_CMO_evaluate_doublet_calling.Rmd" target="_blank">8f1fb7d</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-17
+</td>
+<td>
+wflow_publish("analysis/LungCancer_10x_CMO_evaluate_doublet_calling.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/f222a44aed5049f9fa9aea6369ea55ad9316a340/docs/LungCancer_10x_CMO_evaluate_doublet_calling.html" target="_blank">f222a44</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/f0946d01ed842c1f34b4fc814b4c6aaf1d78930e/analysis/LungCancer_10x_CMO_evaluate_doublet_calling.Rmd" target="_blank">f0946d0</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+wflow_publish(c("analysis/BAL_inflammation_10x_HTO_evaluate_doublet_calling.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/b62445d4de112786f4a05a35f77ed9e23cb8dc08/docs/LungCancer_10x_CMO_evaluate_doublet_calling.html" target="_blank">b62445d</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/b444b0bce25d420ae0766a130402fd3bd67a3d8d/analysis/LungCancer_10x_CMO_evaluate_doublet_calling.Rmd" target="_blank">b444b0b</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+wflow_publish("analysis/LungCancer_10x_CMO_evaluate_doublet_calling.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/ae564820093ded96959e5c360b35f7486dd7727f/docs/LungCancer_10x_CMO_evaluate_doublet_calling.html" target="_blank">ae56482</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/734b4d13490882053d2f4d35745cfedf6e1b0120/analysis/LungCancer_10x_CMO_evaluate_doublet_calling.Rmd" target="_blank">734b4d1</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+wflow_publish(c("analysis/BAL_inflammation_10x_HTO_evaluate_doublet_calling.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/b7b1012c0d90e8ca8a2a894556f3109cdbb44386/docs/LungCancer_10x_CMO_evaluate_doublet_calling.html" target="_blank">b7b1012</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/2728565ac673093e0ebc9335c09995e95f52f95c/analysis/LungCancer_10x_CMO_evaluate_doublet_calling.Rmd" target="_blank">2728565</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-16
+</td>
+<td>
+wflow_publish(c("analysis/BAL_inflammation_10x_HTO_evaluate_doublet_calling.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/f27ec3c1d6466bd766139b2eeadc94ce2b70b916/docs/LungCancer_10x_CMO_evaluate_doublet_calling.html" target="_blank">f27ec3c</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/718cf44f4fa058d54b707e34bc5f24e5daa05c3d/analysis/LungCancer_10x_CMO_evaluate_doublet_calling.Rmd" target="_blank">718cf44</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-07
+</td>
+<td>
+wflow_publish(c("analysis/LungCancer_10x_CMO_QC_filtering.Rmd",
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="set-up" class="section level1">
+<h1>Set-up</h1>
+<p>In this markdown, we will evaluate the performance of doublet calling
+using a selection of doublet detection tools (<code>scDblFinder</code>,
+<code>scrublet</code>, <code>DoubletDetection</code>, <code>scds</code>,
+<code>bcds</code>, <code>cxds</code>) on the Lung Cancer 10x CMO
+dataset, both uncorrected as well as ambient corrected
+(<code>decontX BG</code>, <code>decontX</code>, <code>soupX</code>,
+<code>CellBender</code>).</p>
+<p>We treat the demultiplexed result as the ground truth. We will
+calculate performance metrics using <code>caret</code> and
+<code>yardstick</code> (AUPRC, MCC) packages.</p>
+<div id="load-libraries" class="section level2">
+<h2>Load libraries</h2>
+<pre class="r"><code>suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+  library(patchwork)
+  library(rstatix)
+  library(yardstick)
+  library(caret)
+  library(ComplexHeatmap)
+  library(ggrepel)
+})</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 4.5.2</code></pre>
+</div>
+<div id="load-data" class="section level2">
+<h2>Load data</h2>
+<pre class="r"><code>files &lt;- list.dirs(path = here(&quot;output/data/LungCancer_10x/&quot;), full.names = T, recursive = F)
+files &lt;- files[grepl(&quot;LungCancer_10x_cellranger_allmultiplets&quot;, files)]</code></pre>
+<pre class="r"><code>run_read_data &lt;- function(path){
+  #original metadata (from UNFILTERED uncorrected) - this will contain ALL info
+  meta &lt;- read_tsv(paste0(here(&quot;output/data/LungCancer_10x//LungCancer_10x_cellranger_allmultiplets&quot;), &quot;/metadata.tsv&quot;), show_col_types = F)
+    
+  #converting multiplet hits to doublets for now
+  meta$doublet_class[meta$doublet_class == &quot;multiplet&quot;] &lt;- &quot;doublet&quot; 
+  
+  #filter metadata based on uncorrected qc filtered barcodes - these are droplets that pass QC (based on RNA reads) AND have a doublet/singlet assignment based on demultiplexing
+  barcodes_to_keep &lt;- read_tsv(here(&quot;output/data/LungCancer_10x//LungCancer_10x_cellranger_allmultiplets/filtered_qc_barcodes.tsv&quot;), show_col_types = F) %&gt;% pull(.)
+  
+  meta &lt;- meta %&gt;% 
+    filter(., Barcode %in% barcodes_to_keep)
+  
+  #doublet calling results 
+  doublet_file &lt;- list.files(path = paste0(path, &quot;/doublet_calls/&quot;),
+                             pattern = &quot;consensus&quot;,
+                             full.names = T)
+  dbl_res &lt;- read_csv(doublet_file, show_col_types = F)
+  #combine, full
+  combined_res &lt;- right_join(dbl_res, meta)
+  
+
+  #add metadata
+  if (basename(path) == &quot;LungCancer_10x_cellranger_allmultiplets&quot;){
+    combined_res$ambient_tool &lt;- &quot;uncorrected&quot;
+  } else {
+    combined_res$ambient_tool &lt;- gsub(&quot;LungCancer_10x_cellranger_allmultiplets_&quot;, &quot;&quot;,basename(path))
+  }
+  return(combined_res)
+} </code></pre>
+<p>Run for all.</p>
+<pre class="r"><code>list_results &lt;- lapply(files, run_read_data)
+names(list_results) &lt;- basename(files)</code></pre>
+</div>
+</div>
+<div id="compute-metrics-using-caret-package" class="section level1">
+<h1>Compute metrics using <code>caret</code> package</h1>
+<p>Write a function that computes all confusion matrix performance
+metrics using the <code>caret::confusionMatrix()</code> function. Note
+that we consider doublets the positive class in this analysis.</p>
+<pre class="r"><code>run_evaluation_confusion_matrix &lt;- function(entry){
+  #convert for all doublet detection tools
+  df_tmp &lt;- entry %&gt;% 
+    pivot_longer(., cols=ends_with(&quot;DropletType&quot;), names_to = &quot;doublet_tool&quot;, values_to = &quot;call&quot;) %&gt;% 
+    mutate(., doublet_tool = gsub(&quot;_DropletType&quot;, &quot;&quot;, doublet_tool)) %&gt;% 
+    mutate(., call = ifelse(is.na(call), &quot;Missing&quot;, call)) %&gt;% #NAs indicate this droplet was removed due to QC, we consider it missing
+    select(call, doublet_tool, ambient_tool, doublet_class) 
+  
+  list_res &lt;- lapply(df_tmp$doublet_tool %&gt;% unique(), function(TOOL){
+    CM &lt;- df_tmp %&gt;% 
+    filter(., doublet_tool == TOOL) %&gt;% 
+    select(doublet_class, call) %&gt;% 
+    mutate(., doublet_class = factor(doublet_class, levels = c(&quot;singlet&quot;, &quot;doublet&quot;, &quot;Missing&quot;)),
+           call = factor(call, levels = c(&quot;singlet&quot;, &quot;doublet&quot;, &quot;Missing&quot;))) %&gt;% 
+    table() %&gt;% t() #transform because confusionMatrix makes assumption of which is col and row
+    
+    dimnames(CM) &lt;- list( Predicted = c(&quot;singlet&quot;, &quot;doublet&quot;, &quot;Missing&quot;),
+                             Actual = c(&quot;singlet&quot;, &quot;doublet&quot;, &quot;Missing&quot;))
+    
+    stats &lt;- caret::confusionMatrix(data = CM, mode = &quot;everything&quot;)
+    
+    res &lt;- stats$byClass %&gt;% as.data.frame() %&gt;% 
+      filter(rownames(.) == &quot;Class: doublet&quot;) %&gt;% #we consider detecting a doublet a &quot;positive&quot; event 
+      mutate(., ambient_tool = unique(df_tmp$ambient_tool),
+                doublet_tool = TOOL) %&gt;% 
+      select(doublet_tool, ambient_tool, everything())
+    
+    return(res)
+  })
+  
+  
+  OUT &lt;- bind_rows(list_res)
+  rownames(OUT) &lt;- NULL
+  
+  return(OUT)
+
+    
+}</code></pre>
+<pre class="r"><code>caret_metrics &lt;- lapply(list_results, run_evaluation_confusion_matrix) %&gt;% bind_rows()</code></pre>
+<pre class="r"><code>DT::datatable(caret_metrics, rownames = F)</code></pre>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-7761955bf323b2341c7d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7761955bf323b2341c7d">{"x":{"filter":"none","vertical":false,"data":[["DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet"],["uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","CellBender","CellBender","CellBender","CellBender","CellBender","CellBender","decontX","decontX","decontX","decontX","decontX","decontX","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","soupX","soupX","soupX","soupX","soupX","soupX"],[0.3366834170854272,0.6658291457286433,0.4563442211055276,0.5449120603015075,0.5998743718592965,0.2496859296482412,0.2842336683417085,0.6507537688442211,0.522927135678392,0.5964195979899497,0.6516959798994975,0.2707286432160804,0.2704145728643216,0.4029522613065327,0.4585427135678392,0.2050879396984925,0.3329145728643216,0,0.2603643216080402,0.2641331658291458,0.4503768844221105,0.1934673366834171,0.3313442211055276,0,0.3291457286432161,0.6155778894472361,0.4343592964824121,0.310929648241206,0.4217964824120603,0.2170226130653266],[0.976212748897501,0.9513564078578111,0.8884805559267673,0.9524923159160764,0.9303086997193639,0.9848991046371776,0.9864359214218896,0.9488841373780569,0.8740478417746893,0.9500868635573968,0.9262327943338233,0.984498195910731,0.9809568354937859,0.9683950287317921,0.8849391955098223,0.9764132032607243,0.9623813978350929,0.9999331818789255,0.9812241079780837,0.9776827475611386,0.8883469196846184,0.9717359347855138,0.9583723105706268,0.9999331818789255,0.9756113858078311,0.9586395830549245,0.9184150741681144,0.9791527462247761,0.9689295737003876,0.9877722838433783],[0.7507002801120446,0.7443820224719102,0.4654067905188982,0.7093213409648406,0.6467998645445311,0.7786483839373158,0.8167870036101084,0.7303489601691926,0.4690140845070424,0.7176870748299321,0.6527209814407046,0.7879341864716632,0.7513089005235598,0.7306378132118451,0.458830923947203,0.6491053677932409,0.6531115218730748,0,0.7468468468468471,0.715744680851064,0.4618357487922704,0.592877767083734,0.628724672228844,0,0.7416843595187548,0.7599844901124466,0.5311059907834103,0.7603686635944695,0.7428097345132746,0.790617848970252],[0.8736993182633657,0.9304666056724611,0.8848150119776417,0.907730514518594,0.9161676646706587,0.8605289275497694,0.8662715643703791,0.9273819630379416,0.895958904109589,0.9171181630546956,0.9259234520072139,0.863860225140713,0.8633850858621501,0.8840429425399536,0.8848209513629075,0.8523681754549697,0.8714830277727356,0.8245633368229655,0.8617957746478874,0.8619734904270987,0.8836822864739117,0.8499211033837882,0.8707503642544925,0.8245633368229655,0.8723785624663918,0.921392331899043,0.8841502637334362,0.8697768281101614,0.8873454901480847,0.8556957629080806],[0.7507002801120448,0.7443820224719101,0.4654067905188982,0.7093213409648406,0.646799864544531,0.7786483839373164,0.8167870036101083,0.7303489601691928,0.4690140845070422,0.717687074829932,0.6527209814407047,0.7879341864716636,0.7513089005235603,0.7306378132118451,0.458830923947203,0.6491053677932406,0.6531115218730745,0,0.7468468468468469,0.7157446808510638,0.4618357487922705,0.5928777670837344,0.6287246722288439,0,0.7416843595187544,0.7599844901124467,0.5311059907834101,0.7603686635944701,0.7428097345132744,0.7906178489702517],[0.3366834170854272,0.6658291457286433,0.4563442211055276,0.5449120603015075,0.5998743718592965,0.2496859296482412,0.2842336683417085,0.6507537688442211,0.522927135678392,0.5964195979899497,0.6516959798994975,0.2707286432160804,0.2704145728643216,0.4029522613065327,0.4585427135678392,0.2050879396984925,0.3329145728643216,0,0.2603643216080402,0.2641331658291458,0.4503768844221105,0.1934673366834171,0.3313442211055276,0,0.3291457286432161,0.6155778894472361,0.4343592964824121,0.310929648241206,0.4217964824120603,0.2170226130653266],[0.4648742411101474,0.7029177718832891,0.4608309546463685,0.6163410301953819,0.6224539677366792,0.3781212841854935,0.4217148182665424,0.6882577644909483,0.4945054945054945,0.6514579759862777,0.6522080779506523,0.4029920523609163,0.3976905311778291,0.5194331983805668,0.4586867734841344,0.3116945107398568,0.4410235073850635,null,0.3861201676758267,0.3858683184216564,0.4560343456829384,0.2917357328913095,0.4339777869189634,null,0.4559495323036763,0.6802012840534444,0.4778852798894264,0.4413731609451627,0.5380608974358975,0.3405618531296205],[0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791],[0.0590633608815427,0.1168044077134986,0.08005509641873278,0.09559228650137741,0.1052341597796143,0.04380165289256199,0.04986225895316804,0.1141597796143251,0.09173553719008265,0.1046280991735537,0.1143250688705234,0.0474931129476584,0.04743801652892562,0.07068870523415978,0.08044077134986226,0.03597796143250689,0.05840220385674931,0,0.04567493112947658,0.04633608815426997,0.07900826446280992,0.03393939393939394,0.0581267217630854,0,0.05774104683195593,0.1079889807162534,0.07619834710743802,0.05454545454545454,0.07399449035812672,0.03807162534435261],[0.07867768595041322,0.1569146005509642,0.1720110192837466,0.1347658402203857,0.1626997245179063,0.0562534435261708,0.06104683195592286,0.1563085399449036,0.1955922865013774,0.1457851239669422,0.1751515151515151,0.06027548209366392,0.0631404958677686,0.09674931129476584,0.1753168044077135,0.05542699724517906,0.08942148760330579,5.509641873278237e-05,0.06115702479338843,0.06473829201101929,0.1710743801652893,0.05724517906336088,0.09245179063360881,5.509641873278237e-05,0.07785123966942149,0.1420936639118457,0.1434710743801653,0.07173553719008265,0.09961432506887052,0.04815426997245179],[0.6564480829914641,0.8085927767932272,0.6724123885161475,0.748702188108792,0.7650915357893302,0.6172925171427094,0.6353347948817991,0.799818953111139,0.6984874887265407,0.7732532307736733,0.7889643871166604,0.6276134195634057,0.6256857041790538,0.6856736450191624,0.6717409545388308,0.5907505714796084,0.6476479853497072,0.4999665909394628,0.620794214793062,0.6209079566951422,0.6693619020533645,0.5826016357344654,0.6448582658380773,0.4999665909394628,0.6523785572255236,0.7871087362510802,0.6763871853252632,0.645041197232991,0.695363028056224,0.6023974484543525]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>doublet_tool<\/th>\n      <th>ambient_tool<\/th>\n      <th>Sensitivity<\/th>\n      <th>Specificity<\/th>\n      <th>Pos Pred Value<\/th>\n      <th>Neg Pred Value<\/th>\n      <th>Precision<\/th>\n      <th>Recall<\/th>\n      <th>F1<\/th>\n      <th>Prevalence<\/th>\n      <th>Detection Rate<\/th>\n      <th>Detection Prevalence<\/th>\n      <th>Balanced Accuracy<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6,7,8,9,10,11,12]},{"name":"doublet_tool","targets":0},{"name":"ambient_tool","targets":1},{"name":"Sensitivity","targets":2},{"name":"Specificity","targets":3},{"name":"Pos Pred Value","targets":4},{"name":"Neg Pred Value","targets":5},{"name":"Precision","targets":6},{"name":"Recall","targets":7},{"name":"F1","targets":8},{"name":"Prevalence","targets":9},{"name":"Detection Rate","targets":10},{"name":"Detection Prevalence","targets":11},{"name":"Balanced Accuracy","targets":12}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="compute-metrics-using-yardstick-package"
+class="section level1">
+<h1>Compute metrics using <code>yardstick</code> package</h1>
+<div id="compute-auprc" class="section level2">
+<h2>Compute AUPRC</h2>
+<p>Note that this metric does not take the Missing barcodes into
+account, but removes them as they do not have a doublet score. Also note
+that as DoubletDetection does not output a score, we cannot compute this
+metric for it.</p>
+<p>Write function.</p>
+<pre class="r"><code>run_evaluation_auprc &lt;- function(entry){
+  
+  all_tools &lt;- entry %&gt;% 
+    pivot_longer(., cols=ends_with(&quot;DropletType&quot;), names_to = &quot;doublet_tool&quot;, values_to = &quot;call&quot;) %&gt;%
+    mutate(., doublet_tool = gsub(&quot;_DropletType&quot;, &quot;&quot;,doublet_tool)) %&gt;% 
+    filter(., doublet_tool != &quot;DoubletDetection&quot;) %&gt;% #no score
+    pull(doublet_tool) %&gt;% unique()
+  
+  
+  list_res &lt;- lapply(all_tools, function(TOOL){
+      input &lt;- entry %&gt;%
+        select(doublet_class, starts_with(TOOL)) %&gt;% 
+        dplyr::rename(truth = doublet_class, doublet_score = contains(&quot;score&quot;, ignore.case = T), predicted= ends_with(&quot;Type&quot;)) %&gt;% 
+    mutate(., truth = factor(truth, levels = c(&quot;doublet&quot;, &quot;singlet&quot;)),
+           predicted = factor(predicted, levels =  c(&quot;doublet&quot;, &quot;singlet&quot;))) # doublet considered &quot;true&quot; event
+      
+      out_doubl &lt;- pr_auc(input, truth, doublet_score) %&gt;%
+        rename(.,pr_auc = `.estimate`) %&gt;% 
+        mutate(., ambient_tool = unique(entry$ambient_tool),
+                doublet_tool = TOOL) %&gt;% 
+      select(doublet_tool, ambient_tool, pr_auc)
+  
+    
+    return(out_doubl)
+  })
+  
+  
+  OUT &lt;- bind_rows(list_res)
+  rownames(OUT) &lt;- NULL
+  
+  return(OUT)
+
+    
+  }</code></pre>
+<pre class="r"><code>all_results_auprc &lt;- lapply(list_results, run_evaluation_auprc) %&gt;% bind_rows()</code></pre>
+<pre class="r"><code>DT::datatable(all_results_auprc, rownames = F)</code></pre>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-445ab8b2d4bba916a632" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-445ab8b2d4bba916a632">{"x":{"filter":"none","vertical":false,"data":[["scDblFinder","cxds","bcds","scds","scrublet","scDblFinder","cxds","bcds","scds","scrublet","scDblFinder","cxds","bcds","scds","scrublet","scDblFinder","cxds","bcds","scds","scrublet","scDblFinder","cxds","bcds","scds","scrublet"],["uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","CellBender","CellBender","CellBender","CellBender","CellBender","decontX","decontX","decontX","decontX","decontX","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","soupX","soupX","soupX","soupX","soupX"],[0.6877702349480173,0.4769916650321686,0.6459562700193476,0.6197012721258458,0.5534241854556113,0.676008597086266,0.4975856385040108,0.6605852177255671,0.6395686718778821,0.5669455055367632,0.569197203596943,0.4711128453774742,0.4738124707713766,0.538411155267414,0.417224903645448,0.4954153215361942,0.4714121006590685,0.4378342752374219,0.5176086105530332,0.3610761826138303,0.6676217173190392,0.4958211688565401,0.5978343953905972,0.6107971703405558,0.5479195746819283]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>doublet_tool<\/th>\n      <th>ambient_tool<\/th>\n      <th>pr_auc<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"name":"doublet_tool","targets":0},{"name":"ambient_tool","targets":1},{"name":"pr_auc","targets":2}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="compute-mcc" class="section level2">
+<h2>Compute MCC</h2>
+<p>Compute MCC, make sure to add Missing to the levels!</p>
+<pre class="r"><code>run_mcc &lt;- function(entry){
+  doublet_tools_loop &lt;- colnames(entry)[grepl(&quot;_DropletType&quot;, colnames(entry))]
+  truth_in &lt;- factor(entry$doublet_class, levels = c(&quot;singlet&quot;, &quot;doublet&quot;, &quot;Missing&quot;))
+  
+  OUT &lt;- lapply(doublet_tools_loop, function(TOOL){
+    predicted_in &lt;- entry %&gt;% pull(TOOL)
+    predicted_in[is.na(predicted_in)] &lt;- &quot;Missing&quot; #NAs indicate this droplet was removed due to QC, we consider it missing
+    
+    input &lt;- data.frame(truth = truth_in, 
+                      predicted = factor(predicted_in, levels = c(&quot;singlet&quot;, &quot;doublet&quot;, &quot;Missing&quot;)))
+    
+    tmp_out &lt;- data.frame(ambient_tool = unique(entry$ambient_tool),
+             doublet_tool = gsub(&quot;_DropletType&quot;,&quot;&quot;, TOOL),
+             mcc = mcc(input, truth, predicted)$`.estimate`)
+  } ) %&gt;% bind_rows()
+  
+  return(OUT)
+
+}</code></pre>
+<pre class="r"><code>all_MCC &lt;- lapply(list_results, run_mcc) %&gt;% bind_rows()</code></pre>
+<pre class="r"><code>DT::datatable(all_MCC, rownames = F)</code></pre>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-1469ba099f484d05d1c1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1469ba099f484d05d1c1">{"x":{"filter":"none","vertical":false,"data":[["uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","CellBender","CellBender","CellBender","CellBender","CellBender","CellBender","decontX","decontX","decontX","decontX","decontX","decontX","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","soupX","soupX","soupX","soupX","soupX","soupX"],["DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet"],[0.4418074684781156,0.6453733990089325,0.3475128126525953,0.5540074848507378,0.5463294370966647,0.3869781163775522,0.3753118610484962,0.5930826404931497,0.3608614778302567,0.5538903290191307,0.5485753678430244,0.3550509313214675,0.3722623527711286,0.4609498710747524,0.3358077754805426,0.2832547753977508,0.3782906407903732,-0.01012778335122781,0.359831737595885,0.3520158016862086,0.3337685464275327,0.2525318099844256,0.3643454641340103,-0.004310375542435508,0.4300966929661371,0.6236678079161253,0.3817101165298697,0.4250667205415128,0.4941345516835274,0.3604118957300797]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>ambient_tool<\/th>\n      <th>doublet_tool<\/th>\n      <th>mcc<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"name":"ambient_tool","targets":0},{"name":"doublet_tool","targets":1},{"name":"mcc","targets":2}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="export" class="section level1">
+<h1>Export</h1>
+<div id="combine-and-clean-up" class="section level2">
+<h2>Combine and clean up</h2>
+<pre class="r"><code>combined_results &lt;- full_join(full_join(caret_metrics, all_MCC, by=c(&quot;ambient_tool&quot;, &quot;doublet_tool&quot;)), 
+                              all_results_auprc, by=c(&quot;ambient_tool&quot;, &quot;doublet_tool&quot;))
+
+colnames(combined_results)</code></pre>
+<pre><code> [1] &quot;doublet_tool&quot;         &quot;ambient_tool&quot;         &quot;Sensitivity&quot;         
+ [4] &quot;Specificity&quot;          &quot;Pos Pred Value&quot;       &quot;Neg Pred Value&quot;      
+ [7] &quot;Precision&quot;            &quot;Recall&quot;               &quot;F1&quot;                  
+[10] &quot;Prevalence&quot;           &quot;Detection Rate&quot;       &quot;Detection Prevalence&quot;
+[13] &quot;Balanced Accuracy&quot;    &quot;mcc&quot;                  &quot;pr_auc&quot;              </code></pre>
+<pre class="r"><code>DT::datatable(combined_results, rownames = F)</code></pre>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-c43200acd425ee7ea162" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c43200acd425ee7ea162">{"x":{"filter":"none","vertical":false,"data":[["DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet","DoubletDetection","scDblFinder","cxds","bcds","scds","scrublet"],["uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","uncorrected","CellBender","CellBender","CellBender","CellBender","CellBender","CellBender","decontX","decontX","decontX","decontX","decontX","decontX","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","decontX_BG","soupX","soupX","soupX","soupX","soupX","soupX"],[0.3366834170854272,0.6658291457286433,0.4563442211055276,0.5449120603015075,0.5998743718592965,0.2496859296482412,0.2842336683417085,0.6507537688442211,0.522927135678392,0.5964195979899497,0.6516959798994975,0.2707286432160804,0.2704145728643216,0.4029522613065327,0.4585427135678392,0.2050879396984925,0.3329145728643216,0,0.2603643216080402,0.2641331658291458,0.4503768844221105,0.1934673366834171,0.3313442211055276,0,0.3291457286432161,0.6155778894472361,0.4343592964824121,0.310929648241206,0.4217964824120603,0.2170226130653266],[0.976212748897501,0.9513564078578111,0.8884805559267673,0.9524923159160764,0.9303086997193639,0.9848991046371776,0.9864359214218896,0.9488841373780569,0.8740478417746893,0.9500868635573968,0.9262327943338233,0.984498195910731,0.9809568354937859,0.9683950287317921,0.8849391955098223,0.9764132032607243,0.9623813978350929,0.9999331818789255,0.9812241079780837,0.9776827475611386,0.8883469196846184,0.9717359347855138,0.9583723105706268,0.9999331818789255,0.9756113858078311,0.9586395830549245,0.9184150741681144,0.9791527462247761,0.9689295737003876,0.9877722838433783],[0.7507002801120446,0.7443820224719102,0.4654067905188982,0.7093213409648406,0.6467998645445311,0.7786483839373158,0.8167870036101084,0.7303489601691926,0.4690140845070424,0.7176870748299321,0.6527209814407046,0.7879341864716632,0.7513089005235598,0.7306378132118451,0.458830923947203,0.6491053677932409,0.6531115218730748,0,0.7468468468468471,0.715744680851064,0.4618357487922704,0.592877767083734,0.628724672228844,0,0.7416843595187548,0.7599844901124466,0.5311059907834103,0.7603686635944695,0.7428097345132746,0.790617848970252],[0.8736993182633657,0.9304666056724611,0.8848150119776417,0.907730514518594,0.9161676646706587,0.8605289275497694,0.8662715643703791,0.9273819630379416,0.895958904109589,0.9171181630546956,0.9259234520072139,0.863860225140713,0.8633850858621501,0.8840429425399536,0.8848209513629075,0.8523681754549697,0.8714830277727356,0.8245633368229655,0.8617957746478874,0.8619734904270987,0.8836822864739117,0.8499211033837882,0.8707503642544925,0.8245633368229655,0.8723785624663918,0.921392331899043,0.8841502637334362,0.8697768281101614,0.8873454901480847,0.8556957629080806],[0.7507002801120448,0.7443820224719101,0.4654067905188982,0.7093213409648406,0.646799864544531,0.7786483839373164,0.8167870036101083,0.7303489601691928,0.4690140845070422,0.717687074829932,0.6527209814407047,0.7879341864716636,0.7513089005235603,0.7306378132118451,0.458830923947203,0.6491053677932406,0.6531115218730745,0,0.7468468468468469,0.7157446808510638,0.4618357487922705,0.5928777670837344,0.6287246722288439,0,0.7416843595187544,0.7599844901124467,0.5311059907834101,0.7603686635944701,0.7428097345132744,0.7906178489702517],[0.3366834170854272,0.6658291457286433,0.4563442211055276,0.5449120603015075,0.5998743718592965,0.2496859296482412,0.2842336683417085,0.6507537688442211,0.522927135678392,0.5964195979899497,0.6516959798994975,0.2707286432160804,0.2704145728643216,0.4029522613065327,0.4585427135678392,0.2050879396984925,0.3329145728643216,0,0.2603643216080402,0.2641331658291458,0.4503768844221105,0.1934673366834171,0.3313442211055276,0,0.3291457286432161,0.6155778894472361,0.4343592964824121,0.310929648241206,0.4217964824120603,0.2170226130653266],[0.4648742411101474,0.7029177718832891,0.4608309546463685,0.6163410301953819,0.6224539677366792,0.3781212841854935,0.4217148182665424,0.6882577644909483,0.4945054945054945,0.6514579759862777,0.6522080779506523,0.4029920523609163,0.3976905311778291,0.5194331983805668,0.4586867734841344,0.3116945107398568,0.4410235073850635,null,0.3861201676758267,0.3858683184216564,0.4560343456829384,0.2917357328913095,0.4339777869189634,null,0.4559495323036763,0.6802012840534444,0.4778852798894264,0.4413731609451627,0.5380608974358975,0.3405618531296205],[0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791,0.1754269972451791],[0.0590633608815427,0.1168044077134986,0.08005509641873278,0.09559228650137741,0.1052341597796143,0.04380165289256199,0.04986225895316804,0.1141597796143251,0.09173553719008265,0.1046280991735537,0.1143250688705234,0.0474931129476584,0.04743801652892562,0.07068870523415978,0.08044077134986226,0.03597796143250689,0.05840220385674931,0,0.04567493112947658,0.04633608815426997,0.07900826446280992,0.03393939393939394,0.0581267217630854,0,0.05774104683195593,0.1079889807162534,0.07619834710743802,0.05454545454545454,0.07399449035812672,0.03807162534435261],[0.07867768595041322,0.1569146005509642,0.1720110192837466,0.1347658402203857,0.1626997245179063,0.0562534435261708,0.06104683195592286,0.1563085399449036,0.1955922865013774,0.1457851239669422,0.1751515151515151,0.06027548209366392,0.0631404958677686,0.09674931129476584,0.1753168044077135,0.05542699724517906,0.08942148760330579,5.509641873278237e-05,0.06115702479338843,0.06473829201101929,0.1710743801652893,0.05724517906336088,0.09245179063360881,5.509641873278237e-05,0.07785123966942149,0.1420936639118457,0.1434710743801653,0.07173553719008265,0.09961432506887052,0.04815426997245179],[0.6564480829914641,0.8085927767932272,0.6724123885161475,0.748702188108792,0.7650915357893302,0.6172925171427094,0.6353347948817991,0.799818953111139,0.6984874887265407,0.7732532307736733,0.7889643871166604,0.6276134195634057,0.6256857041790538,0.6856736450191624,0.6717409545388308,0.5907505714796084,0.6476479853497072,0.4999665909394628,0.620794214793062,0.6209079566951422,0.6693619020533645,0.5826016357344654,0.6448582658380773,0.4999665909394628,0.6523785572255236,0.7871087362510802,0.6763871853252632,0.645041197232991,0.695363028056224,0.6023974484543525],[0.4418074684781156,0.6453733990089325,0.3475128126525953,0.5540074848507378,0.5463294370966647,0.3869781163775522,0.3753118610484962,0.5930826404931497,0.3608614778302567,0.5538903290191307,0.5485753678430244,0.3550509313214675,0.3722623527711286,0.4609498710747524,0.3358077754805426,0.2832547753977508,0.3782906407903732,-0.01012778335122781,0.359831737595885,0.3520158016862086,0.3337685464275327,0.2525318099844256,0.3643454641340103,-0.004310375542435508,0.4300966929661371,0.6236678079161253,0.3817101165298697,0.4250667205415128,0.4941345516835274,0.3604118957300797],[null,0.6877702349480173,0.4769916650321686,0.6459562700193476,0.6197012721258458,0.5534241854556113,null,0.676008597086266,0.4975856385040108,0.6605852177255671,0.6395686718778821,0.5669455055367632,null,0.569197203596943,0.4711128453774742,0.4738124707713766,0.538411155267414,0.417224903645448,null,0.4954153215361942,0.4714121006590685,0.4378342752374219,0.5176086105530332,0.3610761826138303,null,0.6676217173190392,0.4958211688565401,0.5978343953905972,0.6107971703405558,0.5479195746819283]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>doublet_tool<\/th>\n      <th>ambient_tool<\/th>\n      <th>Sensitivity<\/th>\n      <th>Specificity<\/th>\n      <th>Pos Pred Value<\/th>\n      <th>Neg Pred Value<\/th>\n      <th>Precision<\/th>\n      <th>Recall<\/th>\n      <th>F1<\/th>\n      <th>Prevalence<\/th>\n      <th>Detection Rate<\/th>\n      <th>Detection Prevalence<\/th>\n      <th>Balanced Accuracy<\/th>\n      <th>mcc<\/th>\n      <th>pr_auc<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6,7,8,9,10,11,12,13,14]},{"name":"doublet_tool","targets":0},{"name":"ambient_tool","targets":1},{"name":"Sensitivity","targets":2},{"name":"Specificity","targets":3},{"name":"Pos Pred Value","targets":4},{"name":"Neg Pred Value","targets":5},{"name":"Precision","targets":6},{"name":"Recall","targets":7},{"name":"F1","targets":8},{"name":"Prevalence","targets":9},{"name":"Detection Rate","targets":10},{"name":"Detection Prevalence","targets":11},{"name":"Balanced Accuracy","targets":12},{"name":"mcc","targets":13},{"name":"pr_auc","targets":14}],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="write-to-file" class="section level2">
+<h2>Write to file</h2>
+<p>Export results for plotting for figures.</p>
+<pre class="r"><code>filename &lt;- here(&quot;output/results/LungCancer_10x/DoubletCallingPerformance/LungCancer_10x_correctAssignments_MCC.csv&quot;)
+
+write_csv(x = combined_results, file = filename, col_names = TRUE)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.9
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] grid      stats4    stats     graphics  grDevices datasets  utils    
+[8] methods   base     
+
+other attached packages:
+ [1] ggrepel_0.9.6               ComplexHeatmap_2.24.0      
+ [3] caret_7.0-1                 lattice_0.22-6             
+ [5] yardstick_1.3.2             rstatix_0.7.2              
+ [7] patchwork_1.3.2             DropletUtils_1.28.0        
+ [9] qs2_0.1.5                   scater_1.36.0              
+[11] scuttle_1.18.0              Seurat_5.3.1.0000          
+[13] SeuratObject_5.1.0          sp_2.2-0                   
+[15] here_1.0.1                  lubridate_1.9.4            
+[17] forcats_1.0.0               stringr_1.5.1              
+[19] dplyr_1.1.4                 purrr_1.2.0                
+[21] readr_2.1.5                 tidyr_1.3.1                
+[23] tibble_3.3.0                ggplot2_4.0.3              
+[25] tidyverse_2.0.0             SingleCellExperiment_1.30.1
+[27] SummarizedExperiment_1.38.1 Biobase_2.68.0             
+[29] GenomicRanges_1.60.0        GenomeInfoDb_1.44.0        
+[31] IRanges_2.42.0              S4Vectors_0.46.0           
+[33] BiocGenerics_0.54.0         generics_0.1.4             
+[35] MatrixGenerics_1.20.0       matrixStats_1.5.0          
+[37] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] fs_2.1.0                  spatstat.sparse_3.1-0    
+  [3] doParallel_1.0.17         httr_1.4.7               
+  [5] RColorBrewer_1.1-3        tools_4.5.0              
+  [7] sctransform_0.4.2         backports_1.5.0          
+  [9] DT_0.33                   R6_2.6.1                 
+ [11] HDF5Array_1.36.0          lazyeval_0.2.2           
+ [13] uwot_0.2.3                GetoptLong_1.0.5         
+ [15] rhdf5filters_1.20.0       withr_3.0.2              
+ [17] gridExtra_2.3             progressr_0.15.1         
+ [19] cli_3.6.6                 spatstat.explore_3.4-3   
+ [21] fastDummies_1.7.5         sass_0.4.10              
+ [23] S7_0.2.1                  spatstat.data_3.1-6      
+ [25] proxy_0.4-27              ggridges_0.5.6           
+ [27] pbapply_1.7-2             R.utils_2.13.0           
+ [29] parallelly_1.45.0         limma_3.64.1             
+ [31] rstudioapi_0.17.1         shape_1.4.6.1            
+ [33] crosstalk_1.2.1           vroom_1.6.5              
+ [35] ica_1.0-3                 spatstat.random_3.4-1    
+ [37] car_3.1-3                 Matrix_1.7-3             
+ [39] ggbeeswarm_0.7.2          abind_1.4-8              
+ [41] R.methodsS3_1.8.2         lifecycle_1.0.5          
+ [43] whisker_0.4.1             yaml_2.3.10              
+ [45] edgeR_4.6.2               carData_3.0-5            
+ [47] rhdf5_2.52.1              recipes_1.3.1            
+ [49] SparseArray_1.8.0         Rtsne_0.17               
+ [51] promises_1.3.3            dqrng_0.4.1              
+ [53] crayon_1.5.3              miniUI_0.1.2             
+ [55] beachmat_2.24.0           cowplot_1.1.3            
+ [57] pillar_1.10.2             knitr_1.50               
+ [59] rjson_0.2.23              future.apply_1.20.0      
+ [61] codetools_0.2-20          glue_1.8.0               
+ [63] getPass_0.2-4             spatstat.univar_3.1-3    
+ [65] data.table_1.17.4         vctrs_0.6.5              
+ [67] png_0.1-8                 spam_2.11-1              
+ [69] gtable_0.3.6              cachem_1.1.0             
+ [71] gower_1.0.2               xfun_0.52                
+ [73] prodlim_2025.04.28        S4Arrays_1.8.1           
+ [75] mime_0.13                 survival_3.8-3           
+ [77] timeDate_4041.110         iterators_1.0.14         
+ [79] hardhat_1.4.2             lava_1.8.1               
+ [81] statmod_1.5.0             fitdistrplus_1.2-2       
+ [83] ipred_0.9-15              ROCR_1.0-11              
+ [85] nlme_3.1-168              bit64_4.6.0-1            
+ [87] RcppAnnoy_0.0.22          rprojroot_2.1.1          
+ [89] bslib_0.9.0               irlba_2.3.5.1            
+ [91] rpart_4.1.24              vipor_0.4.7              
+ [93] KernSmooth_2.23-26        colorspace_2.1-1         
+ [95] nnet_7.3-20               tidyselect_1.2.1         
+ [97] processx_3.8.6            bit_4.6.0                
+ [99] compiler_4.5.0            git2r_0.36.2             
+[101] BiocNeighbors_2.2.0       h5mread_1.0.1            
+[103] DelayedArray_0.34.1       plotly_4.10.4            
+[105] stringfish_0.17.0         scales_1.4.0             
+[107] lmtest_0.9-40             callr_3.7.6              
+[109] digest_0.6.37             goftest_1.2-3            
+[111] spatstat.utils_3.1-4      rmarkdown_2.29           
+[113] XVector_0.48.0            htmltools_0.5.8.1        
+[115] pkgconfig_2.0.3           sparseMatrixStats_1.20.0 
+[117] fastmap_1.2.0             GlobalOptions_0.1.2      
+[119] rlang_1.3.0               htmlwidgets_1.6.4        
+[121] UCSC.utils_1.4.0          shiny_1.10.0             
+[123] DelayedMatrixStats_1.30.0 farver_2.1.2             
+[125] jquerylib_0.1.4           zoo_1.8-14               
+[127] jsonlite_2.0.0            BiocParallel_1.42.1      
+[129] ModelMetrics_1.2.2.2      R.oo_1.27.1              
+[131] BiocSingular_1.24.0       magrittr_2.0.4           
+[133] Formula_1.2-5             GenomeInfoDbData_1.2.14  
+[135] dotCall64_1.2             Rhdf5lib_1.30.0          
+[137] Rcpp_1.1.2                viridis_0.6.5            
+[139] reticulate_1.42.0         pROC_1.18.5              
+[141] stringi_1.8.7             MASS_7.3-65              
+[143] plyr_1.8.9                parallel_4.5.0           
+[145] listenv_0.9.1             deldir_2.0-4             
+[147] splines_4.5.0             tensor_1.5               
+[149] circlize_0.4.16           hms_1.1.3                
+[151] locfit_1.5-9.12           ps_1.9.1                 
+[153] igraph_2.1.4              spatstat.geom_3.4-1      
+[155] RcppHNSW_0.6.0            reshape2_1.4.4           
+[157] ScaledMatrix_1.16.0       evaluate_1.0.5           
+[159] RcppParallel_5.1.10       renv_1.1.4               
+[161] BiocManager_1.30.26       tzdb_0.5.0               
+[163] foreach_1.5.2             httpuv_1.6.16            
+[165] RANN_2.6.2                polyclip_1.10-7          
+[167] clue_0.3-66               future_1.58.0            
+[169] scattermore_1.2           rsvd_1.0.5               
+[171] broom_1.0.8               xtable_1.8-4             
+[173] e1071_1.7-16              RSpectra_0.16-2          
+[175] later_1.4.2               class_7.3-23             
+[177] viridisLite_0.4.2         beeswarm_0.4.0           
+[179] cluster_2.1.8.1           timechange_0.3.0         
+[181] globals_0.18.0           </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

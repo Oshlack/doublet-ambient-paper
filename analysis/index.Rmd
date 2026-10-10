@@ -1,0 +1,201 @@
+---
+title: "Order Matters: Ambient RNA Correction confounds Doublet Detection in single-cell RNA sequencing"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+This website contains all the code described in the manuscript: *Order Matters: Ambient RNA correction confounds doublet detection in single-cell RNA sequencing* (add link when available)
+
+All the code of this analysis is available on GitHub at https://github.com/Oshlack/doublet-ambient-paper 
+
+
+# **Abstract**
+
+A common technical artifact in droplet-based single-cell RNA sequencing (scRNA-seq) is the capture of two cells in the same droplet, termed doublets. Doublets may present as hybrid cell types, and their removal is a critical step during quality control. Another form of contamination is ambient RNA, which originates from free floating RNA released from other cells in suspension, likely during cell death. As with doublets, ambient RNA results in unexpected gene expression patterns. Most suggested analysis pipelines include ambient RNA correction before doublet detection however no formal investigation into how doublet detection is affected by ambient RNA correction has been conducted.
+Here, we evaluate the impact of ambient RNA correction on the performance of doublet detection using novel engineered and multiplexed datasets. We apply three of the most widely-used methods for removing ambient RNA (decontX, soupX, CellBender), in conjunction with up to six doublet detection methods (scDblFinder, scds, bcds, cxds scrublet, DoubletDetection). We find that doublet detection tools perform best when done prior to ambient RNA correction, with the exception of CellBender. Performing ambient RNA correction first, particularly for decontX, leads to an increased proportion of doublet droplets retained in the dataset compared with calling doublets on uncorrected data. We show that both decontX and soupX partially mask doublet signal by removing proportionally more ambient RNA from doublets that remain undetected after ambient RNA correction. Our results show that the performance of doublet detection is significantly impacted by the use of ambient RNA correction tools. We suggest a new workflow that implements doublet detection prior to ambient RNA correction unless using CellBender.
+
+## Authors
+
+Michelle Meier [1,2], George Howitt [1,2], Calandra V Grima [1,2], Gunjan Dixit [1,2], Hamish King [3], Liam Gubbels [4], Eric Levi [5,6], Karen Davies [5], Shivanthan Shanthikumar [7,8,9], Melanie R. Neeland [7,8], Jovana Maksimovic [1,2]+, Alicia Oshlack [1,2,10]*+
+
+[1] Peter MacCallum Cancer Centre, Melbourne, Victoria 3000, Australia
+
+[2] Sir Peter MacCallum Department of Oncology, The University of Melbourne, Victoria 3010, Australia
+
+[3] Walter and Eliza Hall Institute, Parkville, VIC, Australia
+
+[4] Infection, Immunity and Global Health, Murdoch Children's Research Institute, Parkville, Australia
+
+[5] Department of Otolaryngology, Royal Children's Hospital, Parkville, Australia
+
+[6] Clinical Sciences, Murdoch Children's Research Institute, Parkville, Australia
+
+[7] Respiratory Diseases, Murdoch Children’s Research Institute, Parkville, VIC, Australia
+
+[8] Respiratory and Sleep Medicine, Royal Children’s Hospital, Parkville, VIC, Australia
+
+[9] Department of Paediatrics, University of Melbourne, Parkville, VIC, Australia
+
+[10] School of Mathematics and Statistics, The University of Melbourne, Victoria 3010, Australia
+
++ co-last
+* corresponding author (alicia.oshlack@petermac.org)
+
+
+# **Overview** 
+
+This overview is structured into sections as they appear in the manuscript. Each section contains links to the markdowns that were used for data processing, analysis and generating the figures. 
+
+## FIGURE 1: PERFORMING AMBIENT RNA CORRECTION ALTERS DOUBLET DETECTION OUTCOMES
+
+[Generate Figure 1](figure_01.html)
+
+[Generate Supp Figure 1](supp_figure_01.html)
+
+### Processing + Doublet calling for all presented datasets{.tabset}
+
+#### 10x Flex Tonsil dataset
+
+- [Tonsils 10x Flex - scDblFinder on uncorrected data](Tonsils_10xFlex_whole_dataset_uncorrected_scDblFinder.html)
+
+- [Tonsils 10x Flex - scDblFinder on decontX corrected data](Tonsils_10xFlex_whole_dataset_decontX_scDblFinder.html)
+
+#### 10x Flex PBMC dataset
+
+- [PBMC 10x Flex - scDblFinder on uncorrected data](PBMC_10xFlex_whole_dataset_uncorrected_scDblFinder.html)
+
+- [PBMC 10x Flex - scDblFinder on decontX corrected data](PBMC_10xFlex_whole_dataset_decontX_scDblFinder.html)
+
+#### 10x Flex Ovarian cancer dataset
+
+- [Ovarian Cancer 10x Flex - scDblFinder on uncorrected data](OvarianCancer_10xFlex_whole_dataset_uncorrected_scDblFinder.html)
+
+- [Ovarian Cancer 10x Flex - scDblFinder on decontX corrected data](OvarianCancer_10xFlex_whole_dataset_decontX_scDblFinder.html)
+
+#### Non-Flex Tonsil 3' v2
+
+- [Tonsil 3' v2 - scDblFinder on uncorrected data](Tonsils_10x3pGEX_BCP002_uncorrected_scDblFinder.html)
+
+- [Tonsil 3' v2 - scDblFinder on decontX corrected data](Tonsils_10x3pGEX_BCP002_decontX_scDblFinder.html)
+
+#### Non-Flex Tonsil 5' v2
+
+- [Tonsil 5' v1 - scDblFinder on uncorrected data](Tonsils_10x5pGEX_BCP003_uncorrected_scDblFinder.html)
+
+- [Tonsil 5' v1 - scDblFinder on decontX corrected data](Tonsils_10x5pGEX_BCP003_decontX_scDblFinder.html)
+
+
+
+## FIGURE 03: DOUBLET DETECTION PERFORMANCE IS REDUCED AFTER AMBIENT RNA CORRECTION IN ENGINEERED DATASETS
+
+[Generate Figure 3](figure_03.html)
+
+[Generate Supp Figure 2](supp_figure_02.html)
+
+### Make engineered datasets
+
+1. [Generate engineered datasets](Tonsils_10xFlex_make_engineered_datasets.html)
+
+2. [Generate empty droplet object](Tonsils_10xFlex_make_engineered_emptyObject.html) - this is required for soupX and decontX with background
+
+3. [Generate cellranger 'raw' h5 file for cellbender](Tonsils_10xFlex_make_engineered_CellbenderInput.html) - make engineered 'raw' cellranger h5 files which are a cellbender input requirement. 
+
+4. Run ambient RNA correction tools
+
+    4.1. [Apply soupX to engineered datasets](Tonsils_10xFlex_clean_engineered_soupX.html)  
+  
+    4.2. [Apply decontX to engineered datasets](Tonsils_10xFlex_clean_engineered_decontX.html)  
+  
+    4.3. [Apply CellBender to engineered datasets](Tonsils_10xFlex_clean_engineered_CellBender.html)  
+  
+  
+5. [Post ambient correction QC filter](Tonsils_10xFlex_QC_engineered_datasets.html) - perform lenient QC before doublet detection
+
+6. Doublet Detection - bash scripts for doublet detection can be found in `code/Tonsil_10xFlex/Engineered`
+
+7. [Evaluation of doublet detection](Tonsils_10xFlex_evaluate_engineered_datasets.html) 
+
+
+
+## FIGURE 4: ENGINEERED DOUBLETS REVEAL KEY FEATURES OF UNDETECTED DOUBLETS AFTER AMBIENT RNA CORRECTION
+
+This uses the engineered datasets generated above. 
+
+[Generate Figure 4](figure_04.html)
+
+[Generate Supp Figure 3](supp_figure_03.html)
+
+
+## FIGURE 5: DOUBLET DETECTION PERFORMS BEST ON UNCORRECTED OR CELLBENDER CORRECTED DATA
+
+[Generate Figure 5](figure_05.html)
+
+[Generate Supp Figure 4](supp_figure_04.html)
+
+### Processing and Analysis{.tabset}
+
+#### Lung Cancer dataset
+
+1. [Prepare data for analysis](LungCancer_10x_CMO_prepare_for_analysis.html)
+
+2. [Get CellBender inputs](LungCancer_10x_CMO_prepare_for_CellBender.html)
+
+3. Run ambient RNA correction tools
+
+    3.1. [Apply soupX](LungCancer_10x_CMO_clean_soupX.html)  
+  
+    3.2. [Apply decontX](LungCancer_10x_CMO_clean_decontX.html)  
+  
+    3.3. [Apply CellBender](LungCancer_10x_CMO_clean_CellBender.html)  
+    
+4. [Post ambient correction QC filter](LungCancer_10x_CMO_QC_filtering.html) - perform lenient QC before doublet detection
+
+5. Doublet Detection - see bash script `code/LungCancer_10x/LungCancer_10x_CMO_runDoubletTools.sh`
+
+6. [Evaluation of doublet detection](LungCancer_10x_CMO_evaluate_doublet_calling.html) 
+
+#### BAL dataset
+
+1. [Prepare data for analysis](BAL_inflammation_10x_HTO_prepare_for_analysis.html)
+
+2. [Get CellBender inputs](BAL_inflammation_10x_HTO_prepare_for_CellBender.html)
+
+3. Run ambient RNA correction tools
+
+    3.1. [Apply soupX](BAL_inflammation_10x_HTO_clean_soupX.html)  
+  
+    3.2. [Apply decontX](BAL_inflammation_10x_HTO_clean_decontX.html)  
+  
+    3.3. [Apply CellBender](BAL_inflammation_10x_HTO_clean_CellBender.html)  
+    
+4. [Post ambient correction QC filter](BAL_inflammation_10x_HTO_QC_filtering.html) - perform lenient QC before doublet detection
+
+5. Doublet Detection - see bash script `code/BAL_inflammation_10x/BAL_inflammation_10x_runDoubletTools.sh`
+
+6. [Evaluation of doublet detection](BAL_inflammation_10x_HTO_evaluate_doublet_calling.html) 
+
+
+#### Brain Cortex dataset
+
+1. [Prepare data for analysis](BrainCortex_nuclei_10x_prepare_for_analysis.html) - this includes `deMULTIplex2` 
+
+2. [Get CellBender inputs](BrainCortex_nuclei_10x_prepare_for_CellBender.html)
+
+3. Run ambient RNA correction tools
+
+    3.1. [Apply soupX](BrainCortex_nuclei_10x_clean_soupX.html)  
+  
+    3.2. [Apply decontX](BrainCortex_nuclei_10x_clean_decontX.html)  
+  
+    3.3. [Apply CellBender](BrainCortex_nuclei_10x_clean_CellBender.html)  
+    
+4. [Post ambient correction QC filter](BrainCortex_nuclei_10x_QC_filtering.html) - perform lenient QC before doublet detection
+
+5. Doublet Detection - see bash script `code/BrainCortex_nuclei_10x/BrainCortex_nuclei_10x_runDoubletTools.sh`
+
+6. [Evaluation of doublet detection](BrainCortex_nuclei_10x_evaluate_doublet_calling.html) 
+

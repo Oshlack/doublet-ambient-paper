@@ -1,0 +1,137 @@
+---
+title: "Tonsil 10x Flex: Clean engineered datasets with soupX"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown will apply soupX to all of the engineered datasets (generated [here](Tonsils_10xFlex_make_engineered_datasets.html)) using the appropriate background (generated [here](Tonsils_10xFlex_make_engineered_emptyObject.html)). 
+
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(SoupX)
+  library(qs2)
+  library(DropletUtils)
+})
+```
+
+
+## Load data
+
+```{r}
+background <- read10xCounts(here("output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_emptyObject"), row.names = "symbol", col.names = T)
+
+files <- list.files(path = here("output/data/Tonsils_10xFlex/Engineered/"), pattern = "Tonsils_10xFlex*.*s$", full.names = T)
+
+engineered_in <- sapply(files, function(P) read10xCounts(P, row.names = "symbol", col.names = T))
+names(engineered_in) <- basename(files)
+  
+```
+
+
+# Run soupX
+
+## Write function
+
+```{r}
+run_soupx <- function(cells, empties, name){
+  #ensure matching gene universe
+  gene_universe <- intersect(rownames(cells), rownames(empties))
+  cells <- cells[gene_universe, ]
+  empties <- empties[gene_universe,]
+  
+  
+  #clustering information is needed. Run basic workflow.
+  cells <- logNormCounts(cells) %>%
+  runPCA() %>%
+  runUMAP()
+  
+  #run clustering (with seurat because its easier)
+  seu <- as.Seurat(cells, counts = "counts", data = "logcounts") #convert to seurat
+  # run clustering for multiple solutions
+  seu <- FindNeighbors(seu, reduction = "PCA", dims = 1:30, verbose = F) %>%
+    FindClusters(resolution = 0.8, verbose = F)
+  
+  cells$clustering_soupx <- seu$originalexp_snn_res.0.8
+  
+  rm(seu); gc()
+  
+  #add mitochondrial 
+  is.mito <- grepl(pattern = "^MT", rownames(cells))
+  cells <- addPerCellQCMetrics(cells, subsets = list(mito = is.mito))
+  #clean
+  new_meta <- cells@colData %>% as.data.frame() %>%
+    dplyr::rename(., ncount_raw =sum ,  nfeatures_raw =detected, subsets_mito_percent_raw=subsets_mito_percent) %>%
+    select(., -c("total", "subsets_mito_detected", "subsets_mito_sum"))
+  cells@colData <- new_meta %>% DataFrame()
+  
+  
+  #start soupX
+  soupchannel <- SoupChannel(tod = counts(empties), toc = counts(cells)) #prepare soupchannel
+  soupchannel <- setClusters(soupchannel, setNames(cells$clustering_soupx, colnames(cells)))
+  soupchannel <- setDR(soupchannel, reducedDim(cells, type = "UMAP", withDimnames=TRUE))
+  
+  print(paste("Showing results for", name))
+  soupchannel <- autoEstCont(soupchannel) #using automated contamination method
+  out <- adjustCounts(soupchannel) #remove background
+  
+  #make sce
+  sce_soupx <- SingleCellExperiment(list(counts=out), colData = cells@colData)
+  
+  #add mitochondrial and ribo genes content
+  is.mito <- grepl(pattern = "^MT", rownames(sce_soupx))
+  sce_soupx <- addPerCellQCMetrics(sce_soupx, subsets = list(mito = is.mito))
+  #clean
+  new_meta <- sce_soupx@colData %>% as.data.frame() %>%
+    dplyr::rename(., ncount =sum ,  nfeatures =detected) %>%
+    select(., -c("total", "subsets_mito_detected", "subsets_mito_sum"))
+  sce_soupx@colData <- new_meta %>% DataFrame()
+
+  #add rounded nfeatures
+  sce_soupx$nfeatures_rounded <- colSums(assay(sce_soupx, "counts") > 0.5)
+  #add info on how many ngenes were removed (fraction)
+  sce_soupx$nfeature_frac_removed <- (sce_soupx$nfeatures_raw  - sce_soupx$nfeatures_rounded)/sce_soupx$nfeatures_raw
+  sce_soupx$ncount_frac_removed <- (sce_soupx$ncount_raw  - sce_soupx$ncount)/sce_soupx$ncount_raw
+  
+  #export file
+  out_file <- sprintf("%s/%s_soupX", 
+                      here("output/data/Tonsils_10xFlex/Engineered"),
+                      name)
+  DropletUtils::write10xCounts(path = out_file,
+                             x = counts(sce_soupx),
+                             version = "3", 
+                             overwrite = TRUE)
+  write_tsv(x = sce_soupx@colData %>% as.data.frame(),
+          file = sprintf("%s/metadata.tsv", out_file))
+  
+  return(sce_soupx)
+
+}
+```
+
+## Run for all engineered datasets
+
+This will give us the soupX corrected outputs 
+
+```{r, warning=FALSE, fig.align='center'}
+
+corrected <- sapply(1:length(engineered_in), function(IN){
+  run_soupx(cells = engineered_in[[IN]], empties = background, name=names(engineered_in)[IN])
+})
+
+```
+
+

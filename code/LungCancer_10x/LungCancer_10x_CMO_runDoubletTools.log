@@ -1,0 +1,1622 @@
+##########################################################################
+Start Dataset LungCancer_10x_cellranger_allmultiplets_decontX_BG
+##########################################################################
+mkdir: /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG/doublet_calls: File exists
+mkdir: /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG/doublet_calls: File exists
+##########################################################################
+Start doublet calling
+Inputs detected:
+  OUTPUT = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG/doublet_calls
+  COUNTS = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG
+##########################################################################
+##########################################################################
+Start cxds + bcds + scds
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG
+Start doublet calling: cxds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells   8858889  473.2   16104087  860.1         NA  11809860  630.8
+Vcells 230090627 1755.5  407315433 3107.6      49152 407301100 3107.5
+Start doublet calling: bcds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+Warning message:
+In asMethod(object) :
+  sparse->dense coercion: allocating vector of size 2.7 GiB
+            used   (Mb) gc trigger    (Mb) limit (Mb)   max used    (Mb)
+Ncells   8916035  476.2   16104087   860.1         NA   11809860   630.8
+Vcells 230367578 1757.6 1312077306 10010.4      49152 1638810172 12503.2
+Start doublet calling: hybrid
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+            used   (Mb) gc trigger   (Mb) limit (Mb)   max used    (Mb)
+Ncells   8916651  476.3   16104087  860.1         NA   11809860   630.8
+Vcells 230411858 1758.0 1049661845 8008.3      49152 1638810172 12503.2
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG/doublet_calls/LungCancer_10x_cellranger_allmultiplets_decontX_BG_doublet_calling_scds_bcds_cxds.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [3] sp_2.2-0                    here_1.0.1                 
+ [5] lubridate_1.9.4             forcats_1.0.0              
+ [7] stringr_1.5.1               dplyr_1.1.4                
+ [9] purrr_1.2.0                 readr_2.1.5                
+[11] tidyr_1.3.1                 tibble_3.3.0               
+[13] ggplot2_4.0.1               tidyverse_2.0.0            
+[15] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[17] Biobase_2.68.0              GenomicRanges_1.60.0       
+[19] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[21] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[23] generics_0.1.4              MatrixGenerics_1.20.0      
+[25] matrixStats_1.5.0           scds_1.24.0                
+[27] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22        splines_4.5.0           later_1.4.2            
+  [4] R.oo_1.27.1             polyclip_1.10-7         pROC_1.18.5            
+  [7] fastDummies_1.7.5       lifecycle_1.0.4         rprojroot_2.0.4        
+ [10] globals_0.18.0          processx_3.8.6          lattice_0.22-6         
+ [13] vroom_1.6.5             MASS_7.3-65             magrittr_2.0.4         
+ [16] plotly_4.10.4           rmarkdown_2.29          yaml_2.3.10            
+ [19] httpuv_1.6.16           sctransform_0.4.2       spam_2.11-1            
+ [22] spatstat.sparse_3.1-0   reticulate_1.42.0       cowplot_1.1.3          
+ [25] pbapply_1.7-2           RColorBrewer_1.1-3      abind_1.4-8            
+ [28] Rtsne_0.17              R.utils_2.13.0          git2r_0.36.2           
+ [31] GenomeInfoDbData_1.2.14 ggrepel_0.9.6           irlba_2.3.5.1          
+ [34] listenv_0.9.1           spatstat.utils_3.1-4    goftest_1.2-3          
+ [37] RSpectra_0.16-2         spatstat.random_3.4-1   fitdistrplus_1.2-2     
+ [40] parallelly_1.45.0       codetools_0.2-20        DelayedArray_0.34.1    
+ [43] tidyselect_1.2.1        UCSC.utils_1.4.0        farver_2.1.2           
+ [46] spatstat.explore_3.4-3  jsonlite_2.0.0          progressr_0.15.1       
+ [49] ggridges_0.5.6          survival_3.8-3          tools_4.5.0            
+ [52] ica_1.0-3               Rcpp_1.0.14             glue_1.8.0             
+ [55] gridExtra_2.3           SparseArray_1.8.0       xfun_0.52              
+ [58] withr_3.0.2             BiocManager_1.30.26     fastmap_1.2.0          
+ [61] callr_3.7.6             digest_0.6.37           timechange_0.3.0       
+ [64] R6_2.6.1                mime_0.13               scattermore_1.2        
+ [67] tensor_1.5              spatstat.data_3.1-6     R.methodsS3_1.8.2      
+ [70] renv_1.1.4              data.table_1.17.4       httr_1.4.7             
+ [73] htmlwidgets_1.6.4       S4Arrays_1.8.1          whisker_0.4.1          
+ [76] uwot_0.2.3              pkgconfig_2.0.3         gtable_0.3.6           
+ [79] lmtest_0.9-40           S7_0.2.1                XVector_0.48.0         
+ [82] htmltools_0.5.8.1       dotCall64_1.2           scales_1.4.0           
+ [85] png_0.1-8               spatstat.univar_3.1-3   knitr_1.50             
+ [88] rstudioapi_0.17.1       tzdb_0.5.0              reshape2_1.4.4         
+ [91] nlme_3.1-168            zoo_1.8-14              KernSmooth_2.23-26     
+ [94] parallel_4.5.0          miniUI_0.1.2            pillar_1.10.2          
+ [97] grid_4.5.0              vctrs_0.6.5             RANN_2.6.2             
+[100] promises_1.3.3          xtable_1.8-4            cluster_2.1.8.1        
+[103] evaluate_1.0.3          cli_3.6.5               compiler_4.5.0         
+[106] rlang_1.1.6             crayon_1.5.3            future.apply_1.20.0    
+[109] ps_1.9.1                getPass_0.2-4           plyr_1.8.9             
+[112] fs_1.6.6                stringi_1.8.7           viridisLite_0.4.2      
+[115] deldir_2.0-4            lazyeval_0.2.2          spatstat.geom_3.4-1    
+[118] Matrix_1.7-3            RcppHNSW_0.6.0          hms_1.1.3              
+[121] patchwork_1.3.2         bit64_4.6.0-1           future_1.58.0          
+[124] shiny_1.10.0            ROCR_1.0-11             igraph_2.1.4           
+[127] bit_4.6.0               xgboost_1.7.11.1       
+##########################################################################
+Start scDblFinder
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG
+Run PCA and UMAP
+Run scDblFinder
+Clustering cells...
+16 clusters
+Creating ~14416 artificial doublets...
+Dimensional reduction
+Evaluating kNN...
+Training model...
+iter=0, 811 cells excluded from training.
+iter=1, 830 cells excluded from training.
+iter=2, 905 cells excluded from training.
+Threshold found:0.379
+1175 (6.5%) doublets called
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  12002606  641.1   20925902 1117.6         NA  20925902 1117.6
+Vcells 378176799 2885.3  748936486 5714.0      49152 747841955 5705.6
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG/doublet_calls/LungCancer_10x_cellranger_allmultiplets_decontX_BG_doublet_calling_scDblFinder.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] scater_1.36.0               scuttle_1.18.0             
+ [3] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [5] sp_2.2-0                    here_1.0.1                 
+ [7] lubridate_1.9.4             forcats_1.0.0              
+ [9] stringr_1.5.1               dplyr_1.1.4                
+[11] purrr_1.2.0                 readr_2.1.5                
+[13] tidyr_1.3.1                 tibble_3.3.0               
+[15] ggplot2_4.0.1               tidyverse_2.0.0            
+[17] scDblFinder_1.22.0          SingleCellExperiment_1.30.1
+[19] SummarizedExperiment_1.38.1 Biobase_2.68.0             
+[21] GenomicRanges_1.60.0        GenomeInfoDb_1.44.0        
+[23] IRanges_2.42.0              S4Vectors_0.46.0           
+[25] BiocGenerics_0.54.0         generics_0.1.4             
+[27] MatrixGenerics_1.20.0       matrixStats_1.5.0          
+[29] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22         splines_4.5.0            later_1.4.2             
+  [4] BiocIO_1.18.0            bitops_1.0-9             R.oo_1.27.1             
+  [7] polyclip_1.10-7          XML_3.99-0.18            fastDummies_1.7.5       
+ [10] lifecycle_1.0.4          edgeR_4.6.2              rprojroot_2.0.4         
+ [13] vroom_1.6.5              globals_0.18.0           processx_3.8.6          
+ [16] lattice_0.22-6           MASS_7.3-65              magrittr_2.0.4          
+ [19] plotly_4.10.4            limma_3.64.1             rmarkdown_2.29          
+ [22] yaml_2.3.10              metapod_1.16.0           httpuv_1.6.16           
+ [25] sctransform_0.4.2        spam_2.11-1              spatstat.sparse_3.1-0   
+ [28] reticulate_1.42.0        pbapply_1.7-2            cowplot_1.1.3           
+ [31] RColorBrewer_1.1-3       abind_1.4-8              Rtsne_0.17              
+ [34] R.utils_2.13.0           RCurl_1.98-1.17          git2r_0.36.2            
+ [37] GenomeInfoDbData_1.2.14  ggrepel_0.9.6            irlba_2.3.5.1           
+ [40] spatstat.utils_3.1-4     listenv_0.9.1            goftest_1.2-3           
+ [43] RSpectra_0.16-2          spatstat.random_3.4-1    dqrng_0.4.1             
+ [46] fitdistrplus_1.2-2       parallelly_1.45.0        codetools_0.2-20        
+ [49] DelayedArray_0.34.1      tidyselect_1.2.1         UCSC.utils_1.4.0        
+ [52] farver_2.1.2             ScaledMatrix_1.16.0      viridis_0.6.5           
+ [55] spatstat.explore_3.4-3   GenomicAlignments_1.44.0 jsonlite_2.0.0          
+ [58] BiocNeighbors_2.2.0      progressr_0.15.1         ggridges_0.5.6          
+ [61] survival_3.8-3           tools_4.5.0              ica_1.0-3               
+ [64] Rcpp_1.0.14              glue_1.8.0               gridExtra_2.3           
+ [67] SparseArray_1.8.0        xfun_0.52                withr_3.0.2             
+ [70] BiocManager_1.30.26      fastmap_1.2.0            bluster_1.18.0          
+ [73] callr_3.7.6              digest_0.6.37            rsvd_1.0.5              
+ [76] mime_0.13                timechange_0.3.0         R6_2.6.1                
+ [79] scattermore_1.2          tensor_1.5               spatstat.data_3.1-6     
+ [82] R.methodsS3_1.8.2        renv_1.1.4               data.table_1.17.4       
+ [85] rtracklayer_1.68.0       htmlwidgets_1.6.4        httr_1.4.7              
+ [88] S4Arrays_1.8.1           whisker_0.4.1            uwot_0.2.3              
+ [91] pkgconfig_2.0.3          gtable_0.3.6             lmtest_0.9-40           
+ [94] S7_0.2.1                 XVector_0.48.0           htmltools_0.5.8.1       
+ [97] dotCall64_1.2            scales_1.4.0             png_0.1-8               
+[100] spatstat.univar_3.1-3    scran_1.36.0             knitr_1.50              
+[103] rstudioapi_0.17.1        reshape2_1.4.4           tzdb_0.5.0              
+[106] rjson_0.2.23             nlme_3.1-168             curl_7.0.0              
+[109] zoo_1.8-14               KernSmooth_2.23-26       parallel_4.5.0          
+[112] miniUI_0.1.2             vipor_0.4.7              restfulr_0.0.15         
+[115] pillar_1.10.2            grid_4.5.0               vctrs_0.6.5             
+[118] RANN_2.6.2               promises_1.3.3           BiocSingular_1.24.0     
+[121] beachmat_2.24.0          xtable_1.8-4             cluster_2.1.8.1         
+[124] beeswarm_0.4.0           evaluate_1.0.3           cli_3.6.5               
+[127] locfit_1.5-9.12          compiler_4.5.0           Rsamtools_2.24.0        
+[130] rlang_1.1.6              crayon_1.5.3             future.apply_1.20.0     
+[133] ps_1.9.1                 plyr_1.8.9               getPass_0.2-4           
+[136] fs_1.6.6                 ggbeeswarm_0.7.2         stringi_1.8.7           
+[139] deldir_2.0-4             viridisLite_0.4.2        BiocParallel_1.42.1     
+[142] Biostrings_2.76.0        lazyeval_0.2.2           spatstat.geom_3.4-1     
+[145] Matrix_1.7-3             RcppHNSW_0.6.0           patchwork_1.3.2         
+[148] hms_1.1.3                bit64_4.6.0-1            future_1.58.0           
+[151] statmod_1.5.0            shiny_1.10.0             ROCR_1.0-11             
+[154] igraph_2.1.4             bit_4.6.0                xgboost_1.7.11.1        
+
+ArgumentError: activate does not accept more than one argument:
+['/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG', '/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG/doublet_calls']
+
+
+##########################################################################
+Start scrublet
+##########################################################################
+Counts matrix shape: 18019 rows, 34352 columns
+Preprocessing...
+Simulating doublets...
+Embedding transcriptomes using PCA...
+Calculating doublet scores...
+Automatically set threshold at doublet score = 0.71
+Detected doublet rate = 0.0%
+Estimated detectable doublet fraction = 12.2%
+Overall doublet rate:
+	Expected   = 10.0%
+	Estimated  = 0.0%
+Elapsed time: 10.7 seconds
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG/doublet_calls/LungCancer_10x_cellranger_allmultiplets_decontX_BG_doublet_calling_scrublet.csv
+##########################################################################
+Start DoubletDetection
+##########################################################################
+/Users/meiermichelle/miniforge3/envs/DoubletDetection/lib/python3.14/site-packages/doubletdetection/doubletdetection.py:106: UserWarning: Leiden clustering is experimental and results have not been validated.
+  warnings.warn("Leiden clustering is experimental and results have not been validated.")
+Counts matrix shape: 18019 rows, 34352 columns
+Counts matrix shape after filtering: 18019 rows, 34343 columns
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:15<02:15, 15.05s/it] 20%|██        | 2/10 [00:18<01:04,  8.08s/it] 30%|███       | 3/10 [00:21<00:41,  5.86s/it] 40%|████      | 4/10 [00:24<00:28,  4.74s/it] 50%|█████     | 5/10 [00:28<00:21,  4.34s/it] 60%|██████    | 6/10 [00:31<00:15,  3.91s/it] 70%|███████   | 7/10 [00:34<00:10,  3.59s/it] 80%|████████  | 8/10 [00:37<00:06,  3.47s/it] 90%|█████████ | 9/10 [00:40<00:03,  3.40s/it]100%|██████████| 10/10 [00:43<00:00,  3.36s/it]100%|██████████| 10/10 [00:43<00:00,  4.38s/it]
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG/doublet_calls/LungCancer_10x_cellranger_allmultiplets_decontX_BG_doublet_calling_DoubletDetection.csv
+Print threshold and convergence plots
+##########################################################################
+Combine all doublet calling results
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG/doublet_calls
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+[1] NA
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX_BG/doublet_calls/LungCancer_10x_cellranger_allmultiplets_decontX_BG_doublet_calling_consensus.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+ [5] purrr_1.2.0     readr_2.1.5     tidyr_1.3.1     tibble_3.3.0   
+ [9] ggplot2_4.0.1   tidyverse_2.0.0 workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4      renv_1.1.4          stringi_1.8.7      
+ [4] hms_1.1.3           digest_0.6.37       magrittr_2.0.4     
+ [7] timechange_0.3.0    evaluate_1.0.3      grid_4.5.0         
+[10] RColorBrewer_1.1-3  fastmap_1.2.0       rprojroot_2.0.4    
+[13] processx_3.8.6      whisker_0.4.1       ps_1.9.1           
+[16] promises_1.3.3      BiocManager_1.30.26 httr_1.4.7         
+[19] scales_1.4.0        cli_3.6.5           crayon_1.5.3       
+[22] rlang_1.1.6         bit64_4.6.0-1       withr_3.0.2        
+[25] yaml_2.3.10         parallel_4.5.0      tools_4.5.0        
+[28] tzdb_0.5.0          httpuv_1.6.16       vctrs_0.6.5        
+[31] R6_2.6.1            lifecycle_1.0.4     git2r_0.36.2       
+[34] bit_4.6.0           fs_1.6.6            vroom_1.6.5        
+[37] pkgconfig_2.0.3     callr_3.7.6         pillar_1.10.2      
+[40] later_1.4.2         gtable_0.3.6        glue_1.8.0         
+[43] Rcpp_1.0.14         xfun_0.52           tidyselect_1.2.1   
+[46] rstudioapi_0.17.1   knitr_1.50          farver_2.1.2       
+[49] htmltools_0.5.8.1   rmarkdown_2.29      compiler_4.5.0     
+[52] S7_0.2.1            getPass_0.2-4      
+##########################################################################
+Doublet calling completed
+##########################################################################
+##########################################################################
+Start Dataset LungCancer_10x_cellranger_allmultiplets_decontX
+##########################################################################
+mkdir: /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX/doublet_calls: File exists
+##########################################################################
+Start doublet calling
+Inputs detected:
+  OUTPUT = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX/doublet_calls
+  COUNTS = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX
+##########################################################################
+##########################################################################
+Start cxds + bcds + scds
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX
+Start doublet calling: cxds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells   8858875  473.2   16104397  860.1         NA  11809788  630.8
+Vcells 230197439 1756.3  407315763 3107.6      49152 406893195 3104.4
+Start doublet calling: bcds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+Warning message:
+In asMethod(object) :
+  sparse->dense coercion: allocating vector of size 2.7 GiB
+            used   (Mb) gc trigger    (Mb) limit (Mb)   max used    (Mb)
+Ncells   8916021  476.2   16104397   860.1         NA   11809788   630.8
+Vcells 230478607 1758.5 1314250612 10027.0      49152 1641248190 12521.8
+Start doublet calling: hybrid
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+            used   (Mb) gc trigger   (Mb) limit (Mb)   max used    (Mb)
+Ncells   8916637  476.2   16104397  860.1         NA   11809788   630.8
+Vcells 230522975 1758.8 1051400490 8021.6      49152 1641248190 12521.8
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX/doublet_calls/LungCancer_10x_cellranger_allmultiplets_decontX_doublet_calling_scds_bcds_cxds.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [3] sp_2.2-0                    here_1.0.1                 
+ [5] lubridate_1.9.4             forcats_1.0.0              
+ [7] stringr_1.5.1               dplyr_1.1.4                
+ [9] purrr_1.2.0                 readr_2.1.5                
+[11] tidyr_1.3.1                 tibble_3.3.0               
+[13] ggplot2_4.0.1               tidyverse_2.0.0            
+[15] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[17] Biobase_2.68.0              GenomicRanges_1.60.0       
+[19] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[21] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[23] generics_0.1.4              MatrixGenerics_1.20.0      
+[25] matrixStats_1.5.0           scds_1.24.0                
+[27] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22        splines_4.5.0           later_1.4.2            
+  [4] R.oo_1.27.1             polyclip_1.10-7         pROC_1.18.5            
+  [7] fastDummies_1.7.5       lifecycle_1.0.4         rprojroot_2.0.4        
+ [10] globals_0.18.0          processx_3.8.6          lattice_0.22-6         
+ [13] vroom_1.6.5             MASS_7.3-65             magrittr_2.0.4         
+ [16] plotly_4.10.4           rmarkdown_2.29          yaml_2.3.10            
+ [19] httpuv_1.6.16           sctransform_0.4.2       spam_2.11-1            
+ [22] spatstat.sparse_3.1-0   reticulate_1.42.0       cowplot_1.1.3          
+ [25] pbapply_1.7-2           RColorBrewer_1.1-3      abind_1.4-8            
+ [28] Rtsne_0.17              R.utils_2.13.0          git2r_0.36.2           
+ [31] GenomeInfoDbData_1.2.14 ggrepel_0.9.6           irlba_2.3.5.1          
+ [34] listenv_0.9.1           spatstat.utils_3.1-4    goftest_1.2-3          
+ [37] RSpectra_0.16-2         spatstat.random_3.4-1   fitdistrplus_1.2-2     
+ [40] parallelly_1.45.0       codetools_0.2-20        DelayedArray_0.34.1    
+ [43] tidyselect_1.2.1        UCSC.utils_1.4.0        farver_2.1.2           
+ [46] spatstat.explore_3.4-3  jsonlite_2.0.0          progressr_0.15.1       
+ [49] ggridges_0.5.6          survival_3.8-3          tools_4.5.0            
+ [52] ica_1.0-3               Rcpp_1.0.14             glue_1.8.0             
+ [55] gridExtra_2.3           SparseArray_1.8.0       xfun_0.52              
+ [58] withr_3.0.2             BiocManager_1.30.26     fastmap_1.2.0          
+ [61] callr_3.7.6             digest_0.6.37           timechange_0.3.0       
+ [64] R6_2.6.1                mime_0.13               scattermore_1.2        
+ [67] tensor_1.5              spatstat.data_3.1-6     R.methodsS3_1.8.2      
+ [70] renv_1.1.4              data.table_1.17.4       httr_1.4.7             
+ [73] htmlwidgets_1.6.4       S4Arrays_1.8.1          whisker_0.4.1          
+ [76] uwot_0.2.3              pkgconfig_2.0.3         gtable_0.3.6           
+ [79] lmtest_0.9-40           S7_0.2.1                XVector_0.48.0         
+ [82] htmltools_0.5.8.1       dotCall64_1.2           scales_1.4.0           
+ [85] png_0.1-8               spatstat.univar_3.1-3   knitr_1.50             
+ [88] rstudioapi_0.17.1       tzdb_0.5.0              reshape2_1.4.4         
+ [91] nlme_3.1-168            zoo_1.8-14              KernSmooth_2.23-26     
+ [94] parallel_4.5.0          miniUI_0.1.2            pillar_1.10.2          
+ [97] grid_4.5.0              vctrs_0.6.5             RANN_2.6.2             
+[100] promises_1.3.3          xtable_1.8-4            cluster_2.1.8.1        
+[103] evaluate_1.0.3          cli_3.6.5               compiler_4.5.0         
+[106] rlang_1.1.6             crayon_1.5.3            future.apply_1.20.0    
+[109] ps_1.9.1                getPass_0.2-4           plyr_1.8.9             
+[112] fs_1.6.6                stringi_1.8.7           viridisLite_0.4.2      
+[115] deldir_2.0-4            lazyeval_0.2.2          spatstat.geom_3.4-1    
+[118] Matrix_1.7-3            RcppHNSW_0.6.0          hms_1.1.3              
+[121] patchwork_1.3.2         bit64_4.6.0-1           future_1.58.0          
+[124] shiny_1.10.0            ROCR_1.0-11             igraph_2.1.4           
+[127] bit_4.6.0               xgboost_1.7.11.1       
+##########################################################################
+Start scDblFinder
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX
+Run PCA and UMAP
+Run scDblFinder
+Clustering cells...
+17 clusters
+Creating ~14444 artificial doublets...
+Dimensional reduction
+Evaluating kNN...
+Training model...
+iter=0, 1418 cells excluded from training.
+iter=1, 1523 cells excluded from training.
+iter=2, 1584 cells excluded from training.
+Threshold found:0.436
+1756 (9.7%) doublets called
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  12002621  641.1   20925890 1117.6         NA  20925890 1117.6
+Vcells 378427912 2887.2  749499528 5718.3      49152 747183598 5700.6
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX/doublet_calls/LungCancer_10x_cellranger_allmultiplets_decontX_doublet_calling_scDblFinder.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] scater_1.36.0               scuttle_1.18.0             
+ [3] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [5] sp_2.2-0                    here_1.0.1                 
+ [7] lubridate_1.9.4             forcats_1.0.0              
+ [9] stringr_1.5.1               dplyr_1.1.4                
+[11] purrr_1.2.0                 readr_2.1.5                
+[13] tidyr_1.3.1                 tibble_3.3.0               
+[15] ggplot2_4.0.1               tidyverse_2.0.0            
+[17] scDblFinder_1.22.0          SingleCellExperiment_1.30.1
+[19] SummarizedExperiment_1.38.1 Biobase_2.68.0             
+[21] GenomicRanges_1.60.0        GenomeInfoDb_1.44.0        
+[23] IRanges_2.42.0              S4Vectors_0.46.0           
+[25] BiocGenerics_0.54.0         generics_0.1.4             
+[27] MatrixGenerics_1.20.0       matrixStats_1.5.0          
+[29] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22         splines_4.5.0            later_1.4.2             
+  [4] BiocIO_1.18.0            bitops_1.0-9             R.oo_1.27.1             
+  [7] polyclip_1.10-7          XML_3.99-0.18            fastDummies_1.7.5       
+ [10] lifecycle_1.0.4          edgeR_4.6.2              rprojroot_2.0.4         
+ [13] vroom_1.6.5              globals_0.18.0           processx_3.8.6          
+ [16] lattice_0.22-6           MASS_7.3-65              magrittr_2.0.4          
+ [19] plotly_4.10.4            limma_3.64.1             rmarkdown_2.29          
+ [22] yaml_2.3.10              metapod_1.16.0           httpuv_1.6.16           
+ [25] sctransform_0.4.2        spam_2.11-1              spatstat.sparse_3.1-0   
+ [28] reticulate_1.42.0        pbapply_1.7-2            cowplot_1.1.3           
+ [31] RColorBrewer_1.1-3       abind_1.4-8              Rtsne_0.17              
+ [34] R.utils_2.13.0           RCurl_1.98-1.17          git2r_0.36.2            
+ [37] GenomeInfoDbData_1.2.14  ggrepel_0.9.6            irlba_2.3.5.1           
+ [40] spatstat.utils_3.1-4     listenv_0.9.1            goftest_1.2-3           
+ [43] RSpectra_0.16-2          spatstat.random_3.4-1    dqrng_0.4.1             
+ [46] fitdistrplus_1.2-2       parallelly_1.45.0        codetools_0.2-20        
+ [49] DelayedArray_0.34.1      tidyselect_1.2.1         UCSC.utils_1.4.0        
+ [52] farver_2.1.2             ScaledMatrix_1.16.0      viridis_0.6.5           
+ [55] spatstat.explore_3.4-3   GenomicAlignments_1.44.0 jsonlite_2.0.0          
+ [58] BiocNeighbors_2.2.0      progressr_0.15.1         ggridges_0.5.6          
+ [61] survival_3.8-3           tools_4.5.0              ica_1.0-3               
+ [64] Rcpp_1.0.14              glue_1.8.0               gridExtra_2.3           
+ [67] SparseArray_1.8.0        xfun_0.52                withr_3.0.2             
+ [70] BiocManager_1.30.26      fastmap_1.2.0            bluster_1.18.0          
+ [73] callr_3.7.6              digest_0.6.37            rsvd_1.0.5              
+ [76] mime_0.13                timechange_0.3.0         R6_2.6.1                
+ [79] scattermore_1.2          tensor_1.5               spatstat.data_3.1-6     
+ [82] R.methodsS3_1.8.2        renv_1.1.4               data.table_1.17.4       
+ [85] rtracklayer_1.68.0       htmlwidgets_1.6.4        httr_1.4.7              
+ [88] S4Arrays_1.8.1           whisker_0.4.1            uwot_0.2.3              
+ [91] pkgconfig_2.0.3          gtable_0.3.6             lmtest_0.9-40           
+ [94] S7_0.2.1                 XVector_0.48.0           htmltools_0.5.8.1       
+ [97] dotCall64_1.2            scales_1.4.0             png_0.1-8               
+[100] spatstat.univar_3.1-3    scran_1.36.0             knitr_1.50              
+[103] rstudioapi_0.17.1        reshape2_1.4.4           tzdb_0.5.0              
+[106] rjson_0.2.23             nlme_3.1-168             curl_7.0.0              
+[109] zoo_1.8-14               KernSmooth_2.23-26       parallel_4.5.0          
+[112] miniUI_0.1.2             vipor_0.4.7              restfulr_0.0.15         
+[115] pillar_1.10.2            grid_4.5.0               vctrs_0.6.5             
+[118] RANN_2.6.2               promises_1.3.3           BiocSingular_1.24.0     
+[121] beachmat_2.24.0          xtable_1.8-4             cluster_2.1.8.1         
+[124] beeswarm_0.4.0           evaluate_1.0.3           cli_3.6.5               
+[127] locfit_1.5-9.12          compiler_4.5.0           Rsamtools_2.24.0        
+[130] rlang_1.1.6              crayon_1.5.3             future.apply_1.20.0     
+[133] ps_1.9.1                 plyr_1.8.9               getPass_0.2-4           
+[136] fs_1.6.6                 ggbeeswarm_0.7.2         stringi_1.8.7           
+[139] deldir_2.0-4             viridisLite_0.4.2        BiocParallel_1.42.1     
+[142] Biostrings_2.76.0        lazyeval_0.2.2           spatstat.geom_3.4-1     
+[145] Matrix_1.7-3             RcppHNSW_0.6.0           patchwork_1.3.2         
+[148] hms_1.1.3                bit64_4.6.0-1            future_1.58.0           
+[151] statmod_1.5.0            shiny_1.10.0             ROCR_1.0-11             
+[154] igraph_2.1.4             bit_4.6.0                xgboost_1.7.11.1        
+
+ArgumentError: activate does not accept more than one argument:
+['/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX', '/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX/doublet_calls']
+
+
+##########################################################################
+Start scrublet
+##########################################################################
+Counts matrix shape: 18054 rows, 34352 columns
+Preprocessing...
+Simulating doublets...
+Embedding transcriptomes using PCA...
+Calculating doublet scores...
+Automatically set threshold at doublet score = 0.72
+Detected doublet rate = 0.0%
+Estimated detectable doublet fraction = 7.9%
+Overall doublet rate:
+	Expected   = 10.0%
+	Estimated  = 0.1%
+Elapsed time: 11.0 seconds
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX/doublet_calls/LungCancer_10x_cellranger_allmultiplets_decontX_doublet_calling_scrublet.csv
+##########################################################################
+Start DoubletDetection
+##########################################################################
+/Users/meiermichelle/miniforge3/envs/DoubletDetection/lib/python3.14/site-packages/doubletdetection/doubletdetection.py:106: UserWarning: Leiden clustering is experimental and results have not been validated.
+  warnings.warn("Leiden clustering is experimental and results have not been validated.")
+Counts matrix shape: 18054 rows, 34352 columns
+Counts matrix shape after filtering: 18054 rows, 34346 columns
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:15<02:19, 15.50s/it] 20%|██        | 2/10 [00:18<01:06,  8.27s/it] 30%|███       | 3/10 [00:22<00:42,  6.05s/it] 40%|████      | 4/10 [00:25<00:29,  4.91s/it] 50%|█████     | 5/10 [00:28<00:21,  4.39s/it] 60%|██████    | 6/10 [00:32<00:16,  4.12s/it] 70%|███████   | 7/10 [00:35<00:11,  3.75s/it] 80%|████████  | 8/10 [00:38<00:07,  3.58s/it] 90%|█████████ | 9/10 [00:42<00:03,  3.54s/it]100%|██████████| 10/10 [00:45<00:00,  3.41s/it]100%|██████████| 10/10 [00:45<00:00,  4.51s/it]
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX/doublet_calls/LungCancer_10x_cellranger_allmultiplets_decontX_doublet_calling_DoubletDetection.csv
+Print threshold and convergence plots
+##########################################################################
+Combine all doublet calling results
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX/doublet_calls
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+[1] NA
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_decontX/doublet_calls/LungCancer_10x_cellranger_allmultiplets_decontX_doublet_calling_consensus.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+ [5] purrr_1.2.0     readr_2.1.5     tidyr_1.3.1     tibble_3.3.0   
+ [9] ggplot2_4.0.1   tidyverse_2.0.0 workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4      renv_1.1.4          stringi_1.8.7      
+ [4] hms_1.1.3           digest_0.6.37       magrittr_2.0.4     
+ [7] timechange_0.3.0    evaluate_1.0.3      grid_4.5.0         
+[10] RColorBrewer_1.1-3  fastmap_1.2.0       rprojroot_2.0.4    
+[13] processx_3.8.6      whisker_0.4.1       ps_1.9.1           
+[16] promises_1.3.3      BiocManager_1.30.26 httr_1.4.7         
+[19] scales_1.4.0        cli_3.6.5           crayon_1.5.3       
+[22] rlang_1.1.6         bit64_4.6.0-1       withr_3.0.2        
+[25] yaml_2.3.10         parallel_4.5.0      tools_4.5.0        
+[28] tzdb_0.5.0          httpuv_1.6.16       vctrs_0.6.5        
+[31] R6_2.6.1            lifecycle_1.0.4     git2r_0.36.2       
+[34] bit_4.6.0           fs_1.6.6            vroom_1.6.5        
+[37] pkgconfig_2.0.3     callr_3.7.6         pillar_1.10.2      
+[40] later_1.4.2         gtable_0.3.6        glue_1.8.0         
+[43] Rcpp_1.0.14         xfun_0.52           tidyselect_1.2.1   
+[46] rstudioapi_0.17.1   knitr_1.50          farver_2.1.2       
+[49] htmltools_0.5.8.1   rmarkdown_2.29      compiler_4.5.0     
+[52] S7_0.2.1            getPass_0.2-4      
+##########################################################################
+Doublet calling completed
+##########################################################################
+##########################################################################
+Start Dataset LungCancer_10x_cellranger_allmultiplets_CellBender
+##########################################################################
+mkdir: /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender/doublet_calls: File exists
+##########################################################################
+Start doublet calling
+Inputs detected:
+  OUTPUT = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender/doublet_calls
+  COUNTS = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender
+##########################################################################
+##########################################################################
+Start cxds + bcds + scds
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender
+Start doublet calling: cxds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells   8861127  473.3   16104401  860.1         NA  11809810  630.8
+Vcells 219763883 1676.7  388471374 2963.9      49152 388458209 2963.8
+Start doublet calling: bcds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+Warning message:
+In asMethod(object) :
+  sparse->dense coercion: allocating vector of size 2.7 GiB
+            used   (Mb) gc trigger   (Mb) limit (Mb)   max used    (Mb)
+Ncells   8918273  476.3   16104401  860.1         NA   11809810   630.8
+Vcells 220035854 1678.8 1279489447 9761.8      49152 1596230020 12178.3
+Start doublet calling: hybrid
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+            used   (Mb) gc trigger   (Mb) limit (Mb)   max used    (Mb)
+Ncells   8918889  476.4   16104401  860.1         NA   11809810   630.8
+Vcells 220079747 1679.1 1023591558 7809.4      49152 1596230020 12178.3
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender/doublet_calls/LungCancer_10x_cellranger_allmultiplets_CellBender_doublet_calling_scds_bcds_cxds.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [3] sp_2.2-0                    here_1.0.1                 
+ [5] lubridate_1.9.4             forcats_1.0.0              
+ [7] stringr_1.5.1               dplyr_1.1.4                
+ [9] purrr_1.2.0                 readr_2.1.5                
+[11] tidyr_1.3.1                 tibble_3.3.0               
+[13] ggplot2_4.0.1               tidyverse_2.0.0            
+[15] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[17] Biobase_2.68.0              GenomicRanges_1.60.0       
+[19] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[21] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[23] generics_0.1.4              MatrixGenerics_1.20.0      
+[25] matrixStats_1.5.0           scds_1.24.0                
+[27] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22        splines_4.5.0           later_1.4.2            
+  [4] R.oo_1.27.1             polyclip_1.10-7         pROC_1.18.5            
+  [7] fastDummies_1.7.5       lifecycle_1.0.4         rprojroot_2.0.4        
+ [10] globals_0.18.0          processx_3.8.6          lattice_0.22-6         
+ [13] vroom_1.6.5             MASS_7.3-65             magrittr_2.0.4         
+ [16] plotly_4.10.4           rmarkdown_2.29          yaml_2.3.10            
+ [19] httpuv_1.6.16           sctransform_0.4.2       spam_2.11-1            
+ [22] spatstat.sparse_3.1-0   reticulate_1.42.0       cowplot_1.1.3          
+ [25] pbapply_1.7-2           RColorBrewer_1.1-3      abind_1.4-8            
+ [28] Rtsne_0.17              R.utils_2.13.0          git2r_0.36.2           
+ [31] GenomeInfoDbData_1.2.14 ggrepel_0.9.6           irlba_2.3.5.1          
+ [34] listenv_0.9.1           spatstat.utils_3.1-4    goftest_1.2-3          
+ [37] RSpectra_0.16-2         spatstat.random_3.4-1   fitdistrplus_1.2-2     
+ [40] parallelly_1.45.0       codetools_0.2-20        DelayedArray_0.34.1    
+ [43] tidyselect_1.2.1        UCSC.utils_1.4.0        farver_2.1.2           
+ [46] spatstat.explore_3.4-3  jsonlite_2.0.0          progressr_0.15.1       
+ [49] ggridges_0.5.6          survival_3.8-3          tools_4.5.0            
+ [52] ica_1.0-3               Rcpp_1.0.14             glue_1.8.0             
+ [55] gridExtra_2.3           SparseArray_1.8.0       xfun_0.52              
+ [58] withr_3.0.2             BiocManager_1.30.26     fastmap_1.2.0          
+ [61] callr_3.7.6             digest_0.6.37           timechange_0.3.0       
+ [64] R6_2.6.1                mime_0.13               scattermore_1.2        
+ [67] tensor_1.5              spatstat.data_3.1-6     R.methodsS3_1.8.2      
+ [70] renv_1.1.4              data.table_1.17.4       httr_1.4.7             
+ [73] htmlwidgets_1.6.4       S4Arrays_1.8.1          whisker_0.4.1          
+ [76] uwot_0.2.3              pkgconfig_2.0.3         gtable_0.3.6           
+ [79] lmtest_0.9-40           S7_0.2.1                XVector_0.48.0         
+ [82] htmltools_0.5.8.1       dotCall64_1.2           scales_1.4.0           
+ [85] png_0.1-8               spatstat.univar_3.1-3   knitr_1.50             
+ [88] rstudioapi_0.17.1       tzdb_0.5.0              reshape2_1.4.4         
+ [91] nlme_3.1-168            zoo_1.8-14              KernSmooth_2.23-26     
+ [94] parallel_4.5.0          miniUI_0.1.2            pillar_1.10.2          
+ [97] grid_4.5.0              vctrs_0.6.5             RANN_2.6.2             
+[100] promises_1.3.3          xtable_1.8-4            cluster_2.1.8.1        
+[103] evaluate_1.0.3          cli_3.6.5               compiler_4.5.0         
+[106] rlang_1.1.6             crayon_1.5.3            future.apply_1.20.0    
+[109] ps_1.9.1                getPass_0.2-4           plyr_1.8.9             
+[112] fs_1.6.6                stringi_1.8.7           viridisLite_0.4.2      
+[115] deldir_2.0-4            lazyeval_0.2.2          spatstat.geom_3.4-1    
+[118] Matrix_1.7-3            RcppHNSW_0.6.0          hms_1.1.3              
+[121] patchwork_1.3.2         bit64_4.6.0-1           future_1.58.0          
+[124] shiny_1.10.0            ROCR_1.0-11             igraph_2.1.4           
+[127] bit_4.6.0               xgboost_1.7.11.1       
+##########################################################################
+Start scDblFinder
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender
+Run PCA and UMAP
+Run scDblFinder
+Clustering cells...
+14 clusters
+Creating ~14292 artificial doublets...
+Dimensional reduction
+Evaluating kNN...
+Training model...
+iter=0, 2406 cells excluded from training.
+iter=1, 2563 cells excluded from training.
+iter=2, 2604 cells excluded from training.
+Threshold found:0.391
+2837 (15.9%) doublets called
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  12004798  641.2   20932311 1118.0         NA  20932311 1118.0
+Vcells 361198868 2755.8  715315912 5457.5      49152 713997455 5447.4
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender/doublet_calls/LungCancer_10x_cellranger_allmultiplets_CellBender_doublet_calling_scDblFinder.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] scater_1.36.0               scuttle_1.18.0             
+ [3] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [5] sp_2.2-0                    here_1.0.1                 
+ [7] lubridate_1.9.4             forcats_1.0.0              
+ [9] stringr_1.5.1               dplyr_1.1.4                
+[11] purrr_1.2.0                 readr_2.1.5                
+[13] tidyr_1.3.1                 tibble_3.3.0               
+[15] ggplot2_4.0.1               tidyverse_2.0.0            
+[17] scDblFinder_1.22.0          SingleCellExperiment_1.30.1
+[19] SummarizedExperiment_1.38.1 Biobase_2.68.0             
+[21] GenomicRanges_1.60.0        GenomeInfoDb_1.44.0        
+[23] IRanges_2.42.0              S4Vectors_0.46.0           
+[25] BiocGenerics_0.54.0         generics_0.1.4             
+[27] MatrixGenerics_1.20.0       matrixStats_1.5.0          
+[29] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22         splines_4.5.0            later_1.4.2             
+  [4] BiocIO_1.18.0            bitops_1.0-9             R.oo_1.27.1             
+  [7] polyclip_1.10-7          XML_3.99-0.18            fastDummies_1.7.5       
+ [10] lifecycle_1.0.4          edgeR_4.6.2              rprojroot_2.0.4         
+ [13] vroom_1.6.5              globals_0.18.0           processx_3.8.6          
+ [16] lattice_0.22-6           MASS_7.3-65              magrittr_2.0.4          
+ [19] plotly_4.10.4            limma_3.64.1             rmarkdown_2.29          
+ [22] yaml_2.3.10              metapod_1.16.0           httpuv_1.6.16           
+ [25] sctransform_0.4.2        spam_2.11-1              spatstat.sparse_3.1-0   
+ [28] reticulate_1.42.0        pbapply_1.7-2            cowplot_1.1.3           
+ [31] RColorBrewer_1.1-3       abind_1.4-8              Rtsne_0.17              
+ [34] R.utils_2.13.0           RCurl_1.98-1.17          git2r_0.36.2            
+ [37] GenomeInfoDbData_1.2.14  ggrepel_0.9.6            irlba_2.3.5.1           
+ [40] spatstat.utils_3.1-4     listenv_0.9.1            goftest_1.2-3           
+ [43] RSpectra_0.16-2          spatstat.random_3.4-1    dqrng_0.4.1             
+ [46] fitdistrplus_1.2-2       parallelly_1.45.0        codetools_0.2-20        
+ [49] DelayedArray_0.34.1      tidyselect_1.2.1         UCSC.utils_1.4.0        
+ [52] farver_2.1.2             ScaledMatrix_1.16.0      viridis_0.6.5           
+ [55] spatstat.explore_3.4-3   GenomicAlignments_1.44.0 jsonlite_2.0.0          
+ [58] BiocNeighbors_2.2.0      progressr_0.15.1         ggridges_0.5.6          
+ [61] survival_3.8-3           tools_4.5.0              ica_1.0-3               
+ [64] Rcpp_1.0.14              glue_1.8.0               gridExtra_2.3           
+ [67] SparseArray_1.8.0        xfun_0.52                withr_3.0.2             
+ [70] BiocManager_1.30.26      fastmap_1.2.0            bluster_1.18.0          
+ [73] callr_3.7.6              digest_0.6.37            rsvd_1.0.5              
+ [76] mime_0.13                timechange_0.3.0         R6_2.6.1                
+ [79] scattermore_1.2          tensor_1.5               spatstat.data_3.1-6     
+ [82] R.methodsS3_1.8.2        renv_1.1.4               data.table_1.17.4       
+ [85] rtracklayer_1.68.0       htmlwidgets_1.6.4        httr_1.4.7              
+ [88] S4Arrays_1.8.1           whisker_0.4.1            uwot_0.2.3              
+ [91] pkgconfig_2.0.3          gtable_0.3.6             lmtest_0.9-40           
+ [94] S7_0.2.1                 XVector_0.48.0           htmltools_0.5.8.1       
+ [97] dotCall64_1.2            scales_1.4.0             png_0.1-8               
+[100] spatstat.univar_3.1-3    scran_1.36.0             knitr_1.50              
+[103] rstudioapi_0.17.1        reshape2_1.4.4           tzdb_0.5.0              
+[106] rjson_0.2.23             nlme_3.1-168             curl_7.0.0              
+[109] zoo_1.8-14               KernSmooth_2.23-26       parallel_4.5.0          
+[112] miniUI_0.1.2             vipor_0.4.7              restfulr_0.0.15         
+[115] pillar_1.10.2            grid_4.5.0               vctrs_0.6.5             
+[118] RANN_2.6.2               promises_1.3.3           BiocSingular_1.24.0     
+[121] beachmat_2.24.0          xtable_1.8-4             cluster_2.1.8.1         
+[124] beeswarm_0.4.0           evaluate_1.0.3           cli_3.6.5               
+[127] locfit_1.5-9.12          compiler_4.5.0           Rsamtools_2.24.0        
+[130] rlang_1.1.6              crayon_1.5.3             future.apply_1.20.0     
+[133] ps_1.9.1                 plyr_1.8.9               getPass_0.2-4           
+[136] fs_1.6.6                 ggbeeswarm_0.7.2         stringi_1.8.7           
+[139] deldir_2.0-4             viridisLite_0.4.2        BiocParallel_1.42.1     
+[142] Biostrings_2.76.0        lazyeval_0.2.2           spatstat.geom_3.4-1     
+[145] Matrix_1.7-3             RcppHNSW_0.6.0           patchwork_1.3.2         
+[148] hms_1.1.3                bit64_4.6.0-1            future_1.58.0           
+[151] statmod_1.5.0            shiny_1.10.0             ROCR_1.0-11             
+[154] igraph_2.1.4             bit_4.6.0                xgboost_1.7.11.1        
+
+ArgumentError: activate does not accept more than one argument:
+['/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender', '/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender/doublet_calls']
+
+
+##########################################################################
+Start scrublet
+##########################################################################
+Counts matrix shape: 17864 rows, 36601 columns
+Preprocessing...
+Simulating doublets...
+Embedding transcriptomes using PCA...
+Calculating doublet scores...
+Automatically set threshold at doublet score = 0.25
+Detected doublet rate = 6.1%
+Estimated detectable doublet fraction = 35.7%
+Overall doublet rate:
+	Expected   = 10.0%
+	Estimated  = 17.1%
+Elapsed time: 10.3 seconds
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender/doublet_calls/LungCancer_10x_cellranger_allmultiplets_CellBender_doublet_calling_scrublet.csv
+##########################################################################
+Start DoubletDetection
+##########################################################################
+/Users/meiermichelle/miniforge3/envs/DoubletDetection/lib/python3.14/site-packages/doubletdetection/doubletdetection.py:106: UserWarning: Leiden clustering is experimental and results have not been validated.
+  warnings.warn("Leiden clustering is experimental and results have not been validated.")
+Counts matrix shape: 17864 rows, 36601 columns
+Counts matrix shape after filtering: 17864 rows, 34345 columns
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:14<02:14, 14.99s/it] 20%|██        | 2/10 [00:18<01:04,  8.01s/it] 30%|███       | 3/10 [00:21<00:41,  5.92s/it] 40%|████      | 4/10 [00:24<00:28,  4.77s/it] 50%|█████     | 5/10 [00:27<00:21,  4.21s/it] 60%|██████    | 6/10 [00:30<00:15,  3.81s/it] 70%|███████   | 7/10 [00:33<00:10,  3.48s/it] 80%|████████  | 8/10 [00:36<00:06,  3.35s/it] 90%|█████████ | 9/10 [00:39<00:03,  3.30s/it]100%|██████████| 10/10 [00:42<00:00,  3.25s/it]100%|██████████| 10/10 [00:42<00:00,  4.30s/it]
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender/doublet_calls/LungCancer_10x_cellranger_allmultiplets_CellBender_doublet_calling_DoubletDetection.csv
+Print threshold and convergence plots
+##########################################################################
+Combine all doublet calling results
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender/doublet_calls
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+[1] NA
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_CellBender/doublet_calls/LungCancer_10x_cellranger_allmultiplets_CellBender_doublet_calling_consensus.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+ [5] purrr_1.2.0     readr_2.1.5     tidyr_1.3.1     tibble_3.3.0   
+ [9] ggplot2_4.0.1   tidyverse_2.0.0 workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4      renv_1.1.4          stringi_1.8.7      
+ [4] hms_1.1.3           digest_0.6.37       magrittr_2.0.4     
+ [7] timechange_0.3.0    evaluate_1.0.3      grid_4.5.0         
+[10] RColorBrewer_1.1-3  fastmap_1.2.0       rprojroot_2.0.4    
+[13] processx_3.8.6      whisker_0.4.1       ps_1.9.1           
+[16] promises_1.3.3      BiocManager_1.30.26 httr_1.4.7         
+[19] scales_1.4.0        cli_3.6.5           crayon_1.5.3       
+[22] rlang_1.1.6         bit64_4.6.0-1       withr_3.0.2        
+[25] yaml_2.3.10         parallel_4.5.0      tools_4.5.0        
+[28] tzdb_0.5.0          httpuv_1.6.16       vctrs_0.6.5        
+[31] R6_2.6.1            lifecycle_1.0.4     git2r_0.36.2       
+[34] bit_4.6.0           fs_1.6.6            vroom_1.6.5        
+[37] pkgconfig_2.0.3     callr_3.7.6         pillar_1.10.2      
+[40] later_1.4.2         gtable_0.3.6        glue_1.8.0         
+[43] Rcpp_1.0.14         xfun_0.52           tidyselect_1.2.1   
+[46] rstudioapi_0.17.1   knitr_1.50          farver_2.1.2       
+[49] htmltools_0.5.8.1   rmarkdown_2.29      compiler_4.5.0     
+[52] S7_0.2.1            getPass_0.2-4      
+##########################################################################
+Doublet calling completed
+##########################################################################
+##########################################################################
+Start Dataset LungCancer_10x_cellranger_allmultiplets_soupX
+##########################################################################
+mkdir: /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX/doublet_calls: File exists
+##########################################################################
+Start doublet calling
+Inputs detected:
+  OUTPUT = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX/doublet_calls
+  COUNTS = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX
+##########################################################################
+##########################################################################
+Start cxds + bcds + scds
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX
+Start doublet calling: cxds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells   8859238  473.2   16104091  860.1         NA  11809874  630.8
+Vcells 230267564 1756.9  407315432 3107.6      49152 407315432 3107.6
+Start doublet calling: bcds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+Warning message:
+In asMethod(object) :
+  sparse->dense coercion: allocating vector of size 2.7 GiB
+            used   (Mb) gc trigger    (Mb) limit (Mb)   max used    (Mb)
+Ncells   8916384  476.2   16104091   860.1         NA   11809874   630.8
+Vcells 230549836 1759.0 1316797372 10046.4      49152 1645921979 12557.4
+Start doublet calling: hybrid
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+            used   (Mb) gc trigger   (Mb) limit (Mb)   max used    (Mb)
+Ncells   8917000  476.3   16104091  860.1         NA   11809874   630.8
+Vcells 230594399 1759.3 1053437898 8037.1      49152 1645921979 12557.4
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX/doublet_calls/LungCancer_10x_cellranger_allmultiplets_soupX_doublet_calling_scds_bcds_cxds.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [3] sp_2.2-0                    here_1.0.1                 
+ [5] lubridate_1.9.4             forcats_1.0.0              
+ [7] stringr_1.5.1               dplyr_1.1.4                
+ [9] purrr_1.2.0                 readr_2.1.5                
+[11] tidyr_1.3.1                 tibble_3.3.0               
+[13] ggplot2_4.0.1               tidyverse_2.0.0            
+[15] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[17] Biobase_2.68.0              GenomicRanges_1.60.0       
+[19] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[21] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[23] generics_0.1.4              MatrixGenerics_1.20.0      
+[25] matrixStats_1.5.0           scds_1.24.0                
+[27] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22        splines_4.5.0           later_1.4.2            
+  [4] R.oo_1.27.1             polyclip_1.10-7         pROC_1.18.5            
+  [7] fastDummies_1.7.5       lifecycle_1.0.4         rprojroot_2.0.4        
+ [10] globals_0.18.0          processx_3.8.6          lattice_0.22-6         
+ [13] vroom_1.6.5             MASS_7.3-65             magrittr_2.0.4         
+ [16] plotly_4.10.4           rmarkdown_2.29          yaml_2.3.10            
+ [19] httpuv_1.6.16           sctransform_0.4.2       spam_2.11-1            
+ [22] spatstat.sparse_3.1-0   reticulate_1.42.0       cowplot_1.1.3          
+ [25] pbapply_1.7-2           RColorBrewer_1.1-3      abind_1.4-8            
+ [28] Rtsne_0.17              R.utils_2.13.0          git2r_0.36.2           
+ [31] GenomeInfoDbData_1.2.14 ggrepel_0.9.6           irlba_2.3.5.1          
+ [34] listenv_0.9.1           spatstat.utils_3.1-4    goftest_1.2-3          
+ [37] RSpectra_0.16-2         spatstat.random_3.4-1   fitdistrplus_1.2-2     
+ [40] parallelly_1.45.0       codetools_0.2-20        DelayedArray_0.34.1    
+ [43] tidyselect_1.2.1        UCSC.utils_1.4.0        farver_2.1.2           
+ [46] spatstat.explore_3.4-3  jsonlite_2.0.0          progressr_0.15.1       
+ [49] ggridges_0.5.6          survival_3.8-3          tools_4.5.0            
+ [52] ica_1.0-3               Rcpp_1.0.14             glue_1.8.0             
+ [55] gridExtra_2.3           SparseArray_1.8.0       xfun_0.52              
+ [58] withr_3.0.2             BiocManager_1.30.26     fastmap_1.2.0          
+ [61] callr_3.7.6             digest_0.6.37           timechange_0.3.0       
+ [64] R6_2.6.1                mime_0.13               scattermore_1.2        
+ [67] tensor_1.5              spatstat.data_3.1-6     R.methodsS3_1.8.2      
+ [70] renv_1.1.4              data.table_1.17.4       httr_1.4.7             
+ [73] htmlwidgets_1.6.4       S4Arrays_1.8.1          whisker_0.4.1          
+ [76] uwot_0.2.3              pkgconfig_2.0.3         gtable_0.3.6           
+ [79] lmtest_0.9-40           S7_0.2.1                XVector_0.48.0         
+ [82] htmltools_0.5.8.1       dotCall64_1.2           scales_1.4.0           
+ [85] png_0.1-8               spatstat.univar_3.1-3   knitr_1.50             
+ [88] rstudioapi_0.17.1       tzdb_0.5.0              reshape2_1.4.4         
+ [91] nlme_3.1-168            zoo_1.8-14              KernSmooth_2.23-26     
+ [94] parallel_4.5.0          miniUI_0.1.2            pillar_1.10.2          
+ [97] grid_4.5.0              vctrs_0.6.5             RANN_2.6.2             
+[100] promises_1.3.3          xtable_1.8-4            cluster_2.1.8.1        
+[103] evaluate_1.0.3          cli_3.6.5               compiler_4.5.0         
+[106] rlang_1.1.6             crayon_1.5.3            future.apply_1.20.0    
+[109] ps_1.9.1                getPass_0.2-4           plyr_1.8.9             
+[112] fs_1.6.6                stringi_1.8.7           viridisLite_0.4.2      
+[115] deldir_2.0-4            lazyeval_0.2.2          spatstat.geom_3.4-1    
+[118] Matrix_1.7-3            RcppHNSW_0.6.0          hms_1.1.3              
+[121] patchwork_1.3.2         bit64_4.6.0-1           future_1.58.0          
+[124] shiny_1.10.0            ROCR_1.0-11             igraph_2.1.4           
+[127] bit_4.6.0               xgboost_1.7.11.1       
+##########################################################################
+Start scDblFinder
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX
+Run PCA and UMAP
+Run scDblFinder
+Clustering cells...
+16 clusters
+Creating ~14507 artificial doublets...
+Dimensional reduction
+Evaluating kNN...
+Training model...
+iter=0, 2306 cells excluded from training.
+iter=1, 2418 cells excluded from training.
+iter=2, 2464 cells excluded from training.
+Threshold found:0.403
+2579 (14.2%) doublets called
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  12002609  641.1   20925907 1117.6         NA  20925907 1117.6
+Vcells 378462062 2887.5  749863210 5721.1      49152 749224477 5716.2
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX/doublet_calls/LungCancer_10x_cellranger_allmultiplets_soupX_doublet_calling_scDblFinder.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] scater_1.36.0               scuttle_1.18.0             
+ [3] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [5] sp_2.2-0                    here_1.0.1                 
+ [7] lubridate_1.9.4             forcats_1.0.0              
+ [9] stringr_1.5.1               dplyr_1.1.4                
+[11] purrr_1.2.0                 readr_2.1.5                
+[13] tidyr_1.3.1                 tibble_3.3.0               
+[15] ggplot2_4.0.1               tidyverse_2.0.0            
+[17] scDblFinder_1.22.0          SingleCellExperiment_1.30.1
+[19] SummarizedExperiment_1.38.1 Biobase_2.68.0             
+[21] GenomicRanges_1.60.0        GenomeInfoDb_1.44.0        
+[23] IRanges_2.42.0              S4Vectors_0.46.0           
+[25] BiocGenerics_0.54.0         generics_0.1.4             
+[27] MatrixGenerics_1.20.0       matrixStats_1.5.0          
+[29] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22         splines_4.5.0            later_1.4.2             
+  [4] BiocIO_1.18.0            bitops_1.0-9             R.oo_1.27.1             
+  [7] polyclip_1.10-7          XML_3.99-0.18            fastDummies_1.7.5       
+ [10] lifecycle_1.0.4          edgeR_4.6.2              rprojroot_2.0.4         
+ [13] vroom_1.6.5              globals_0.18.0           processx_3.8.6          
+ [16] lattice_0.22-6           MASS_7.3-65              magrittr_2.0.4          
+ [19] plotly_4.10.4            limma_3.64.1             rmarkdown_2.29          
+ [22] yaml_2.3.10              metapod_1.16.0           httpuv_1.6.16           
+ [25] sctransform_0.4.2        spam_2.11-1              spatstat.sparse_3.1-0   
+ [28] reticulate_1.42.0        pbapply_1.7-2            cowplot_1.1.3           
+ [31] RColorBrewer_1.1-3       abind_1.4-8              Rtsne_0.17              
+ [34] R.utils_2.13.0           RCurl_1.98-1.17          git2r_0.36.2            
+ [37] GenomeInfoDbData_1.2.14  ggrepel_0.9.6            irlba_2.3.5.1           
+ [40] spatstat.utils_3.1-4     listenv_0.9.1            goftest_1.2-3           
+ [43] RSpectra_0.16-2          spatstat.random_3.4-1    dqrng_0.4.1             
+ [46] fitdistrplus_1.2-2       parallelly_1.45.0        codetools_0.2-20        
+ [49] DelayedArray_0.34.1      tidyselect_1.2.1         UCSC.utils_1.4.0        
+ [52] farver_2.1.2             ScaledMatrix_1.16.0      viridis_0.6.5           
+ [55] spatstat.explore_3.4-3   GenomicAlignments_1.44.0 jsonlite_2.0.0          
+ [58] BiocNeighbors_2.2.0      progressr_0.15.1         ggridges_0.5.6          
+ [61] survival_3.8-3           tools_4.5.0              ica_1.0-3               
+ [64] Rcpp_1.0.14              glue_1.8.0               gridExtra_2.3           
+ [67] SparseArray_1.8.0        xfun_0.52                withr_3.0.2             
+ [70] BiocManager_1.30.26      fastmap_1.2.0            bluster_1.18.0          
+ [73] callr_3.7.6              digest_0.6.37            rsvd_1.0.5              
+ [76] mime_0.13                timechange_0.3.0         R6_2.6.1                
+ [79] scattermore_1.2          tensor_1.5               spatstat.data_3.1-6     
+ [82] R.methodsS3_1.8.2        renv_1.1.4               data.table_1.17.4       
+ [85] rtracklayer_1.68.0       htmlwidgets_1.6.4        httr_1.4.7              
+ [88] S4Arrays_1.8.1           whisker_0.4.1            uwot_0.2.3              
+ [91] pkgconfig_2.0.3          gtable_0.3.6             lmtest_0.9-40           
+ [94] S7_0.2.1                 XVector_0.48.0           htmltools_0.5.8.1       
+ [97] dotCall64_1.2            scales_1.4.0             png_0.1-8               
+[100] spatstat.univar_3.1-3    scran_1.36.0             knitr_1.50              
+[103] rstudioapi_0.17.1        reshape2_1.4.4           tzdb_0.5.0              
+[106] rjson_0.2.23             nlme_3.1-168             curl_7.0.0              
+[109] zoo_1.8-14               KernSmooth_2.23-26       parallel_4.5.0          
+[112] miniUI_0.1.2             vipor_0.4.7              restfulr_0.0.15         
+[115] pillar_1.10.2            grid_4.5.0               vctrs_0.6.5             
+[118] RANN_2.6.2               promises_1.3.3           BiocSingular_1.24.0     
+[121] beachmat_2.24.0          xtable_1.8-4             cluster_2.1.8.1         
+[124] beeswarm_0.4.0           evaluate_1.0.3           cli_3.6.5               
+[127] locfit_1.5-9.12          compiler_4.5.0           Rsamtools_2.24.0        
+[130] rlang_1.1.6              crayon_1.5.3             future.apply_1.20.0     
+[133] ps_1.9.1                 plyr_1.8.9               getPass_0.2-4           
+[136] fs_1.6.6                 ggbeeswarm_0.7.2         stringi_1.8.7           
+[139] deldir_2.0-4             viridisLite_0.4.2        BiocParallel_1.42.1     
+[142] Biostrings_2.76.0        lazyeval_0.2.2           spatstat.geom_3.4-1     
+[145] Matrix_1.7-3             RcppHNSW_0.6.0           patchwork_1.3.2         
+[148] hms_1.1.3                bit64_4.6.0-1            future_1.58.0           
+[151] statmod_1.5.0            shiny_1.10.0             ROCR_1.0-11             
+[154] igraph_2.1.4             bit_4.6.0                xgboost_1.7.11.1        
+
+ArgumentError: activate does not accept more than one argument:
+['/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX', '/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX/doublet_calls']
+
+
+##########################################################################
+Start scrublet
+##########################################################################
+Counts matrix shape: 18132 rows, 34352 columns
+Preprocessing...
+Simulating doublets...
+Embedding transcriptomes using PCA...
+Calculating doublet scores...
+Automatically set threshold at doublet score = 0.28
+Detected doublet rate = 4.8%
+Estimated detectable doublet fraction = 30.9%
+Overall doublet rate:
+	Expected   = 10.0%
+	Estimated  = 15.6%
+Elapsed time: 10.8 seconds
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX/doublet_calls/LungCancer_10x_cellranger_allmultiplets_soupX_doublet_calling_scrublet.csv
+##########################################################################
+Start DoubletDetection
+##########################################################################
+/Users/meiermichelle/miniforge3/envs/DoubletDetection/lib/python3.14/site-packages/doubletdetection/doubletdetection.py:106: UserWarning: Leiden clustering is experimental and results have not been validated.
+  warnings.warn("Leiden clustering is experimental and results have not been validated.")
+Counts matrix shape: 18132 rows, 34352 columns
+Counts matrix shape after filtering: 18132 rows, 34346 columns
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:15<02:15, 15.10s/it] 20%|██        | 2/10 [00:18<01:03,  7.99s/it] 30%|███       | 3/10 [00:21<00:41,  5.86s/it] 40%|████      | 4/10 [00:24<00:28,  4.77s/it] 50%|█████     | 5/10 [00:27<00:20,  4.16s/it] 60%|██████    | 6/10 [00:31<00:15,  3.94s/it] 70%|███████   | 7/10 [00:34<00:11,  3.69s/it] 80%|████████  | 8/10 [00:37<00:07,  3.55s/it] 90%|█████████ | 9/10 [00:40<00:03,  3.40s/it]100%|██████████| 10/10 [00:44<00:00,  3.42s/it]100%|██████████| 10/10 [00:44<00:00,  4.41s/it]
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX/doublet_calls/LungCancer_10x_cellranger_allmultiplets_soupX_doublet_calling_DoubletDetection.csv
+Print threshold and convergence plots
+##########################################################################
+Combine all doublet calling results
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX/doublet_calls
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+[1] NA
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets_soupX/doublet_calls/LungCancer_10x_cellranger_allmultiplets_soupX_doublet_calling_consensus.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+ [5] purrr_1.2.0     readr_2.1.5     tidyr_1.3.1     tibble_3.3.0   
+ [9] ggplot2_4.0.1   tidyverse_2.0.0 workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4      renv_1.1.4          stringi_1.8.7      
+ [4] hms_1.1.3           digest_0.6.37       magrittr_2.0.4     
+ [7] timechange_0.3.0    evaluate_1.0.3      grid_4.5.0         
+[10] RColorBrewer_1.1-3  fastmap_1.2.0       rprojroot_2.0.4    
+[13] processx_3.8.6      whisker_0.4.1       ps_1.9.1           
+[16] promises_1.3.3      BiocManager_1.30.26 httr_1.4.7         
+[19] scales_1.4.0        cli_3.6.5           crayon_1.5.3       
+[22] rlang_1.1.6         bit64_4.6.0-1       withr_3.0.2        
+[25] yaml_2.3.10         parallel_4.5.0      tools_4.5.0        
+[28] tzdb_0.5.0          httpuv_1.6.16       vctrs_0.6.5        
+[31] R6_2.6.1            lifecycle_1.0.4     git2r_0.36.2       
+[34] bit_4.6.0           fs_1.6.6            vroom_1.6.5        
+[37] pkgconfig_2.0.3     callr_3.7.6         pillar_1.10.2      
+[40] later_1.4.2         gtable_0.3.6        glue_1.8.0         
+[43] Rcpp_1.0.14         xfun_0.52           tidyselect_1.2.1   
+[46] rstudioapi_0.17.1   knitr_1.50          farver_2.1.2       
+[49] htmltools_0.5.8.1   rmarkdown_2.29      compiler_4.5.0     
+[52] S7_0.2.1            getPass_0.2-4      
+##########################################################################
+Doublet calling completed
+##########################################################################
+##########################################################################
+Start Dataset LungCancer_10x_cellranger_allmultiplets
+##########################################################################
+mkdir: /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/doublet_calls: File exists
+mkdir: /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/doublet_calls: File exists
+##########################################################################
+Start doublet calling
+Inputs detected:
+  OUTPUT = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/doublet_calls
+  COUNTS = /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets
+##########################################################################
+##########################################################################
+Start cxds + bcds + scds
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets
+Start doublet calling: cxds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells   8858892  473.2   16104410  860.1         NA  11809805  630.8
+Vcells 230317331 1757.2  407315848 3107.6      49152 407315587 3107.6
+Start doublet calling: bcds
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+Warning message:
+In asMethod(object) :
+  sparse->dense coercion: allocating vector of size 2.7 GiB
+            used   (Mb) gc trigger    (Mb) limit (Mb)   max used    (Mb)
+Ncells   8916038  476.2   16104410   860.1         NA   11809805   630.8
+Vcells 230590603 1759.3 1318381896 10058.5      49152 1641068053 12520.4
+Start doublet calling: hybrid
+Setting levels: control = 0, case = 1
+Setting direction: controls < cases
+            used   (Mb) gc trigger   (Mb) limit (Mb)   max used    (Mb)
+Ncells   8916654  476.3   16104410  860.1         NA   11809805   630.8
+Vcells 230635208 1759.7 1054705517 8046.8      49152 1641068053 12520.4
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/doublet_calls/LungCancer_10x_cellranger_allmultiplets_doublet_calling_scds_bcds_cxds.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [3] sp_2.2-0                    here_1.0.1                 
+ [5] lubridate_1.9.4             forcats_1.0.0              
+ [7] stringr_1.5.1               dplyr_1.1.4                
+ [9] purrr_1.2.0                 readr_2.1.5                
+[11] tidyr_1.3.1                 tibble_3.3.0               
+[13] ggplot2_4.0.1               tidyverse_2.0.0            
+[15] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[17] Biobase_2.68.0              GenomicRanges_1.60.0       
+[19] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[21] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[23] generics_0.1.4              MatrixGenerics_1.20.0      
+[25] matrixStats_1.5.0           scds_1.24.0                
+[27] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22        splines_4.5.0           later_1.4.2            
+  [4] R.oo_1.27.1             polyclip_1.10-7         pROC_1.18.5            
+  [7] fastDummies_1.7.5       lifecycle_1.0.4         rprojroot_2.0.4        
+ [10] globals_0.18.0          processx_3.8.6          lattice_0.22-6         
+ [13] vroom_1.6.5             MASS_7.3-65             magrittr_2.0.4         
+ [16] plotly_4.10.4           rmarkdown_2.29          yaml_2.3.10            
+ [19] httpuv_1.6.16           sctransform_0.4.2       spam_2.11-1            
+ [22] spatstat.sparse_3.1-0   reticulate_1.42.0       cowplot_1.1.3          
+ [25] pbapply_1.7-2           RColorBrewer_1.1-3      abind_1.4-8            
+ [28] Rtsne_0.17              R.utils_2.13.0          git2r_0.36.2           
+ [31] GenomeInfoDbData_1.2.14 ggrepel_0.9.6           irlba_2.3.5.1          
+ [34] listenv_0.9.1           spatstat.utils_3.1-4    goftest_1.2-3          
+ [37] RSpectra_0.16-2         spatstat.random_3.4-1   fitdistrplus_1.2-2     
+ [40] parallelly_1.45.0       codetools_0.2-20        DelayedArray_0.34.1    
+ [43] tidyselect_1.2.1        UCSC.utils_1.4.0        farver_2.1.2           
+ [46] spatstat.explore_3.4-3  jsonlite_2.0.0          progressr_0.15.1       
+ [49] ggridges_0.5.6          survival_3.8-3          tools_4.5.0            
+ [52] ica_1.0-3               Rcpp_1.0.14             glue_1.8.0             
+ [55] gridExtra_2.3           SparseArray_1.8.0       xfun_0.52              
+ [58] withr_3.0.2             BiocManager_1.30.26     fastmap_1.2.0          
+ [61] callr_3.7.6             digest_0.6.37           timechange_0.3.0       
+ [64] R6_2.6.1                mime_0.13               scattermore_1.2        
+ [67] tensor_1.5              spatstat.data_3.1-6     R.methodsS3_1.8.2      
+ [70] renv_1.1.4              data.table_1.17.4       httr_1.4.7             
+ [73] htmlwidgets_1.6.4       S4Arrays_1.8.1          whisker_0.4.1          
+ [76] uwot_0.2.3              pkgconfig_2.0.3         gtable_0.3.6           
+ [79] lmtest_0.9-40           S7_0.2.1                XVector_0.48.0         
+ [82] htmltools_0.5.8.1       dotCall64_1.2           scales_1.4.0           
+ [85] png_0.1-8               spatstat.univar_3.1-3   knitr_1.50             
+ [88] rstudioapi_0.17.1       tzdb_0.5.0              reshape2_1.4.4         
+ [91] nlme_3.1-168            zoo_1.8-14              KernSmooth_2.23-26     
+ [94] parallel_4.5.0          miniUI_0.1.2            pillar_1.10.2          
+ [97] grid_4.5.0              vctrs_0.6.5             RANN_2.6.2             
+[100] promises_1.3.3          xtable_1.8-4            cluster_2.1.8.1        
+[103] evaluate_1.0.3          cli_3.6.5               compiler_4.5.0         
+[106] rlang_1.1.6             crayon_1.5.3            future.apply_1.20.0    
+[109] ps_1.9.1                getPass_0.2-4           plyr_1.8.9             
+[112] fs_1.6.6                stringi_1.8.7           viridisLite_0.4.2      
+[115] deldir_2.0-4            lazyeval_0.2.2          spatstat.geom_3.4-1    
+[118] Matrix_1.7-3            RcppHNSW_0.6.0          hms_1.1.3              
+[121] patchwork_1.3.2         bit64_4.6.0-1           future_1.58.0          
+[124] shiny_1.10.0            ROCR_1.0-11             igraph_2.1.4           
+[127] bit_4.6.0               xgboost_1.7.11.1       
+##########################################################################
+Start scDblFinder
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/doublet_calls
+counts:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets
+Run PCA and UMAP
+Run scDblFinder
+Clustering cells...
+13 clusters
+Creating ~14520 artificial doublets...
+Dimensional reduction
+Evaluating kNN...
+Training model...
+iter=0, 2459 cells excluded from training.
+iter=1, 2583 cells excluded from training.
+iter=2, 2677 cells excluded from training.
+Threshold found:0.374
+2848 (15.7%) doublets called
+            used   (Mb) gc trigger   (Mb) limit (Mb)  max used   (Mb)
+Ncells  12002532  641.1   20925884 1117.6         NA  20925884 1117.6
+Vcells 378580206 2888.4  750129405 5723.1      49152 747292797 5701.4
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/doublet_calls/LungCancer_10x_cellranger_allmultiplets_doublet_calling_scDblFinder.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] scater_1.36.0               scuttle_1.18.0             
+ [3] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+ [5] sp_2.2-0                    here_1.0.1                 
+ [7] lubridate_1.9.4             forcats_1.0.0              
+ [9] stringr_1.5.1               dplyr_1.1.4                
+[11] purrr_1.2.0                 readr_2.1.5                
+[13] tidyr_1.3.1                 tibble_3.3.0               
+[15] ggplot2_4.0.1               tidyverse_2.0.0            
+[17] scDblFinder_1.22.0          SingleCellExperiment_1.30.1
+[19] SummarizedExperiment_1.38.1 Biobase_2.68.0             
+[21] GenomicRanges_1.60.0        GenomeInfoDb_1.44.0        
+[23] IRanges_2.42.0              S4Vectors_0.46.0           
+[25] BiocGenerics_0.54.0         generics_0.1.4             
+[27] MatrixGenerics_1.20.0       matrixStats_1.5.0          
+[29] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.22         splines_4.5.0            later_1.4.2             
+  [4] BiocIO_1.18.0            bitops_1.0-9             R.oo_1.27.1             
+  [7] polyclip_1.10-7          XML_3.99-0.18            fastDummies_1.7.5       
+ [10] lifecycle_1.0.4          edgeR_4.6.2              rprojroot_2.0.4         
+ [13] vroom_1.6.5              globals_0.18.0           processx_3.8.6          
+ [16] lattice_0.22-6           MASS_7.3-65              magrittr_2.0.4          
+ [19] plotly_4.10.4            limma_3.64.1             rmarkdown_2.29          
+ [22] yaml_2.3.10              metapod_1.16.0           httpuv_1.6.16           
+ [25] sctransform_0.4.2        spam_2.11-1              spatstat.sparse_3.1-0   
+ [28] reticulate_1.42.0        pbapply_1.7-2            cowplot_1.1.3           
+ [31] RColorBrewer_1.1-3       abind_1.4-8              Rtsne_0.17              
+ [34] R.utils_2.13.0           RCurl_1.98-1.17          git2r_0.36.2            
+ [37] GenomeInfoDbData_1.2.14  ggrepel_0.9.6            irlba_2.3.5.1           
+ [40] spatstat.utils_3.1-4     listenv_0.9.1            goftest_1.2-3           
+ [43] RSpectra_0.16-2          spatstat.random_3.4-1    dqrng_0.4.1             
+ [46] fitdistrplus_1.2-2       parallelly_1.45.0        codetools_0.2-20        
+ [49] DelayedArray_0.34.1      tidyselect_1.2.1         UCSC.utils_1.4.0        
+ [52] farver_2.1.2             ScaledMatrix_1.16.0      viridis_0.6.5           
+ [55] spatstat.explore_3.4-3   GenomicAlignments_1.44.0 jsonlite_2.0.0          
+ [58] BiocNeighbors_2.2.0      progressr_0.15.1         ggridges_0.5.6          
+ [61] survival_3.8-3           tools_4.5.0              ica_1.0-3               
+ [64] Rcpp_1.0.14              glue_1.8.0               gridExtra_2.3           
+ [67] SparseArray_1.8.0        xfun_0.52                withr_3.0.2             
+ [70] BiocManager_1.30.26      fastmap_1.2.0            bluster_1.18.0          
+ [73] callr_3.7.6              digest_0.6.37            rsvd_1.0.5              
+ [76] mime_0.13                timechange_0.3.0         R6_2.6.1                
+ [79] scattermore_1.2          tensor_1.5               spatstat.data_3.1-6     
+ [82] R.methodsS3_1.8.2        renv_1.1.4               data.table_1.17.4       
+ [85] rtracklayer_1.68.0       htmlwidgets_1.6.4        httr_1.4.7              
+ [88] S4Arrays_1.8.1           whisker_0.4.1            uwot_0.2.3              
+ [91] pkgconfig_2.0.3          gtable_0.3.6             lmtest_0.9-40           
+ [94] S7_0.2.1                 XVector_0.48.0           htmltools_0.5.8.1       
+ [97] dotCall64_1.2            scales_1.4.0             png_0.1-8               
+[100] spatstat.univar_3.1-3    scran_1.36.0             knitr_1.50              
+[103] rstudioapi_0.17.1        reshape2_1.4.4           tzdb_0.5.0              
+[106] rjson_0.2.23             nlme_3.1-168             curl_7.0.0              
+[109] zoo_1.8-14               KernSmooth_2.23-26       parallel_4.5.0          
+[112] miniUI_0.1.2             vipor_0.4.7              restfulr_0.0.15         
+[115] pillar_1.10.2            grid_4.5.0               vctrs_0.6.5             
+[118] RANN_2.6.2               promises_1.3.3           BiocSingular_1.24.0     
+[121] beachmat_2.24.0          xtable_1.8-4             cluster_2.1.8.1         
+[124] beeswarm_0.4.0           evaluate_1.0.3           cli_3.6.5               
+[127] locfit_1.5-9.12          compiler_4.5.0           Rsamtools_2.24.0        
+[130] rlang_1.1.6              crayon_1.5.3             future.apply_1.20.0     
+[133] ps_1.9.1                 plyr_1.8.9               getPass_0.2-4           
+[136] fs_1.6.6                 ggbeeswarm_0.7.2         stringi_1.8.7           
+[139] deldir_2.0-4             viridisLite_0.4.2        BiocParallel_1.42.1     
+[142] Biostrings_2.76.0        lazyeval_0.2.2           spatstat.geom_3.4-1     
+[145] Matrix_1.7-3             RcppHNSW_0.6.0           patchwork_1.3.2         
+[148] hms_1.1.3                bit64_4.6.0-1            future_1.58.0           
+[151] statmod_1.5.0            shiny_1.10.0             ROCR_1.0-11             
+[154] igraph_2.1.4             bit_4.6.0                xgboost_1.7.11.1        
+
+ArgumentError: activate does not accept more than one argument:
+['/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets', '/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/doublet_calls']
+
+
+##########################################################################
+Start scrublet
+##########################################################################
+Counts matrix shape: 18149 rows, 34352 columns
+Preprocessing...
+Simulating doublets...
+Embedding transcriptomes using PCA...
+Calculating doublet scores...
+Automatically set threshold at doublet score = 0.26
+Detected doublet rate = 5.6%
+Estimated detectable doublet fraction = 34.9%
+Overall doublet rate:
+	Expected   = 10.0%
+	Estimated  = 16.1%
+Elapsed time: 11.1 seconds
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/doublet_calls/LungCancer_10x_cellranger_allmultiplets_doublet_calling_scrublet.csv
+##########################################################################
+Start DoubletDetection
+##########################################################################
+/Users/meiermichelle/miniforge3/envs/DoubletDetection/lib/python3.14/site-packages/doubletdetection/doubletdetection.py:106: UserWarning: Leiden clustering is experimental and results have not been validated.
+  warnings.warn("Leiden clustering is experimental and results have not been validated.")
+Counts matrix shape: 18149 rows, 34352 columns
+Counts matrix shape after filtering: 18149 rows, 34346 columns
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:15<02:16, 15.20s/it] 20%|██        | 2/10 [00:18<01:05,  8.19s/it] 30%|███       | 3/10 [00:21<00:41,  5.89s/it] 40%|████      | 4/10 [00:24<00:29,  4.85s/it] 50%|█████     | 5/10 [00:28<00:21,  4.26s/it] 60%|██████    | 6/10 [00:31<00:15,  4.00s/it] 70%|███████   | 7/10 [00:34<00:10,  3.65s/it] 80%|████████  | 8/10 [00:37<00:06,  3.49s/it] 90%|█████████ | 9/10 [00:41<00:03,  3.44s/it]100%|██████████| 10/10 [00:43<00:00,  3.30s/it]100%|██████████| 10/10 [00:43<00:00,  4.40s/it]
+Exporting results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/doublet_calls/LungCancer_10x_cellranger_allmultiplets_doublet_calling_DoubletDetection.csv
+Print threshold and convergence plots
+##########################################################################
+Combine all doublet calling results
+##########################################################################
+- The project is out-of-sync -- use `renv::status()` for details.
+Loading .Rprofile for the current workflowr project
+This is workflowr version 1.7.1
+Run ?workflowr for help getting started
+arguments detected:
+output:/Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/doublet_calls
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+Joining with `by = join_by(Barcode)`
+[1] NA
+Writing results to /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell/output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/doublet_calls/LungCancer_10x_cellranger_allmultiplets_doublet_calling_consensus.csv
+R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices datasets  utils     methods   base     
+
+other attached packages:
+ [1] lubridate_1.9.4 forcats_1.0.0   stringr_1.5.1   dplyr_1.1.4    
+ [5] purrr_1.2.0     readr_2.1.5     tidyr_1.3.1     tibble_3.3.0   
+ [9] ggplot2_4.0.1   tidyverse_2.0.0 workflowr_1.7.1
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4      renv_1.1.4          stringi_1.8.7      
+ [4] hms_1.1.3           digest_0.6.37       magrittr_2.0.4     
+ [7] timechange_0.3.0    evaluate_1.0.3      grid_4.5.0         
+[10] RColorBrewer_1.1-3  fastmap_1.2.0       rprojroot_2.0.4    
+[13] processx_3.8.6      whisker_0.4.1       ps_1.9.1           
+[16] promises_1.3.3      BiocManager_1.30.26 httr_1.4.7         
+[19] scales_1.4.0        cli_3.6.5           crayon_1.5.3       
+[22] rlang_1.1.6         bit64_4.6.0-1       withr_3.0.2        
+[25] yaml_2.3.10         parallel_4.5.0      tools_4.5.0        
+[28] tzdb_0.5.0          httpuv_1.6.16       vctrs_0.6.5        
+[31] R6_2.6.1            lifecycle_1.0.4     git2r_0.36.2       
+[34] bit_4.6.0           fs_1.6.6            vroom_1.6.5        
+[37] pkgconfig_2.0.3     callr_3.7.6         pillar_1.10.2      
+[40] later_1.4.2         gtable_0.3.6        glue_1.8.0         
+[43] Rcpp_1.0.14         xfun_0.52           tidyselect_1.2.1   
+[46] rstudioapi_0.17.1   knitr_1.50          farver_2.1.2       
+[49] htmltools_0.5.8.1   rmarkdown_2.29      compiler_4.5.0     
+[52] S7_0.2.1            getPass_0.2-4      
+##########################################################################
+Doublet calling completed
+##########################################################################

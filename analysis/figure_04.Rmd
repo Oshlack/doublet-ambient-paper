@@ -1,0 +1,768 @@
+---
+title: "Figure 4: Engineered doublets reveal key features of undetected doublets after ambient RNA correction"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown makes the plots for Figure 4: Engineered doublets reveal key features of undetected doublets after ambient RNA correction. 
+
+In this markdown, we perform an in-depth characterisation of the doublets that were mislabeled by `scDblFinder.`
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+  library(patchwork)
+  library(rstatix)
+  library(yardstick)
+  library(caret)
+  library(ComplexHeatmap)
+  library(ggrepel)
+  library(png)
+})
+
+knitr::opts_chunk$set(fig.align = "center")
+```
+
+
+## Load data
+
+```{r}
+files <- list.dirs(path = here("output/data/Tonsils_10xFlex/Engineered/"), full.names = T, recursive = F)
+files <- files[grepl("Tonsils_10xFlex_engineered_12k_0.15p", files)]
+```
+
+```{r}
+
+run_read_data_all_cells <- function(path){
+  #original metadata (from uncorrected)
+  meta <- read_tsv(paste0(str_match(path, "^(.*?\\d+s)(?:_.*)?$")[,2], "/metadata.tsv"), show_col_types = F)
+  #doublet calling results
+  doublet_file <- list.files(path = paste0(path, "/doublet_calls/"),
+                             pattern = "scDblFinder",
+                             full.names = T)
+  dbl_res <- read_csv(doublet_file, show_col_types = F)
+  #combine, full_join to include everything
+  if ("Barcode" %in% names(meta)){
+    combined_res <- full_join(dbl_res, meta)
+  } else {
+    combined_res <- full_join(dbl_res, meta %>% mutate(., Barcode=GEM_barcode))
+  }
+  
+  #metadata for corrected (if applicable)
+  meta_current <- read_tsv(paste0(path, "/metadata.tsv"), show_col_types = F)
+  if ("ncount_frac_removed" %in% colnames(meta_current)){
+    ambient_tool_name <- str_match(basename(path), "\\d+s(?:_(.+))?$")[,2]
+    meta_current <- meta_current %>% select(., Barcode, ncount, nfeatures_rounded, nfeature_frac_removed, ncount_frac_removed)
+    colnames(meta_current)[2:5] <- paste0(ambient_tool_name, "_",colnames(meta_current)[2:5])
+    
+    combined_res <- full_join(combined_res, meta_current)
+  }
+
+  #add metadata
+  if (is.na(str_match(basename(path), "\\d+s(?:_(.+))?$")[,2])){
+    combined_res$ambient_tool <- "uncorrected"
+  } else {
+    combined_res$ambient_tool <- str_match(basename(path), "\\d+s(?:_(.+))?$")[,2]
+  }
+  combined_res$batch <- stringr::str_extract(basename(path), "\\d+s(?=($|_))")
+
+  return(combined_res)
+}
+
+```
+
+Run for all.
+
+
+```{r, message=FALSE}
+list_results <- lapply(files, run_read_data_all_cells) %>% bind_rows()
+
+#replace NAs in doublet calling with "Missing"
+list_results$scDblFinder_DropletType[is.na(list_results$scDblFinder_DropletType)] <- "Missing"
+
+```
+
+
+## Plotting shortcuts
+
+```{r}
+plot_sizing <- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = "black"),
+        plot.title = element_text(size = 22, , face = "italic"),
+         plot.subtitle= element_text(size = 18),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank()) 
+
+
+plot_sizing_keep_legend <- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = "black"),
+        plot.title = element_text(size = 22, face = "italic"),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size=16))
+
+rotate_x <- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 18))
+
+strip_fix <- theme(strip.background = element_rect(fill = "white"),
+                   strip.text = element_text(size = 18))
+
+title_size <- theme(plot.title = element_text(size = 22, face = "italic"))
+
+```
+
+
+## Colours
+
+```{r}
+# method colours
+ambient_tools_colours <- c( "#AD8BC9", 
+                     "#A8786E", "#CDCC5D", "#6DCCDA", "#67BF5C"
+                     , "grey60" ,"#EB663B" ,"azure")
+
+names(ambient_tools_colours) <- c("decontX", "decontX_BG", "soupX", "CellBender", "uncorrected", "never detected", "always detected", "true singlet")
+
+#doublet/singlet colours
+doublet_colours <- c("#2E91E5", "#EB663B"); names(doublet_colours) <- c("singlet", "doublet")
+
+```
+
+## Directory names
+
+```{r}
+save_dir <- here("output/figures/v4")
+```
+
+
+
+# Get unique droplets for batches
+
+## Unique doublets across batches
+
+
+```{r}
+list_doublet_barcodes <- list_results %>%
+  filter(., doublet_class == "doublet") %>%
+  split(., .$batch) %>%
+  lapply(., function(IN) IN %>% pull(Barcode))
+
+m_dist <- make_comb_mat(list_doublet_barcodes)
+
+all_unique <- comb_name(m_dist)[comb_size(m_dist) > 1000]
+all_extracted_sets <- sapply(all_unique, function(comb) {
+  extract_comb(m_dist, comb)
+}) %>% Reduce(append, .)
+```
+
+## Unique singlets across batches
+
+```{r}
+list_singlet_barcodes <- list_results %>%
+  filter(., doublet_class == "singlet") %>%
+  split(., .$batch) %>%
+  lapply(., function(IN) IN %>% pull(Barcode))
+
+m_dist <- make_comb_mat(list_singlet_barcodes)
+
+all_unique <- comb_name(m_dist)[comb_size(m_dist) > 900]
+all_unique_singlets <- sapply(all_unique, function(comb) {
+  extract_comb(m_dist, comb)
+}) %>% Reduce(append, .)
+```
+
+
+# Define doublet sets of interest
+
+First, lets remove any doublets and singlets that were present in more than 1 batch. We defined these sets in the previous sections.
+
+```{r}
+meta_for_analysis <- list_results %>% 
+  filter(., Barcode %in% c(all_extracted_sets, all_unique_singlets))
+```
+
+This dataframe currently contains all the metadata information. 
+
+### generally missed doublets, consensus doublets and true singlets 
+
+These are sets of doublets (and singlets) that are shared across all ambient correction tools:
+
+- generally missed doublets (or missed doublets): doublets that are not identified in any of the settings, including uncorrected
+
+- consensus doublets: doublets that are identified in ALL settings 
+
+- true singlets: ground true singlets 
+
+```{r}
+#CONSENSUS DOUBLETS
+list_consensus_doublets <- lapply(meta_for_analysis %>% split(., .$ambient_tool), function(entry){
+    entry %>% 
+      filter(., doublet_class == "doublet" & scDblFinder_DropletType == "doublet") %>% 
+      pull(Barcode)
+  })
+  
+true_doublets_all <- Reduce(intersect,  list_consensus_doublets)
+
+#TRUE SINGLETS
+#we don't actually have to re-run this, this will be 'all_unique_singlets'
+ 
+#get mislabeled doublets in all settings
+list_unidentifed_doublets <- lapply(meta_for_analysis %>% split(., .$ambient_tool), function(entry){
+    entry %>% 
+      filter(., doublet_class == "doublet" & scDblFinder_DropletType != "doublet") %>% 
+      pull(Barcode)
+  })
+
+
+#get correctly doublets in all settings
+list_corr_identified_doublets <- lapply(meta_for_analysis %>% split(., .$ambient_tool), function(entry){
+    entry %>% 
+      filter(., doublet_class == "doublet" & scDblFinder_DropletType == "doublet") %>% 
+      pull(Barcode)
+  })
+```
+
+Use Upset plot to visualise, but also to collect sets of doublets.
+
+```{r, fig.height=5, fig.width=10}
+m_dist_doublet <- make_comb_mat(list_unidentifed_doublets) 
+
+top_anno <- HeatmapAnnotation(
+
+    "Intersection size" = anno_barplot(
+        comb_size(m_dist_doublet),
+        add_numbers = TRUE,
+        gp = gpar(fill = "black"),
+        numbers_gp = gpar(fontsize = 13),
+        numbers_rot = 90,
+        border = FALSE
+    ),
+    
+    annotation_height = unit.c(
+        unit(30, "mm")   # barplot row
+    ),
+    
+    border = FALSE
+)
+
+UpSet(m_dist_doublet, comb_order = order(-comb_size(m_dist_doublet)), top_annotation = top_anno)
+grid.text("Mislabeled doublets - combinations", 
+          x = 0.5, 
+          y = 0.95, 
+          gp = gpar(fontsize = 20, fontface = "bold"))
+
+```
+
+Use this to get set of missed doublets.
+
+```{r}
+missed_doublets <- meta_for_analysis %>% 
+  filter(., Barcode %in% extract_comb(m_dist_doublet, "11111")) %>% 
+  pull(Barcode)
+```
+
+
+### sets for each ambient correction tool - undetected
+
+Next, we will define sets specifically for each ambient RNA correction tool. These will include all doublets missed by the tool, except the ones that are missed in all settings (as we assume they are missed because they are difficult to detect in general). 
+
+```{r}
+decontx_doublets <- meta_for_analysis %>% 
+  filter(., Barcode %in% setdiff(list_unidentifed_doublets$decontX, missed_doublets)) %>% 
+  pull(Barcode)
+
+decontx_bg_doublets <- meta_for_analysis %>% 
+  filter(., Barcode %in% setdiff(list_unidentifed_doublets$decontX_BG, missed_doublets)) %>% 
+  pull(Barcode)
+
+soupx_doublets <- meta_for_analysis %>% 
+  filter(., Barcode %in% setdiff(list_unidentifed_doublets$soupX, missed_doublets)) %>% 
+  pull(Barcode)
+
+cellbender_doublets <- meta_for_analysis %>% 
+  filter(., Barcode %in% setdiff(list_unidentifed_doublets$CellBender, missed_doublets)) %>% 
+  pull(Barcode)
+
+
+uncorrected_only_doublets <- meta_for_analysis %>% 
+  filter(., Barcode %in% setdiff(list_unidentifed_doublets$uncorrected, missed_doublets)) %>% 
+  pull(Barcode)
+```
+
+### sets for each ambient correction tool - detected
+
+Similar to above, this will define sets specifically for each ambient RNA correction tool. These will include all doublets that are detected by the tool, except the ones that are always detected in all settings.
+
+```{r}
+decontx_doublets_detected <- meta_for_analysis %>% 
+  filter(., Barcode %in% setdiff(list_corr_identified_doublets$decontX, true_doublets_all)) %>% 
+  pull(Barcode)
+
+decontx_bg_doublets_detected <- meta_for_analysis %>% 
+  filter(., Barcode %in% setdiff(list_corr_identified_doublets$decontX_BG, true_doublets_all)) %>% 
+  pull(Barcode)
+
+soupx_doublets_detected <- meta_for_analysis %>% 
+  filter(., Barcode %in% setdiff(list_corr_identified_doublets$soupX, true_doublets_all)) %>% 
+  pull(Barcode)
+
+cellbender_doublets_detected <- meta_for_analysis %>% 
+  filter(., Barcode %in% setdiff(list_corr_identified_doublets$CellBender, true_doublets_all)) %>% 
+  pull(Barcode)
+
+
+uncorrected_only_doublets_detected <- meta_for_analysis %>% 
+  filter(., Barcode %in% setdiff(list_corr_identified_doublets$uncorrected, true_doublets_all)) %>% 
+  pull(Barcode)
+```
+
+
+
+### Generate large DF for plotting
+
+We now need to combine everything into one big dataframe. As a doublet can be part of multiple sets, we will need to duplicate some entries. 
+
+```{r}
+
+list_doublets_meta <- list()
+list_doublets_meta[[1]] <- meta_for_analysis %>% 
+  filter(.,GEM_barcode %in% cellbender_doublets) %>% 
+  mutate(., status = "CellBender undetected")
+
+list_doublets_meta[[2]] <- meta_for_analysis %>% 
+  filter(.,GEM_barcode %in% cellbender_doublets_detected) %>% 
+  mutate(., status = "CellBender detected")
+
+list_doublets_meta[[3]] <- meta_for_analysis %>% 
+  filter(.,GEM_barcode %in% decontx_doublets) %>% 
+  mutate(., status = "decontX undetected")
+
+list_doublets_meta[[4]] <- meta_for_analysis %>% 
+  filter(.,GEM_barcode %in% decontx_doublets_detected) %>% 
+  mutate(., status = "decontX detected")
+
+list_doublets_meta[[5]] <- meta_for_analysis %>% 
+  filter(.,GEM_barcode %in% decontx_bg_doublets) %>% 
+  mutate(., status = "decontX_BG undetected")
+
+list_doublets_meta[[6]] <- meta_for_analysis %>% 
+  filter(.,GEM_barcode %in% decontx_bg_doublets_detected) %>% 
+  mutate(., status = "decontX_BG detected")
+
+list_doublets_meta[[7]] <- meta_for_analysis %>% 
+  filter(.,GEM_barcode %in% soupx_doublets) %>% 
+  mutate(., status = "soupX undetected")
+
+list_doublets_meta[[8]] <- meta_for_analysis %>% 
+  filter(.,GEM_barcode %in% soupx_doublets_detected) %>% 
+  mutate(., status = "soupX detected")
+
+list_doublets_meta[[9]] <- meta_for_analysis %>% 
+  filter(.,GEM_barcode %in% uncorrected_only_doublets) %>% 
+  mutate(., status = "uncorrected undetected")
+
+list_doublets_meta[[10]] <- meta_for_analysis %>% 
+  filter(.,GEM_barcode %in% uncorrected_only_doublets_detected) %>% 
+  mutate(., status = "uncorrected detected")
+
+
+list_doublets_meta[[11]] <- meta_for_analysis %>%
+  mutate(., status = case_when( doublet_class == "singlet" ~ "true singlet",
+                                GEM_barcode %in% missed_doublets ~ "never detected", 
+                                GEM_barcode %in% true_doublets_all ~ "always detected", 
+                                TRUE ~ "remove")) %>% 
+  filter(., status != "remove")
+
+
+meta_total <- bind_rows(list_doublets_meta) %>% 
+  mutate(status = factor(status,levels = c("uncorrected undetected", "uncorrected detected",
+                                               "CellBender undetected", "CellBender detected",
+                                               "soupX undetected", "soupX detected", 
+                                               "decontX undetected", "decontX detected",
+                                               "decontX_BG undetected", "decontX_BG detected",
+                                               "always detected", "never detected", "true singlet")))
+```
+
+
+```{r}
+table(meta_total$status , meta_total$ambient_tool )
+```
+Just to illustrate that the dataframe contains duplication of information, which is why we sometimes need to subset when plotting. 
+
+```{r, include=FALSE}
+#secret clean up
+rm(all_unique, all_unique_singlets, cellbender_doublets, decontx_bg_doublets, decontx_doublets, soupx_doublets, missed_doublets, true_doublets_all, list_unidentifed_doublets, list_results, list_doublet_barcodes, list_consensus_doublets, m_dist);gc()
+
+```
+
+
+
+# Make plots
+
+```{r}
+list_main <- list()
+```
+
+## Stacked barplot overview 
+
+Shows the proportion missed per setting. 
+
+```{r, fig.height=5, fig.width=7}
+#make boxplot df for plotting 
+special <- meta_total %>% 
+  filter(., ambient_tool == "uncorrected") %>% #we have entries for all 4 so to make sure we only plot once
+  dplyr::count(status)  %>% 
+  filter(grepl(c("never detected|always detected"), status))
+
+main_counts    <- meta_total %>%
+  filter(., ambient_tool == "uncorrected") %>% #we have entries for all 4 so to make sure we only plot once
+  dplyr::count(status)  %>%
+  filter(!grepl(c("never detected|always detected|true singlet"), status)) %>% 
+  mutate(., ambient_tool = gsub(" .*", "", status))
+
+result <- map_dfr(main_counts$ambient_tool, function(s) {
+  bind_rows(
+    main_counts %>% filter(ambient_tool == s) %>% select(-ambient_tool),
+    special
+  ) %>%
+    mutate(tool = s, .before = 1)
+})  %>% unique() %>% 
+  mutate(.,  tool = factor(tool, levels = c("uncorrected", "CellBender", "soupX", "decontX", "decontX_BG")),
+             status = factor(status, levels = c("uncorrected undetected", "uncorrected detected",
+                                               "CellBender undetected", "CellBender detected",
+                                               "soupX undetected", "soupX detected",
+                                               "decontX undetected", "decontX detected",
+                                               "decontX_BG undetected", "decontX_BG detected",
+                                               "always detected", "never detected")))
+
+
+tool_fill_colours <- c("CellBender undetected"  = "#6DCCDA",
+                       "CellBender detected"    = "#6DCCDA",
+                       "soupX undetected"       = "#CDCC5D",
+                       "soupX detected"         = "#CDCC5D",
+                       "decontX undetected"     = "#AD8BC9",
+                       "decontX detected"       = "#AD8BC9",
+                       "decontX_BG undetected"  = "#A8786E",
+                       "decontX_BG detected"    = "#A8786E",
+                       "uncorrected undetected" = "#67BF5C",
+                       "uncorrected detected"   = "#67BF5C",
+                       "never detected"         = "grey60",
+                       "always detected"        = "#EB663B")
+
+list_main$stacked_barplot_overview <- result %>%
+  mutate(alpha_group = ifelse(grepl(" detected$", as.character(status)) &
+                              !grepl("never|always", as.character(status)),
+                              "detected", "full")) %>%
+  ggplot(., aes(x=tool, y=n, fill=status, alpha=alpha_group)) +
+  geom_bar(position = "stack", stat="identity") +
+  geom_text(position=position_stack(vjust=0.5),
+            aes(label=ifelse(grepl("undetected", status) & n > 0, n, NA)),
+            fontface="bold", alpha=1, size=5, na.rm=TRUE) +
+  plot_sizing +
+  rotate_x +
+  scale_fill_manual(
+    values = tool_fill_colours,
+    breaks = c("never detected", "always detected"),
+    name = "") +
+  scale_alpha_manual(
+    values = c("detected" = 0.5, "full" = 1),
+    breaks = c("full", "detected"),
+    labels = c("full" = "undetected", "detected" = "detected"),
+    name   = "",
+    guide  = guide_legend(override.aes = list(fill = "black", alpha = c(1, 0.15)))) +
+  ylab("# doublets") + xlab("") +
+  ggtitle("Doublets overview") +
+  theme(legend.position = "right",
+        legend.justification = c(0, 0.7),
+        panel.grid = element_blank())
+
+
+list_main$stacked_barplot_overview
+
+```
+
+
+As we'll only need the undetected moving forward, lets make a DF with just the undetected. 
+
+
+```{r}
+
+meta_total_undetected <- meta_total %>% 
+  filter(grepl("undetected|never|always|true", status)) %>% 
+  mutate(., status_plot = factor(case_when(status == "CellBender undetected" ~ "CellBender",
+                                    status == "decontX undetected"~ "decontX",
+                                    status == "decontX_BG undetected"~ "decontX_BG",
+                                    status == "soupX undetected"~ "soupX",
+                                    status == "uncorrected undetected"~ "uncorrected",
+                                    TRUE ~ status),
+                                 levels = c("uncorrected", "CellBender", "soupX", "decontX", "decontX_BG",
+                                            "never detected", "always detected", "true singlet")))
+
+
+```
+
+
+
+
+## Cosine similarity 
+
+```{r, fig.height=7, fig.width=10}
+
+means <- meta_total_undetected %>% 
+  filter(., ambient_tool== "uncorrected" & status != "true singlet") %>% 
+  group_by(status_plot) %>% 
+  summarise(median_cosine = median(cosine_similarity))
+
+list_main$cosine <- meta_total_undetected %>% 
+  filter(., ambient_tool== "uncorrected" & status != "true singlet") %>% 
+    ggplot(.)+
+    geom_boxplot(aes(x=status_plot, y=cosine_similarity, fill=status_plot), outliers = FALSE)+
+    geom_jitter(aes(x=status_plot, y=cosine_similarity),size=0.2, alpha=0.2, width = 0.25)+
+    geom_label(data=means, aes(x=status_plot, y=median_cosine, label = round(median_cosine, 2))) +
+    plot_sizing + rotate_x + theme(legend.position = "none") +
+    scale_fill_manual(values = ambient_tools_colours) + xlab("") + ylab("cosine similarity") + ggtitle("Cell type similarity")
+
+list_main$cosine_QR <- meta_total_undetected %>% 
+  filter(., ambient_tool== "uncorrected" & status != "true singlet") %>% #we have entries for all 4 so to make sure we only plot once
+    ggplot(.)+
+    ggbeeswarm::geom_quasirandom(aes(x=status_plot, y=cosine_similarity,color = status_plot), size = 1, alpha = 0.8)+
+    geom_label(data=means, aes(x=status_plot, y=median_cosine, label = round(median_cosine, 2))) +
+    plot_sizing + rotate_x + theme(legend.position = "none") +
+    scale_colour_manual(values = ambient_tools_colours) + xlab("") + ylab("cosine similarity") + ggtitle("Cell type similarity")
+
+list_main$cosine  + list_main$cosine_QR
+
+```
+
+
+```{r}
+means %>% mutate(., status_plot = gsub("\nn=*.*", "", status_plot)) %>% knitr::kable()
+```
+
+
+## Library size before correction
+
+```{r, fig.height=7, fig.width=10}
+# for supp
+means <- meta_total_undetected %>% 
+  filter(., ambient_tool== "uncorrected") %>% 
+    group_by(status_plot) %>% 
+    summarise(median_ncount_raw = median(ncount_raw))
+  
+list_main$lib_size_uc <- meta_total_undetected %>% 
+    filter(., ambient_tool== "uncorrected") %>% 
+    ggplot(.)+
+    geom_boxplot(aes(x=status_plot, y=log10(ncount_raw), fill=status_plot), outliers = FALSE)+
+    geom_jitter(aes(x=status_plot, y=log10(ncount_raw)),size=0.2, alpha=0.2, width = 0.25)+
+    geom_label(data=means, aes(x=status_plot, y=log10(median_ncount_raw), label = round(median_ncount_raw))) +
+    plot_sizing + rotate_x + theme(legend.position = "none") +
+    scale_fill_manual(values = ambient_tools_colours) + xlab("") + ylab("log10(library size)") + ggtitle("Library size prior to correction")
+
+list_main$lib_size_uc_QR <- meta_total_undetected %>% 
+    filter(., ambient_tool== "uncorrected") %>% 
+    ggplot(.)+
+    ggbeeswarm::geom_quasirandom(aes(x=status_plot, y=log10(ncount_raw),color = status_plot), size = 1, alpha = 0.8)+
+    geom_label(data=means, aes(x=status_plot, y=log10(median_ncount_raw), label = round(median_ncount_raw))) +
+    plot_sizing + rotate_x + theme(legend.position = "none") +
+    scale_colour_manual(values = ambient_tools_colours) + xlab("") + ylab("log10(library size)") + ggtitle("Library size prior to correction")
+
+list_main$lib_size_uc + list_main$lib_size_uc_QR
+
+```
+
+
+
+```{r}
+means %>% mutate(., status_plot = gsub("\nn=*.*", "", status_plot)) %>% knitr::kable()
+```
+
+## Library size ratio 
+
+
+```{r, fig.height=7, fig.width=10}
+
+means <- meta_total_undetected %>% 
+  filter(., status != "true singlet" & ambient_tool== "uncorrected") %>% 
+  group_by(Barcode) %>% 
+  mutate(., ratio = max(CT1_ncounts, CT2_ncounts)/min(CT1_ncounts, CT2_ncounts)) %>% 
+  group_by(status_plot) %>% 
+  summarise(., median_ratio = median(ratio))
+
+list_main$ratio_plot <- meta_total_undetected %>% 
+    filter(., status != "true singlet"& ambient_tool== "uncorrected") %>% 
+    group_by(Barcode) %>% 
+    mutate(., ratio = max(CT1_ncounts, CT2_ncounts)/min(CT1_ncounts, CT2_ncounts)) %>% 
+    ggplot(.)+
+    geom_boxplot(aes(x=status_plot, y=log(ratio), fill=status_plot), outliers = FALSE)+
+    geom_jitter(aes(x=status_plot, y=log(ratio)),size=0.2, alpha=0.1, width = 0.25)+
+    geom_label(data=means, aes(x=status_plot, y=log(median_ratio), label = round(log(median_ratio),2))) +
+    plot_sizing + rotate_x + theme(legend.position = "none") +
+    scale_fill_manual(values = ambient_tools_colours) + xlab("") + ylab("log(ratio)") + ggtitle("library size ratio")
+
+list_main$ratio_plot_QR <- meta_total_undetected %>% 
+    filter(., status != "true singlet"& ambient_tool== "uncorrected") %>% 
+    group_by(Barcode) %>% 
+    mutate(., ratio = max(CT1_ncounts, CT2_ncounts)/min(CT1_ncounts, CT2_ncounts)) %>% 
+    ggplot(.)+
+    ggbeeswarm::geom_quasirandom(aes(x=status_plot, y=log(ratio),color = status_plot), size = 1, alpha = 0.8)+
+    geom_label(data=means, aes(x=status_plot, y=log(median_ratio), label = round(log(median_ratio),2))) +
+    plot_sizing + rotate_x + theme(legend.position = "none") +
+    scale_colour_manual(values = ambient_tools_colours) + xlab("") + ylab("log(ratio)") + ggtitle("library size ratio")
+
+
+list_main$ratio_plot + list_main$ratio_plot_QR
+
+```
+
+
+```{r}
+means %>% mutate(., status_plot = gsub("\nn=*.*", "", status_plot)) %>% knitr::kable()
+```
+
+## Proportion of counts removed 
+
+Get ready for plotting, rearrange dataframe.
+
+```{r}
+post <- meta_total_undetected %>% 
+  select(., ends_with("ncount_frac_removed"), status_plot) %>% 
+  pivot_longer(cols=ends_with("ncount_frac_removed"), names_to = "tool", values_to = "prop_removed") %>% 
+  mutate(., tool = case_when(tool == "decontX_ncount_frac_removed" ~ "decontX",
+                             tool == "decontX_BG_ncount_frac_removed" ~ "decontX_BG",
+                             tool == "soupX_ncount_frac_removed" ~ "soupX",
+                             tool == "CellBender_ncount_frac_removed" ~ "CellBender"))
+
+means <- post %>% 
+  group_by(status_plot, tool) %>% 
+  summarise(median_removed = median(prop_removed, na.rm = T))
+
+```
+
+Show means.
+
+```{r}
+means %>% mutate(., status_plot = gsub("\nn=*.*", "", status_plot)) %>% knitr::kable()
+```
+
+
+Overview that shows everything:
+
+```{r, message=FALSE, fig.height=10, fig.width=10}
+post %>%
+  ggplot(.)+
+  geom_boxplot(aes(x=status_plot, y=prop_removed, fill=status_plot), outliers = FALSE) +
+  geom_jitter(aes(x=status_plot, y=prop_removed), size=0.3, alpha=0.2, width = 0.2) +
+  plot_sizing + rotate_x +
+  geom_label(data=means, aes(x=status_plot, y=1.2, label = round(median_removed,2), fill=status_plot)) +
+  facet_wrap(~tool) +
+  scale_fill_manual(values = ambient_tools_colours) + xlab("") + ylab("proportion removed") + ggtitle("Proportion of counts removed during correction") +strip_fix + theme(legend.position = "none")
+```
+
+Make plots with only sets of interest. 
+
+```{r, message=FALSE, fig.height=5, fig.width=10}
+factor_order <- c("always detected", "never detected", "true singlet")
+
+p_cellbender <-  post %>%
+  filter(., status_plot %in% c(factor_order, "CellBender") & tool == "CellBender") %>%
+  mutate(status_plot = factor(status_plot, levels = c("CellBender", factor_order))) %>%
+  ggplot(.)+
+  geom_boxplot(aes(x=status_plot, y=prop_removed, fill=status_plot), outliers = FALSE) +
+  geom_jitter(aes(x=status_plot, y=prop_removed), size=0.3, alpha=0.2, width = 0.2) +
+  plot_sizing + rotate_x +
+    facet_wrap(~tool) +
+  scale_fill_manual(values = ambient_tools_colours) +
+  scale_x_discrete(labels = c("CellBender" = "undetected")) +
+  xlab("") + ylab("proportion removed")  +strip_fix+ theme(legend.position = "none") 
+
+p_decontx_bg <-  post %>%
+  filter(., status_plot %in% c(factor_order, "decontX_BG") & tool == "decontX_BG") %>%
+  mutate(status_plot = factor(status_plot, levels = c("decontX_BG", factor_order))) %>%
+  ggplot(.)+
+  geom_boxplot(aes(x=status_plot, y=prop_removed, fill=status_plot), outliers = FALSE) +
+  geom_jitter(aes(x=status_plot, y = prop_removed), size=0.3, alpha=0.2, width = 0.2) +
+  plot_sizing + rotate_x +
+    facet_wrap(~tool) +
+  scale_fill_manual(values = ambient_tools_colours) +
+  scale_x_discrete(labels = c("decontX_BG" = "undetected")) +
+  xlab("") + ylab("proportion removed")  +strip_fix+ theme(legend.position = "none")
+
+p_decontx <-  post %>%
+  filter(., status_plot %in% c(factor_order, "decontX") & tool == "decontX") %>%
+  mutate(status_plot = factor(status_plot, levels = c("decontX", factor_order))) %>%
+  ggplot(.)+
+  geom_boxplot(aes(x=status_plot, y=prop_removed, fill=status_plot), outliers = FALSE) +
+  geom_jitter(aes(x=status_plot, y=prop_removed), size=0.3, alpha=0.2, width = 0.2) +
+  plot_sizing + rotate_x +
+    facet_wrap(~tool) +
+  scale_fill_manual(values = ambient_tools_colours) +
+  scale_x_discrete(labels = c("decontX" = "undetected")) +
+  xlab("") + ylab("proportion removed")  +strip_fix+ theme(legend.position = "none")
+
+p_soupx <-  post %>%
+  filter(., status_plot %in% c(factor_order, "soupX") & tool == "soupX") %>%
+  mutate(status_plot = factor(status_plot, levels = c("soupX", factor_order))) %>%
+  ggplot(.)+
+  geom_boxplot(aes(x=status_plot, y=prop_removed, fill=status_plot), outliers = FALSE) +
+  geom_jitter(aes(x=status_plot, y=prop_removed), size=0.3, alpha=0.2, width = 0.2) +
+  plot_sizing + rotate_x +
+    facet_wrap(~tool) +
+  ylim(c(0,0.15)) + #cut off outliers
+  scale_fill_manual(values = ambient_tools_colours) +
+  scale_x_discrete(labels = c("soupX" = "undetected")) +
+  xlab("") + ylab("proportion removed")  +strip_fix+ theme(legend.position = "none")
+
+
+list_main$plot_removed_count <- (p_cellbender + p_soupx + p_decontx + p_decontx_bg + plot_layout(axis_titles = "collect", nrow = 1))
+
+list_main$plot_removed_count
+
+```
+
+
+
+# Main Figure
+
+```{r, fig.height=12, fig.width=18, fig.align='center'}
+
+tag_margin <- theme(plot.margin = margin(t = 5.5, r = 5.5, b = 5.5, l = 5.5))
+
+top_row <- list_main$stacked_barplot_overview +
+  (wrap_elements(full = ggplotify::as.grob(list_main$plot_removed_count)) + tag_margin) + plot_layout(design = "ABBBB")
+
+bottom_row <- list_main$cosine +
+  list_main$lib_size_uc +
+  list_main$ratio_plot
+
+main <- wrap_plots(top_row) + wrap_plots(bottom_row) +
+  plot_layout(heights = c(1.25, 1), ncol=1) &
+  plot_annotation(tag_levels ="A") &
+    title_size &
+  theme(
+    plot.tag = element_text(size = 20, face = "bold")
+  )
+
+
+ggsave(plot = main,
+       filename = "Figure_04_EngineeredDataset_InDepthCharacterisation.png",
+       path = save_dir,
+       device = "png",
+       width = 18,
+       height = 12,
+       dpi = 1200,
+       bg = "transparent")
+
+main
+```
+

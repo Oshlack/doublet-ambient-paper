@@ -1,0 +1,269 @@
+---
+title: "BrainCortex nuclei 10x: evaluate doublet calling (all doublet detection tools)"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+In this markdown, we will evaluate the performance of doublet calling using a selection of doublet detection tools (`scDblFinder`, `scrublet`, `DoubletDetection`, `scds`, `bcds`, `cxds`) on the BrainCortex nuclei 10x dataset, both uncorrected as well as ambient corrected (`decontX BG`, `decontX`, `soupX`, `CellBender`). 
+
+
+We treat the demultiplexed result as the ground truth. We will calculate performance metrics using `caret` and `yardstick` (AUPRC, MCC) packages.
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+  library(patchwork)
+  library(rstatix)
+  library(yardstick)
+  library(caret)
+  library(ComplexHeatmap)
+  library(ggrepel)
+})
+```
+
+
+## Load data
+
+```{r}
+files <- list.dirs(path = here("output/data/BrainCortex_nuclei_10x/"), full.names = T, recursive = F)
+files <- files[grepl("BrainCortex_nuclei_10x_cellranger", files)]
+```
+
+```{r}
+
+run_read_data <- function(path){
+  #original metadata (from UNFILTERED uncorrected) - this will contain ALL info
+  meta <- read_tsv(paste0(here("output/data/BrainCortex_nuclei_10x//BrainCortex_nuclei_10x_cellranger"), "/metadata.tsv"), show_col_types = F)
+    
+  #converting multiplet hits to doublets for now
+  meta$doublet_class[meta$doublet_class == "multiplet"] <- "doublet" 
+  
+  #filter metadata based on uncorrected qc filtered barcodes - these are droplets that pass QC (based on RNA reads) AND have a doublet/singlet assignment based on demultiplexing
+  barcodes_to_keep <- read_tsv(here("output/data/BrainCortex_nuclei_10x//BrainCortex_nuclei_10x_cellranger/filtered_qc_barcodes.tsv"), show_col_types = F) %>% pull(.)
+  
+  meta <- meta %>% 
+    filter(., Barcode %in% barcodes_to_keep)
+  
+  #doublet calling results 
+  doublet_file <- list.files(path = paste0(path, "/doublet_calls/"),
+                             pattern = "consensus",
+                             full.names = T)
+  dbl_res <- read_csv(doublet_file, show_col_types = F)
+  #combine, full
+  combined_res <- right_join(dbl_res, meta)
+  
+
+  #add metadata
+  if (basename(path) == "BrainCortex_nuclei_10x_cellranger"){
+    combined_res$ambient_tool <- "uncorrected"
+  } else {
+    combined_res$ambient_tool <- gsub("BrainCortex_nuclei_10x_cellranger_", "",basename(path))
+  }
+  return(combined_res)
+} 
+
+
+```
+
+Run for all.
+
+
+```{r, message=FALSE}
+list_results <- lapply(files, run_read_data)
+names(list_results) <- basename(files)
+```
+
+
+# Compute metrics using `caret` package
+
+Write a function that computes all confusion matrix performance metrics using the `caret::confusionMatrix()` function. Note that we consider doublets the positive class in this analysis.
+
+```{r}
+run_evaluation_confusion_matrix <- function(entry){
+  #convert for all doublet detection tools
+  df_tmp <- entry %>% 
+    pivot_longer(., cols=ends_with("DropletType"), names_to = "doublet_tool", values_to = "call") %>% 
+    mutate(., doublet_tool = gsub("_DropletType", "", doublet_tool)) %>% 
+    mutate(., call = ifelse(is.na(call), "Missing", call)) %>% #NAs indicate this droplet was removed due to QC, we consider it missing
+    select(call, doublet_tool, ambient_tool, doublet_class) 
+  
+  list_res <- lapply(df_tmp$doublet_tool %>% unique(), function(TOOL){
+    CM <- df_tmp %>% 
+    filter(., doublet_tool == TOOL) %>% 
+    select(doublet_class, call) %>% 
+    mutate(., doublet_class = factor(doublet_class, levels = c("singlet", "doublet", "Missing")),
+           call = factor(call, levels = c("singlet", "doublet", "Missing"))) %>% 
+    table() %>% t() #transform because confusionMatrix makes assumption of which is col and row
+    
+    dimnames(CM) <- list( Predicted = c("singlet", "doublet", "Missing"),
+                             Actual = c("singlet", "doublet", "Missing"))
+    
+    stats <- caret::confusionMatrix(data = CM, mode = "everything")
+    
+    res <- stats$byClass %>% as.data.frame() %>% 
+      filter(rownames(.) == "Class: doublet") %>% #we consider detecting a doublet a "positive" event 
+      mutate(., ambient_tool = unique(df_tmp$ambient_tool),
+                doublet_tool = TOOL) %>% 
+      select(doublet_tool, ambient_tool, everything())
+    
+    return(res)
+  })
+  
+  
+  OUT <- bind_rows(list_res)
+  rownames(OUT) <- NULL
+  
+  return(OUT)
+
+    
+}
+
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+caret_metrics <- lapply(list_results, run_evaluation_confusion_matrix) %>% bind_rows()
+```
+
+
+```{r}
+DT::datatable(caret_metrics, rownames = F)
+```
+
+# Compute metrics using `yardstick` package
+
+## Compute AUPRC
+
+Note that this metric does not take the Missing barcodes into account, but removes them as they do not have a doublet score. Also note that as DoubletDetection does not output a score, we cannot compute this metric for it. 
+
+Write function.
+
+```{r}
+run_evaluation_auprc <- function(entry){
+  
+  all_tools <- entry %>% 
+    pivot_longer(., cols=ends_with("DropletType"), names_to = "doublet_tool", values_to = "call") %>%
+    mutate(., doublet_tool = gsub("_DropletType", "",doublet_tool)) %>% 
+    filter(., doublet_tool != "DoubletDetection") %>% #no score
+    pull(doublet_tool) %>% unique()
+  
+  
+  list_res <- lapply(all_tools, function(TOOL){
+      input <- entry %>%
+        select(doublet_class, starts_with(TOOL)) %>% 
+        dplyr::rename(truth = doublet_class, doublet_score = contains("score", ignore.case = T), predicted= ends_with("Type")) %>% 
+    mutate(., truth = factor(truth, levels = c("doublet", "singlet")),
+           predicted = factor(predicted, levels =  c("doublet", "singlet"))) # doublet considered "true" event
+      
+      out_doubl <- pr_auc(input, truth, doublet_score) %>%
+        rename(.,pr_auc = `.estimate`) %>% 
+        mutate(., ambient_tool = unique(entry$ambient_tool),
+                doublet_tool = TOOL) %>% 
+      select(doublet_tool, ambient_tool, pr_auc)
+  
+    
+    return(out_doubl)
+  })
+  
+  
+  OUT <- bind_rows(list_res)
+  rownames(OUT) <- NULL
+  
+  return(OUT)
+
+    
+  }
+
+```
+
+```{r}
+all_results_auprc <- lapply(list_results, run_evaluation_auprc) %>% bind_rows()
+
+```
+
+```{r}
+DT::datatable(all_results_auprc, rownames = F)
+```
+
+
+## Compute MCC
+
+Compute MCC, make sure to add Missing to the levels! 
+
+```{r}
+run_mcc <- function(entry){
+  doublet_tools_loop <- colnames(entry)[grepl("_DropletType", colnames(entry))]
+  truth_in <- factor(entry$doublet_class, levels = c("singlet", "doublet", "Missing"))
+  
+  OUT <- lapply(doublet_tools_loop, function(TOOL){
+    predicted_in <- entry %>% pull(TOOL)
+    predicted_in[is.na(predicted_in)] <- "Missing" #NAs indicate this droplet was removed due to QC, we consider it missing
+    
+    input <- data.frame(truth = truth_in, 
+                      predicted = factor(predicted_in, levels = c("singlet", "doublet", "Missing")))
+    
+    tmp_out <- data.frame(ambient_tool = unique(entry$ambient_tool),
+             doublet_tool = gsub("_DropletType","", TOOL),
+             mcc = mcc(input, truth, predicted)$`.estimate`)
+  } ) %>% bind_rows()
+  
+  return(OUT)
+
+}
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+all_MCC <- lapply(list_results, run_mcc) %>% bind_rows()
+```
+
+
+```{r}
+DT::datatable(all_MCC, rownames = F)
+```
+
+
+# Export 
+
+## Combine and clean up
+
+
+```{r}
+
+combined_results <- full_join(full_join(caret_metrics, all_MCC, by=c("ambient_tool", "doublet_tool")), 
+                              all_results_auprc, by=c("ambient_tool", "doublet_tool"))
+
+colnames(combined_results)
+
+```
+
+
+```{r}
+DT::datatable(combined_results, rownames = F)
+```
+
+## Write to file
+
+Export results for plotting for figures. 
+
+
+```{r}
+filename <- here("output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_correctAssignments_MCC.csv")
+
+write_csv(x = combined_results, file = filename, col_names = TRUE)
+
+```

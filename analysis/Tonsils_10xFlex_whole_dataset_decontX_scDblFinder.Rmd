@@ -1,0 +1,351 @@
+---
+title: "Tonsil 10x Flex, whole dataset: doublet calling using scDblFinder on decontX corrected"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown performs doublet calling using scDblFinder on the whole, decontX corrected Tonsil 10x Flex dataset. This includes:
+
+- decontX correction - no background provided
+
+- removal of low quality cells (post-ambient correction)
+
+- scDblFinder doublet calling, split per sample
+
+- clustering (using Seurat)
+
+- export of results as `qs2` object, as well as in 10X cellranger output format
+
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(here)
+  library(glue)
+  library(DropletUtils)
+  library(scran)
+  library(scater)
+  library(scuttle)
+  library(scales)
+  library(readr)
+  library(Seurat)
+  library(scDblFinder)
+  library(scMerge)
+  library(ggpubr)
+  library(BiocParallel)
+  library(clustree)
+  library(SingleCellExperiment)
+  library(scMerge)
+  library(Matrix)
+  library(SeuratDisk)
+  library(qs2)
+  library(patchwork)
+  library(decontX)
+})
+
+
+```
+
+## General plotting themes
+
+```{r}
+plot_sizing <- theme_bw()+
+  theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14, colour = "black"),
+        plot.title = element_text(size = 18),
+        plot.subtitle = element_text(size = 16),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank()) 
+
+plot_sizing_keep_title <- theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14, colour = "black"),
+        plot.title = element_text(size = 18),
+        plot.subtitle = element_text(size = 16),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size = 14) )
+
+rotate_x <- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+strip_fix <- theme(strip.background = element_rect(fill = "white"), 
+                   strip.text = element_text(size = 14))
+
+```
+
+
+
+## Load data
+
+Note that the following code chunk was previously run by Gunjan Dixit, and the resulting rds object was loaded for the remaining analysis. 
+
+`cellranger multi` filtered matrices for each sample (n=16) were loaded and combined into a SingleCellExperiment. 
+
+```{r, eval=FALSE}
+
+#Lists for sample names. Used in loading the CellRanger outputs.
+batch_samples <- list.dirs("/oshlack_lab/shared/projects/paed-airway-atlas/G000231_Neeland_batch9/extdata/CellRanger/G000231_batch9_1/outs/per_sample_outs", full.names = FALSE, recursive = F)
+
+#Helper functions for reading the per-sample counts into a SingleCellExperiment object.
+make_filtered_sce <- function(sample_name) {
+  print(sample_name)
+  counts <- Read10X_h5(sprintf('/oshlack_lab/shared/projects/paed-airway-atlas/G000231_Neeland_batch9/extdata/CellRanger/G000231_batch9_1/outs/per_sample_outs/%s/count/sample_filtered_feature_bc_matrix.h5', sample_name))
+  sce <- SingleCellExperiment(assays = c("counts" = counts))
+  sce$Sample <- sample_name
+  return(sce)
+}
+
+sce <- lapply(batch_samples, function(sn) make_filtered_sce(sn))
+sce <- sce_cbind(sce_list = sce,
+                 exprs = "counts",
+                 cut_off_batch = 0, #keep everything
+                 cut_off_overall = 0, #keep everything
+                 colData_names = "Sample") #merge, no integration
+
+```
+
+
+```{r, include=FALSE}
+sce <- readRDS(here("data/Tonsils_10xFlex/G000231_Neeland_batch9_Tonsils.CellRanger_filtered.SCE.rds"))
+
+```
+
+
+# Ambient RNA correction - decontX no background
+
+We are applying decontX without providing empty droplets as background. 
+
+```{r, warning=FALSE}
+sce <- decontX(sce)  #without background
+
+## Replace counts with decontx counts
+counts(sce) <- decontXcounts(sce)
+sce@assays@data$decontXcounts <- NULL #remove to save memory
+sce@metadata$decontX <- NULL #remove to save memory
+sce@int_colData$reducedDims$decontX_UMAP <- NULL #remove to save memory
+
+```
+
+```{r, include=FALSE}
+gc()
+```
+
+
+# QC filtering 
+
+Low quality cells will be removed prior to performing doublet detection. Our main goal here is to eliminate cells with a very low library size and/or number of genes detected, as well as cells with unusually high % mitochondrial reads as their presence may interfere with doublet calling. 10X flex does not have any probes for ribosomal genes. We are performing this on ambient RNA corrected data. We define the number of genes expressed as the number of genes that have a count >0.5. 
+
+
+Add per cell summary metrics
+
+```{r}
+is.mito <- grepl(pattern = "^MT", rownames(sce))
+sce <- addPerCellQCMetrics(sce, subsets = list(mito = is.mito))
+
+new_meta <- sce@colData %>% as.data.frame() %>% #immediately clean up metadata
+  dplyr::rename(., ncount = sum) %>%
+  select(., -c("subsets_mito_sum", "subsets_mito_detected", "total" ,"detected"))
+sce@colData <- new_meta %>% DataFrame()
+
+#adding nfeatures as rounded
+sce$nfeatures <- colSums(assay(sce, "counts") > 0.5)
+
+```
+
+```{r, include=FALSE}
+rm(new_meta, is.mito); gc()
+```
+
+
+Plot distribution of library sizes, detected genes and %mito, split for each sample. The dotted lines indicate selected thresholds. 
+
+```{r, fig.align='center', fig.height=10, fig.width=10}
+p1 <- plotColData(
+    sce,
+    "ncount",
+    x = "Sample",
+    colour_by = "Sample",
+    point_size = 1) +
+    scale_y_log10() +
+    theme(axis.text.x = element_blank()) +
+    geom_hline(yintercept = 200,
+               linetype = "dotted")
+
+p2 <- plotColData(
+    sce,
+    "nfeatures",
+    x = "Sample",
+    colour_by = "Sample",
+    point_size = 1) +
+    scale_y_log10() +
+    theme(axis.text.x = element_blank()) +
+    geom_hline(yintercept = 150,
+               linetype = "dotted")
+  
+p3 <- plotColData(
+    sce,
+    "subsets_mito_percent",
+    x = "Sample",
+    colour_by = "Sample",
+    point_size = 1) +
+    theme(axis.text.x = element_blank()) +
+    geom_hline(yintercept = 7,
+               linetype = "dotted")
+
+p1+p2+p3 + plot_layout(ncol=2)
+```
+
+
+Remove cells. 
+
+```{r}
+sce$high_quality_cell <- (sce$ncount >= 200) & (sce$nfeatures >= 150)  & (sce$subsets_mito_percent <= 7) 
+
+sce@colData %>% as.data.frame() %>% 
+  group_by(Sample,high_quality_cell) %>% 
+  summarise(count = n()) %>% 
+  group_by(Sample) %>% 
+  mutate(., percent_kept = round(count/sum(count),5)) %>% 
+  filter(., high_quality_cell == FALSE) %>% 
+  select(Sample, count, percent_kept) %>% 
+  dplyr::rename(removed_cell=count) %>% 
+  knitr::kable() 
+
+```
+
+```{r}
+sce_filtered <- sce[rowSums(counts(sce)) > 50, sce$high_quality_cell == T] #also remove genes that are barely expressed
+sce_filtered
+```
+
+```{r, fig.align='center', fig.height=10, fig.width=10}
+p1 <- plotColData(
+    sce_filtered,
+    "ncount",
+    x = "Sample",
+    colour_by = "Sample",
+    point_size = 1) +
+    scale_y_log10() +
+    theme(axis.text.x = element_blank()) 
+
+p2 <- plotColData(
+    sce_filtered,
+    "nfeatures",
+    x = "Sample",
+    colour_by = "Sample",
+    point_size = 1) +
+    scale_y_log10() +
+    theme(axis.text.x = element_blank()) 
+  
+p3 <- plotColData(
+    sce_filtered,
+    "subsets_mito_percent",
+    x = "Sample",
+    colour_by = "Sample",
+    point_size = 1) +
+    theme(axis.text.x = element_blank())
+
+p1+p2+p3 + plot_layout(ncol=2)
+```
+
+
+```{r, include=FALSE}
+rm(sce, p1, p2, p3);gc()
+```
+
+
+
+
+# Doublet calling - scDblFinder
+
+Running scDblFinder for doublet detection. We have already removed cells with very low library size and very high mitochondrial content. scDblFinder requires a standard workflow to be run on the SCE. As recommended by the authors, we are applying scDblFinder for each sample separately by using the `samples` parameter. 
+
+```{r}
+#standard workflow
+sce_filtered <- logNormCounts(sce_filtered) %>%
+  runPCA() %>%
+  runUMAP()
+
+#scDblFinder
+set.seed(1997)
+sce_filtered <- scDblFinder(sce_filtered,
+                   clusters = T,
+                   dbr.sd = 1, #removing doublet rate assumption 
+                   samples = "Sample", 
+                   verbose=F) 
+```
+
+```{r, include=FALSE}
+gc()
+```
+
+
+# Clustering 
+
+`Seurat` clustering functions are faster and more user-friendly. 
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+seu <- as.Seurat(sce_filtered, counts = "counts", data = "logcounts") #convert to seurat
+gc()
+
+# run clustering for multiple solutions, all high level
+seu <- FindNeighbors(seu, reduction = "PCA", dims = 1:30, verbose=F) %>%
+  FindClusters(resolution = seq(0.1, 0.3, by = 0.1), algorithm = 3, verbose=F)
+
+#add back to SCE
+sce_filtered$clustering_res0.1 <- seu$RNA_snn_res.0.1
+sce_filtered$clustering_res0.2 <- seu$RNA_snn_res.0.2
+sce_filtered$clustering_res0.3 <- seu$RNA_snn_res.0.3
+```
+
+```{r, include=FALSE}
+rm(seu);gc()
+```
+
+# Clean up metadata
+
+Before we export the data, lets tidy up the metadata. 
+
+```{r, echo=FALSE}
+new_meta <- sce_filtered@colData %>% as.data.frame() %>% 
+  select(., c("Sample", "ncount", "nfeatures", "subsets_mito_percent", "sizeFactor", "scDblFinder.class", "scDblFinder.score", "clustering_res0.1", "clustering_res0.2", "clustering_res0.3"))
+sce_filtered@colData <- new_meta %>% DataFrame()
+
+```
+
+```{r, include=FALSE}
+rm(new_meta);gc()
+```
+
+
+# Export
+
+## qs2 export
+
+Exporting whole object.
+
+```{r}
+filename <- here("output/data/Tonsils_10xFlex/Tonsils_10xFlex_whole_dataset_processed_decontX_scdblfinder.qs2")
+qs_save(object = sce_filtered, file = filename)
+```
+
+## 10x v3 folder format whole dataset
+
+Using the cellranger output format also saves a lot of space and allows us to load in specific things we need, such as just the metadata, or just barcodes. 
+
+```{r}
+DropletUtils::write10xCounts(path = here("output/data/Tonsils_10xFlex/Tonsils_10xFlex_whole_dataset_processed_decontX/"),
+                               x = counts(sce_filtered),
+                               version = "3")
+#export metadata
+write_tsv(x=as.data.frame(sce_filtered@colData), file=here("output/data/Tonsils_10xFlex/Tonsils_10xFlex_whole_dataset_processed_decontX/metadata.tsv"))
+
+```
+
+
+

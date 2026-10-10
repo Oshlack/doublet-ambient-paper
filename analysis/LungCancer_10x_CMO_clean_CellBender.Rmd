@@ -1,0 +1,180 @@
+---
+title: "Lung Cancer 10x CMO: Clean dataset with CellBender"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown contains the code used to apply `CellBender` to the Lung Cancer Dataset. The raw `h5` file provided by 10X was used.
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+})
+
+```
+
+
+
+# Running `CellBender` using GPU
+
+`CellBender` is run through an sbatch script which can be found here: `code/LungCancer_10x/run_CellBender_LungCancer10x.sbatch`. This code was run using our HPC system to access GPU. 
+
+To make the code accessible via workflowR website, we've pasted the content of the sbatch script in the code chunk below:
+
+```{bash, eval=FALSE}
+#!/bin/bash
+#SBATCH --partition=rhel_gpu
+#SBATCH --gres=gpu:T4:1
+#SBATCH --cpus-per-task=1
+#SBATCH --ntasks=1
+#SBATCH --mem=48G
+#SBATCH --time=00-06:00:00
+#SBATCH --job-name="run_cellbender_LungCancer_10x_cellranger_allmultiplets"
+#SBATCH --output="/oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/code/LungCancer_10x/cellbender_logs/run_CellBender_LungCancer_10x_cellranger_allmultiplets_%j.out" \
+#SBATCH --error="/oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/code/LungCancer_10x/cellbender_logs/run_CellBender_LungCancer_10x_cellranger_allmultiplets_%j.err" \
+
+set -euo pipefail
+
+# INPUT
+INPUT_H5="/oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/data/LungCancer_10x/20k_NSCLC_DTC_3p_nextgem_intron_Multiplex_count_raw_feature_bc_matrix.h5"
+SAMPLE="LungCancer_10x_cellranger_allmultiplets"
+SAMPLE_OUT="${SAMPLE}_CellBender"
+
+# Paths
+OUTPUT_DIR="/oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/LungCancer_10x/${SAMPLE_OUT}"
+
+# make output
+mkdir -p "${OUTPUT_DIR}"
+
+# Change to output directory
+cd "${OUTPUT_DIR}"
+
+# Load required modules
+module load cuda/12.4.0-gcc-13.2.0   # for RHEL9
+module load miniconda3/24.3.0-gcc-13.2.0   # for RHEL9
+
+# Activate CellBender conda environment
+source /config/spack/v0.22.1/opt/spack/linux-rhel9-haswell/gcc-13.2.0/miniconda3-24.3.0-re4lxkwqjaazi6ckedtfhnzrjiefmhei/etc/profile.d/conda.sh
+conda activate cellbender_v3.0.2
+
+# Run CellBender remove‑background
+cellbender remove-background \
+    --input  "${INPUT_H5}" \
+    --output "${OUTPUT_DIR}/${SAMPLE_OUT}.h5" \
+    --expected-cells 19000 \
+    --total-droplets-included 40000 \
+    --exclude-feature-types "Multiplexing Capture" \
+    --cuda
+
+# Make compatible with seurat
+ptrepack --complevel 5 ${SAMPLE_OUT}.h5:/matrix ${SAMPLE_OUT}_seurat.h5:/matrix
+
+echo "✅ CellBender completed for ${SAMPLE}. Outputs in ${OUTPUT_DIR}"
+
+
+```
+
+
+The error and log files can be found in this folder: `code/LungCancer_10x/cellbender_logs`
+
+
+# Preparing output for further analysis
+
+Next, we will reformat the `CellBender` output to match the 10X output directory structure. In addition, we will only be considering barcodes that were called as cells by `cellranger`, and not use `CellBender`'s cell calling algorithm. 
+
+Set directories for `CellBender` outputs. 
+
+```{r}
+cellbender_out <- list.files(path = here("output/data/LungCancer_10x/cellbender_output_files"),
+                              full.names = T, pattern = "_seurat\\.h5")
+
+#uncorrected metadata
+uncorrected_meta <- read_tsv(here("output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/metadata.tsv"), show_col_types = F)
+
+```
+
+
+## Write function
+
+Write a function that reads in `.h5` file, subsets to relevant barcodes and writes output in 10X folder format. We also need to get the uncorrected data to determine how much RNA was removed. 
+
+```{r}
+run_makeCellBenderOutput <- function(uncorrected,
+                                     cellbender_out_path,
+                                     name){
+
+  #load cellbender unfiltered counts
+  counts <- Read10X_h5(cellbender_out_path)$`Gene Expression`
+  counts_f <- counts[, colnames(counts) %in% uncorrected$Barcode]
+  
+  #add QC metrics to cellbender objects
+  sce <- SingleCellExperiment(assays = list(counts=counts_f))
+  is.mito <- grepl(pattern = "^MT", rownames(sce))
+  is.ribo <- grepl(pattern = "^RP[SL]", rownames(sce))
+  sce <- addPerCellQCMetrics(sce, subsets = list(mito = is.mito, ribo=is.ribo))
+  sce$nfeatures_rounded <- colSums(assay(sce, "counts") > 0.5)
+  
+  rm(counts, counts_f);gc()
+  
+  #clean
+  new_meta <- sce@colData %>% as.data.frame() %>%
+    mutate(., Barcode = rownames(.)) %>% 
+    dplyr::rename(., ncount =sum ,  nfeatures =detected) %>%
+    left_join(.,uncorrected , by="Barcode") %>% 
+    mutate(., nfeature_frac_removed = (nfeatures_raw-nfeatures_rounded)/nfeatures_raw,
+              ncount_frac_removed = (ncount_raw-ncount)/ncount_raw) %>%
+    select(., -c("total", "subsets_mito_detected", "subsets_mito_sum", "subsets_ribo_sum", "subsets_ribo_detected"))
+  
+  #reorder to match SCE order
+  rownames(new_meta) <- new_meta$Barcode
+  new_meta <- new_meta[match(colnames(sce), new_meta$Barcode),]
+  stopifnot(all(rownames(new_meta) == colnames(sce)))
+  
+  #export
+  out_file <- sprintf("%s/%s_CellBender", 
+                      here("output/data/LungCancer_10x"),
+                      name)
+  print(out_file)
+  
+  DropletUtils::write10xCounts(path = out_file,
+                             x = counts(sce),
+                             version = "3", 
+                             overwrite = TRUE)
+  write_tsv(x = new_meta,
+          file = sprintf("%s/metadata.tsv", out_file))
+}
+```
+
+
+## Run function
+
+
+```{r, warning=FALSE, fig.align='center'}
+
+run_makeCellBenderOutput(uncorrected = uncorrected_meta,
+                         cellbender_out_path = cellbender_out,
+                         name = "LungCancer_10x_cellranger_allmultiplets")
+
+```
+
+
+
+
+
+
+
+

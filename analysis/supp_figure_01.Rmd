@@ -1,0 +1,524 @@
+---
+title:  "Supplementary Figure 1: Performing ambient RNA correction alters doublet detection outcomes in non-flex datasets"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Introduction
+
+This markdown makes the plots for Supplementary Figure 1: Performing ambient RNA correction alters doublet detection outcomes in non-flex datasets (Tonsil 10X 3' v2 and Tonsil 10X 5' v1) as well as supplementary data for the decontX corrected 10x Flex tonsil dataset.
+
+Plots shown in this figure support figure 1.
+
+
+Initiate list:
+
+```{r}
+figure_list <- list()
+```
+
+
+# Set-up
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(here)
+  library(tidyverse)
+  library(glue)
+  library(DropletUtils)
+  library(scran)
+  library(scater)
+  library(scuttle)
+  library(scales)
+  library(readr)
+  library(Seurat)
+  library(ggpubr)
+  library(qs2)
+  library(ggalluvial)
+  library(patchwork)
+  library(png)
+  library(grid)
+  library(ggbeeswarm)
+})
+```
+
+
+## Plotting shortcuts
+
+```{r}
+#general themes
+plot_sizing <- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = "black"),
+        plot.title = element_text(size = 22),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank())
+
+plot_sizing_keep_legend <- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = "black"),
+        plot.title = element_text(size = 22),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size=16)) 
+
+rotate_x <- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+strip_fix <- theme(strip.background = element_rect(fill = "white"), 
+                   strip.text = element_text(size = 14))
+
+remove_background <- theme(plot.background = element_rect(fill = "transparent",
+                                 colour = NA_character_)) # necessary to avoid drawing plot outline
+
+# mini UMAP coordinate indicator for the bottom-left corner
+# arr_len is in cm so both arrows are always the same physical length
+add_umap_coords <- function(p, x_frac = 0.05, y_frac = 0.05, arr_len = 1.5, size = 3.5) {
+  pb    <- ggplot_build(p)
+  plot_data <- pb$data[[1]]
+  x_range <- range(plot_data$x, na.rm = TRUE)
+  y_range <- range(plot_data$y, na.rm = TRUE)
+  x_span <- diff(x_range)
+  y_span <- diff(y_range)
+
+  # Origin in data coords; convert to npc (0-1 within panel) using data range as approx
+  x0_npc <- (x_range[1] + x_span * x_frac - x_range[1]) / x_span  # simplifies to x_frac
+  y0_npc <- y_frac  # same
+
+  font_pt <- size * 2.835  # ggplot size units -> pt
+
+  coord_grob <- grobTree(
+    segmentsGrob(
+      x0 = unit(x0_npc, "npc"),
+      y0 = unit(y0_npc, "npc"),
+      x1 = unit(x0_npc, "npc") + unit(arr_len, "cm"),
+      y1 = unit(y0_npc, "npc"),
+      arrow = arrow(length = unit(0.2, "cm"), type = "closed"),
+      gp = gpar(lwd = 1.5)
+    ),
+    segmentsGrob(
+      x0 = unit(x0_npc, "npc"),
+      y0 = unit(y0_npc, "npc"),
+      x1 = unit(x0_npc, "npc"),
+      y1 = unit(y0_npc, "npc") + unit(arr_len, "cm"),
+      arrow = arrow(length = unit(0.2, "cm"), type = "closed"),
+      gp = gpar(lwd = 1.5)
+    ),
+    textGrob("UMAP1",
+             x = unit(x0_npc, "npc") + unit(arr_len / 2, "cm"),
+             y = unit(y0_npc, "npc") - unit(0.35, "cm"),
+             gp = gpar(fontsize = font_pt)),
+    textGrob("UMAP2",
+             x = unit(x0_npc, "npc") - unit(0.35, "cm"),
+             y = unit(y0_npc, "npc") + unit(arr_len / 2, "cm"),
+             rot = 90,
+             gp = gpar(fontsize = font_pt))
+  )
+
+  p + annotation_custom(coord_grob, xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf)
+}
+
+
+# alluvial settings
+axes_size <- theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = "black"))
+
+#UMAP settings
+legend_dotsize <- 5
+legend_size <- theme(legend.text = element_text(size=16), legend.title = element_text(size=16))
+remove_axes <- theme(axis.title.x=element_blank(),
+                    axis.text.x=element_blank(),
+                    axis.ticks.x=element_blank(),
+                    axis.title.y=element_blank(),
+                    axis.text.y=element_blank(),
+                    axis.ticks.y=element_blank(), 
+                    axis.line = element_blank())
+
+```
+
+
+## Directory names
+
+```{r}
+save_dir <- here("output/figures/v4")
+dir.create(save_dir, showWarnings = F, recursive = T)
+```
+
+
+## colours 
+
+```{r}
+# seurat cluster colours
+colours_seurat_clusters <- Polychrome::dark.colors(9) %>% unname()
+
+#doublet/singlet colours
+doublet_colours <- c("#2E91E5", "#EB663B"); names(doublet_colours) <- c("singlet", "doublet")
+cols_alluv <- c(doublet_colours, c( "#abd3f4","#f5b29d")) 
+
+#gene colours 
+gene_colours <- c("purple4", "green4")
+
+#celltypes 
+celltype_colours <- Polychrome::kelly.colors(5)[2:5] %>% unname()
+
+colours <- c("purple4","green4", "orange3", "red2") #to match the T/Bcell colours
+names(colours) <- c("B cell (CD79A+)", 
+                    "T cell (CD3E+)",
+                    "Non-lymphoid",
+                    "doublet")
+
+colour_changes <-c("grey", "red3")
+names(colour_changes) <- c("unchanged", "changed")
+```
+
+
+
+# Changes in doublet calling result{.tabset}
+
+## Write function
+
+The purpose of these plots is to visualise the difference in doublet calling between datasets that have undergone ambient RNA correction using decontX (without background), and uncorrected.  
+
+Make a function that makes all relevant plots:
+
+- barplots doublet props
+
+- barplots matched
+
+- riverplot
+
+
+```{r}
+# the function is hardcoded!
+# function expects uncorrected and corrected to be dataframes
+# doublet labels should be stored in scDblFinder.class, and Barcode needs to exist
+
+run_doublet_call_comparison <- function(corrected, 
+                                        uncorrected){
+  
+  #1. SUBSET TO ONLY INCLUDE DROPLETS DETECTED IN BOTH SETTINGS
+  corrected <- corrected %>% filter(., Barcode %in% intersect(corrected$Barcode, uncorrected$Barcode)) %>% 
+    mutate(., scDblFinder.class = factor(scDblFinder.class, levels=c("singlet", "doublet")))
+  uncorrected <- uncorrected %>% filter(., Barcode %in% intersect(corrected$Barcode, uncorrected$Barcode)) %>% 
+    mutate(., scDblFinder.class = factor(scDblFinder.class, levels=c("singlet", "doublet")))
+  
+  #2. BARPLOTS WITH DOUBLET CALLS
+  p1 <- uncorrected$scDblFinder.class %>% table() %>% as.data.frame() %>% 
+    dplyr::rename(., status=`.`, uncorrected=Freq) %>% 
+    full_join(., corrected$scDblFinder.class %>% table() %>% as.data.frame() %>% 
+                dplyr::rename(.,status=`.`, `decontX corrected`=Freq) ) %>% 
+    pivot_longer(-status, names_to = "setting", values_to = "counts") %>% 
+    group_by(setting) %>% 
+    mutate(., prop=counts/sum(counts),
+           labels = sprintf("%0.2f\nn=%i", prop, counts), 
+           status = factor(status, levels = c("singlet", "doublet"))) %>% 
+  ggplot(., aes(y=setting, x=counts, fill = status)) + #make plot
+    geom_bar(position = "fill", stat = "identity") +
+    geom_text(aes(label = labels, x = prop), position=position_stack(vjust=0.5), size=6)+
+    ylab("") + xlab("proportion") +
+    scale_fill_manual(values =doublet_colours ) + 
+    ggtitle("Changes in doublet proportions") + 
+    plot_sizing + 
+    remove_background +
+    scale_x_continuous(expand = expansion(mult = 0.1))
+  
+  #3. BARPLOTS WITH MATCHED LABELS
+  p2 <- full_join(uncorrected %>% select(., Barcode,scDblFinder.class),
+                  corrected%>% select(., Barcode,scDblFinder.class), by = "Barcode", suffix = c('_uncorrected', '_decontX_corrected')) %>% 
+  mutate(., is_same = factor(ifelse(scDblFinder.class_uncorrected == scDblFinder.class_decontX_corrected, "unchanged", "changed"), levels = names(colour_changes))) %>% 
+  group_by(is_same) %>% 
+  summarise(., count =n()) %>% 
+  mutate(., prop=count/sum(count),
+         labels = paste0(round(prop, 2), "\nn=", count)) %>% 
+  mutate(., dataset = "dataset") %>% 
+  ggplot(., aes(y=dataset, x=count, fill = is_same)) +
+  geom_bar(position = "fill", stat = "identity") +
+  geom_text(aes(label = labels, x = prop), position=position_stack(vjust=0.5), size=6)+
+   ylab("") + xlab("proportion") +
+  scale_fill_manual(values = colour_changes) +
+  ggtitle("Changes in label assignments") + plot_sizing +
+  remove_background +
+  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank())+
+  scale_x_continuous(expand = expansion(mult = 0.1))
+  
+  
+  #4. ALLUVIAL PLOT - SINGLETS 
+  df_in <-  uncorrected %>%  #prep input
+  select(., Barcode, scDblFinder.class) %>% 
+  filter(., scDblFinder.class == "singlet") %>% 
+  left_join(., corrected %>% select(., Barcode, scDblFinder.class), suffix = c("_uncorrected", "_corrected"), by = "Barcode") %>% 
+  group_by(scDblFinder.class_uncorrected, scDblFinder.class_corrected) %>% 
+  summarise(., count= n()) %>% 
+  ungroup() %>% 
+  mutate(., uncorrected_to_corrected = paste0(round( (count/sum(count))*100, 2), "%\nn=", count))  %>% 
+  pivot_longer(., cols = c('scDblFinder.class_uncorrected', 'scDblFinder.class_corrected'), names_to = "setting", values_to = "call") %>% 
+  mutate(., setting= ifelse(setting == "scDblFinder.class_uncorrected", "uncorrected", "decontX\ncorrected")) %>% 
+  mutate(., setting = factor(setting, levels = c("uncorrected", "decontX\ncorrected")))
+  
+  #rename colours to match
+  names(cols_alluv) <- c("singlet","doublet",
+                         df_in %>% filter(., setting == "decontX\ncorrected" & call == "singlet") %>% pull(uncorrected_to_corrected),
+                         df_in %>% filter(., setting == "decontX\ncorrected" & call == "doublet") %>% pull(uncorrected_to_corrected))
+  
+  p3 <- df_in %>% 
+    ggplot(data = .,
+       aes(x = setting, stratum = call, alluvium = uncorrected_to_corrected, y = count)) +
+  geom_alluvium(aes(fill=uncorrected_to_corrected), alpha = 0.5) +
+  geom_stratum(aes(fill=call)) +
+  geom_text(stat = "stratum", aes(label = call), size = 6) +
+  geom_text(stat = "stratum", aes(label = uncorrected_to_corrected), size = 6, nudge_x = -0.5) +
+  theme_minimal() +
+  xlab("") +
+  ggtitle("Changes in singlet labels") +
+  scale_fill_manual(values = cols_alluv) +
+  scale_colour_manual(values = doublet_colours) +
+  guides(color = FALSE) + axes_size +
+  theme(legend.position = "none")+
+  theme(panel.grid.major.x = element_blank(), panel.grid.minor = element_blank())  +
+  theme(axis.text.x = element_text(size = 20)) +
+  remove_background+
+  scale_y_continuous(expand = expansion(mult = 0.1))
+
+  #5. ALLUVIAL PLOT - DOUBLETS
+  df_in <-  uncorrected %>%  #prep input
+  select(., Barcode, scDblFinder.class) %>% 
+  filter(., scDblFinder.class == "doublet") %>% 
+  left_join(., corrected %>% select(., Barcode, scDblFinder.class), suffix = c("_uncorrected", "_corrected"), by = "Barcode") %>% 
+  group_by(scDblFinder.class_uncorrected, scDblFinder.class_corrected) %>% 
+  summarise(., count= n()) %>% 
+  ungroup() %>% 
+  mutate(., uncorrected_to_corrected = paste0(round( (count/sum(count))*100, 2), "%\nn=", count))  %>% 
+  pivot_longer(., cols = c('scDblFinder.class_uncorrected', 'scDblFinder.class_corrected'), names_to = "setting", values_to = "call") %>% 
+  mutate(., setting= ifelse(setting == "scDblFinder.class_uncorrected", "uncorrected", "decontX\ncorrected")) %>% 
+  mutate(., setting = factor(setting, levels = c("uncorrected", "decontX\ncorrected")))
+  
+  #rename colours to match
+  names(cols_alluv) <- c("singlet","doublet",
+                         df_in %>% filter(., setting == "decontX\ncorrected" & call == "singlet") %>% pull(uncorrected_to_corrected),
+                         df_in %>% filter(., setting == "decontX\ncorrected" & call == "doublet") %>% pull(uncorrected_to_corrected))
+  
+  p4 <- df_in %>% 
+  ggplot(data = .,
+       aes(x = setting, stratum = call, alluvium = uncorrected_to_corrected, y = count)) +
+  geom_alluvium(aes(fill=uncorrected_to_corrected), alpha = 0.5) +
+  geom_stratum(aes(fill=call)) +
+  geom_text(stat = "stratum", aes(label = call), size = 6) +
+  geom_text(stat = "stratum", aes(label = uncorrected_to_corrected), size = 6, nudge_x = -0.5) +
+  theme_minimal() +
+  xlab("") +
+  ggtitle("Changes in doublet labels") +
+    scale_fill_manual(values = cols_alluv) +
+  scale_colour_manual(values = doublet_colours) +
+  guides(color = FALSE) + axes_size +
+  theme(legend.position = "none")+
+  theme(panel.grid.major.x = element_blank(), panel.grid.minor = element_blank())  +
+  theme(axis.text.x = element_text(size = 20)) +
+  remove_background+
+  scale_y_continuous(expand = expansion(mult = 0.1))
+
+  # OUTPUT ALL PLOTS
+  return(list(doublet_prop = p1,
+              matched = p2,
+              river_singlet= p3,
+              river_doublet= p4))
+  
+}
+
+```
+
+
+## Tonsil 3' GEX
+
+```{r, fig.align='center', fig.height=10, fig.width=20}
+#uncorrected
+uncorrected <- read_tsv(here("output/data/Tonsils_3pGEX/Tonsils_3pGEX_BCP002_processed/metadata.tsv"), show_col_types = F)
+uncorrected$Barcode <- read_tsv(here("output/data/Tonsils_3pGEX/Tonsils_3pGEX_BCP002_processed/barcodes.tsv.gz"), show_col_types = F, col_names = F) %>% pull(X1)
+#decontX corrected
+corrected <- read_tsv(here("output/data/Tonsils_3pGEX/Tonsils_3pGEX_BCP002_processed_decontX/metadata.tsv"), show_col_types = F)
+corrected$Barcode <- read_tsv(here("output/data/Tonsils_3pGEX/Tonsils_3pGEX_BCP002_processed_decontX/barcodes.tsv.gz"), show_col_types = F, col_names = F) %>% pull(X1)
+
+figure_list$river_tonsil3p <- run_doublet_call_comparison(uncorrected = uncorrected, corrected = corrected)
+
+wrap_plots(figure_list$river_tonsil3p)
+```
+
+## Tonsil 5' GEX
+
+```{r, fig.align='center', fig.height=10, fig.width=20}
+#uncorrected
+uncorrected <- read_tsv(here("output/data/Tonsils_5pGEX/Tonsils_5pGEX_BCP003_processed/metadata.tsv"), show_col_types = F)
+uncorrected$Barcode <- read_tsv(here("output/data/Tonsils_5pGEX/Tonsils_5pGEX_BCP003_processed/barcodes.tsv.gz"), show_col_types = F, col_names = F) %>% pull(X1)
+#decontX corrected
+corrected <- read_tsv(here("output/data/Tonsils_5pGEX/Tonsils_5pGEX_BCP003_processed_decontX/metadata.tsv"), show_col_types = F)
+corrected$Barcode <- read_tsv(here("output/data/Tonsils_5pGEX/Tonsils_5pGEX_BCP003_processed_decontX/barcodes.tsv.gz"), show_col_types = F, col_names = F) %>% pull(X1)
+
+figure_list$river_tonsil5p <- run_doublet_call_comparison(uncorrected = uncorrected, corrected = corrected)
+
+wrap_plots(figure_list$river_tonsil5p)
+```
+
+```{r, include=FALSE}
+rm(uncorrected, corrected); gc()
+
+```
+
+
+
+
+# Combine Non-flex tonsils
+
+```{r, fig.align='center', fig.height=15, fig.width=25}
+
+design_supp <- c(
+  "AB
+   CD
+   CD"
+)
+
+tonsil_3p <- wrap_plots(figure_list$river_tonsil3p, design = design_supp) + plot_annotation(title = "Tonsil, 10X 3' v2", tag_levels = "A") &
+  theme(plot.title = element_text(size = 22, face = "italic"), plot.tag = element_text(size = 22))
+
+tonsil_5p <- wrap_plots(figure_list$river_tonsil5p, design = design_supp) + plot_annotation(title = "Tonsil, 10X 5' v1", tag_levels = list(c("E", "F", "G", "H"))) &
+  theme(plot.title = element_text(size = 22, face = "italic"), plot.tag = element_text(size = 22))
+
+supp_non_flex <- wrap_elements(tonsil_3p) + wrap_elements(tonsil_5p) + plot_layout(ncol=2)
+
+supp_non_flex
+```
+
+
+# Tonsils 10X Flex - decontX corrected panels
+
+## Load data
+
+```{r}
+tonsil_corrected <- qs_read(here("output/data/Tonsils_10xFlex/Tonsils_10xFlex_whole_dataset_processed_decontX_scdblfinder.qs2"))
+tonsil_corrected$Barcode <- rownames(tonsil_corrected@colData)
+tonsil_corrected$cluster_letter <- LETTERS[as.numeric(as.character(tonsil_corrected$clustering_res0.1)) + 1]
+
+tonsil_corrected$celltype_basic <- case_when(tonsil_corrected$clustering_res0.1 %in% c(0,2,3,4,6) ~ "B cell (CD79A+)",
+                                             tonsil_corrected$clustering_res0.1 == 1 ~ "T cell (CD3E+)",
+                                             tonsil_corrected$clustering_res0.1 %in% c(5,7) ~ "Non-lymphoid")
+
+tonsil_uncorrected <- qs_read(here("output/data/Tonsils_10xFlex/Tonsils_10xFlex_whole_dataset_processed_scdblfinder.qs2"))
+tonsil_uncorrected$Barcode <- rownames(tonsil_uncorrected@colData)
+tonsil_uncorrected$celltype_basic <- case_when(tonsil_uncorrected$clustering_res0.1 %in% c(0,1,3,6) ~ "B cell (CD79A+)",
+                                               tonsil_uncorrected$clustering_res0.1 == 2 ~ "T cell (CD3E+)",
+                                               tonsil_uncorrected$clustering_res0.1 == 4 ~ "Non-lymphoid",
+                                               tonsil_uncorrected$clustering_res0.1 == 5 ~ "doublet")
+
+barcodes <- rownames(tonsil_uncorrected@colData)[tonsil_uncorrected$celltype_basic == "doublet"]
+
+tonsil_corrected$is_selected <- ifelse(tonsil_corrected$Barcode %in% barcodes, "doublet cluster", "")
+tonsil_corrected$is_selected <- factor(tonsil_corrected$is_selected, levels = c("", "doublet cluster"))
+```
+
+
+## Make plots
+
+```{r, fig.align='center', fig.height=10, fig.width=15}
+# UMAP_cluster_C
+figure_list$UMAP_cluster_C <- plotUMAP(tonsil_corrected,
+                                        colour_by = "cluster_letter",
+                                        point_size = 0.5,
+                                        point_alpha = 1) +
+  scale_colour_manual(values = colours_seurat_clusters, drop = F) + remove_axes +
+  guides(colour=guide_legend(title="", override.aes=list(size=legend_dotsize, nrow = 2)))+
+  ggtitle("decontX corrected - Clusters") + legend_size
+
+figure_list$UMAP_cluster_C <- add_umap_coords(figure_list$UMAP_cluster_C)
+
+# UMAP_highlight_dblcluster_C
+figure_list$UMAP_highlight_dblcluster_C <- plotUMAP(tonsil_corrected,
+         colour_by = "is_selected",
+         order_by = "is_selected",
+         point_size = 0.5,
+         point_alpha = 1) +
+  scale_colour_manual(values = c("grey", "red2")) + remove_axes +
+  theme(legend.position = "none") + ggtitle("redistribution of B/T cell doublet cluster (cluster 5)")
+
+figure_list$UMAP_highlight_dblcluster_C <- add_umap_coords(figure_list$UMAP_highlight_dblcluster_C)
+
+# Barplot_doubletcluster_C
+new_x_labels <- tonsil_corrected@colData %>% as.data.frame() %>%
+  group_by(clustering_res0.1) %>%
+  summarise(cluster_count = n()) %>%
+  nrow() %>%
+  { LETTERS[seq_len(.)] }
+
+df_in <- tonsil_corrected@colData %>% as.data.frame() %>%
+  group_by(scDblFinder.class) %>%
+  mutate(., total_count_doublets = n()) %>%
+  mutate(., scDblFinder.class = paste0(scDblFinder.class, "\nn=", total_count_doublets)) %>%
+  group_by(clustering_res0.1, scDblFinder.class) %>%
+  summarise(., count = n()) %>%
+  group_by(clustering_res0.1) %>%
+  mutate(., prop = count/sum(count),
+            labels = ifelse(grepl("doublet", scDblFinder.class), round(prop,2), NA))
+
+doublet_colours_temp <- doublet_colours
+names(doublet_colours_temp) <- c(unique(df_in$scDblFinder.class[grepl("singlet", df_in$scDblFinder.class)]),
+                                  unique(df_in$scDblFinder.class[grepl("doublet", df_in$scDblFinder.class)]))
+
+df_in$scDblFinder.class <- factor(df_in$scDblFinder.class, levels = names(doublet_colours_temp))
+
+figure_list$Barplot_doubletcluster_C <- df_in %>%
+  ggplot(., aes(y = count, x = clustering_res0.1, fill = scDblFinder.class)) +
+  geom_bar(position="fill", stat = "identity") +
+  theme_bw() +
+  axes_size +
+  xlab("clusters") + ylab("proportion") +
+  scale_fill_manual(values = doublet_colours_temp) +
+  guides(colour=guide_legend(override.aes=list(size=legend_dotsize))) +
+  scale_x_discrete(labels= new_x_labels) +
+  legend_size + theme(legend.title = element_blank(), legend.position = "bottom") +
+  ggtitle("decontX corrected")
+
+# Violin_annotation_C
+figure_list$Violin_annotation_C <- logcounts(tonsil_corrected)[c("CD3E", "CD79A"),] %>% t() %>% as.data.frame() %>%
+  rownames_to_column("Barcode") %>%
+  pivot_longer(., cols = c("CD3E", "CD79A"), names_to = "gene", values_to = "expression") %>%
+  full_join(., tonsil_corrected@colData %>% as.data.frame() %>% select(., Barcode, clustering_res0.1, cluster_letter)) %>%
+  mutate(., gene = ifelse(gene == "CD3E", "CD3E ~ T cell", "CD79A ~ B cell")) %>%
+  mutate(., gene = factor(gene, levels = c("CD79A ~ B cell", "CD3E ~ T cell"))) %>%
+  ggplot(., aes(x = cluster_letter, y = expression, colour = cluster_letter)) +
+  geom_quasirandom(size = 0.5, alpha = 0.5) +
+  facet_wrap(~gene, scales = "free_y", ncol = 1) +
+  theme_bw(base_size = 15) +
+  scale_colour_manual(values = colours_seurat_clusters) +
+  xlab("cluster") +
+  ggtitle("decontX corrected") + axes_size + legend_size + strip_fix + theme(legend.position = "none")
+```
+
+
+# Make supp figure
+
+```{r, fig.align='center', fig.height=20, fig.width=30}
+flex_corrected_design <- c(
+  "ABCD"
+)
+
+flex_corrected <- wrap_elements(figure_list$UMAP_cluster_C & theme(plot.title = element_text(size = 22, face = "italic"))) +
+  wrap_elements(figure_list$Violin_annotation_C & theme(plot.title = element_text(size = 22, face = "italic"))) +
+  wrap_elements(figure_list$Barplot_doubletcluster_C & theme(plot.title = element_text(size = 22, face = "italic"))) +
+  wrap_elements(figure_list$UMAP_highlight_dblcluster_C & theme(plot.title = element_text(size = 22, face = "italic"))) +
+  plot_layout(design = flex_corrected_design) +
+  plot_annotation(tag_levels = list(c("I", "J", "K", "L"))) &
+  theme(plot.tag = element_text(size = 22, face = "bold"))
+
+supp_figure_01 <- wrap_elements(supp_non_flex) + wrap_elements(flex_corrected) +
+  plot_layout(ncol = 1, heights = c(2,1))
+
+supp_figure_01
+
+ggsave(plot = supp_figure_01,
+       filename = "Supp_figure_01_Ambient_correction_alters_doublet_calling_non_flex_datasets.png",
+       path = save_dir,
+       device = "png",
+       width = 30,
+       height = 20,
+       dpi = 900,
+       bg = "transparent")
+
+```

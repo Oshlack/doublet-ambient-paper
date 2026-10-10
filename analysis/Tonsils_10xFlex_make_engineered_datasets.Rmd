@@ -1,0 +1,619 @@
+---
+title: "Tonsil 10x Flex: Make engineered datasets "
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown generates the engineered dataset using the 10xFlex tonsil dataset. This process has four key steps: **Filter, combine, annotate and subset**. To avoid confusion, please review the following table for commonly used terminology in this markdown"
+
+
+| Term(s) | Description | 
+| :------: | :------: | 
+| cell/pseudo-GEM/pseudo_droplet   | We use these terms interchangeably with barcodes. It describes a unique combination of sample and droplet barcode, which ideally would be one single-cell, and corresponds to a GEM in regular single-cell | 
+| droplet/GEM| We refer to a droplet/GEM as the combination of all cells that carry the same droplet barcode. These cells were co-captured in GEMs during the sequencing process and are therefore true multiplets that we can re-create   | 
+| pre-QC GEM occupancy | The number of cells that carry the same droplet barcode **prior** to performing QC filtering. This corresponds to the occupancy of the droplet at sequencing  | 
+| post-QC GEM occupancy | The number of cells that carry the same droplet barcode **after** performing QC filtering. | 
+
+
+**1. Filter: get a set of high-confidence singlets**
+
+The purpose of these filtering strategies is to ensure that we start off with a collection of high confident single cells. To this end, we 
+
+- remove cells with a library size < 200, < 150 unique genes expressed and %mito content > 7%. Note that these thresholds are purposefully lenient to ensure we still capture the full cell type diversity present in the dataset. 
+
+- remove cells that were not called as 'cells' by both `DropletUtils::emptyDrops()` and `cellranger multi`. This consensus approach increases the likelihood of barcodes being true cells.  
+
+- only keep cells that were considered singlets by 4 different doublet detection tools (scDblFinder, scrublet, DoubletDetection, scds). This is to maximise the likelihood of remaining singlets to be true singlets, and prevents us from adding more than two cells when creating pseudo-droplets. 
+
+- only keep cells for whose pre and post-QC GEM occupancy is 1 or 2. These correspond will then become singlets (1) and doublets (2) after combining them into pseudo-droplets.  
+
+As a final comment, we recognise that some resulting cells may not be perfect single cells but in general they can be considered high confident single cells. 
+
+
+**2. Combine: generate pseudo-droplets from singlets**
+
+The resulting set of high confidence singlets are then combined based on their droplet barcodes. For doublets, the gene expression is combined for the two cells. 
+
+
+**3. Annotate: add detailed information describing pseudo-droplets**
+
+Finally, we add in-depth information for each pseudo-droplet. This is particularly unique and useful for the doublets! Metrics include:
+
+- RNA contribution of each cell to pseudo-droplet content (in fraction + absolute library size)
+
+- cosine similarity between cells within doublets 
+
+**4. Subset: reduce dataset size and doublet proportion**
+
+The resulting dataset can then be subset to desired dataset size as well as doublet proportion. 
+
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(here)
+  library(glue)
+  library(DropletUtils)
+  library(scran)
+  library(scater)
+  library(scuttle)
+  library(scales)
+  library(readr)
+  library(Seurat)
+  library(scDblFinder)
+  library(scMerge)
+  library(ggpubr)
+  library(BiocParallel)
+  library(clustree)
+  library(SingleCellExperiment)
+  library(scMerge)
+  library(Matrix)
+  library(SeuratDisk)
+  library(qs2)
+  library(patchwork)
+})
+
+
+```
+
+
+# 1. Filter: get a set of high-confidence singlets
+
+## Starting point - all cells 
+
+We will start off with all cells from all samples and gradually remove the ones we are not interested in. See [this analysis file](Tonsils_10xFlex_whole_dataset_uncorrected_scDblFinder.html) for how this object was generated. 
+
+```{r}
+sce <- readRDS(here("data/Tonsils_10xFlex/G000231_Neeland_batch9_Tonsils.CellRanger_filtered.SCE.rds"))
+```
+
+First thing, we will compute the pre-QC GEM occupancy. We will need this later.
+
+```{r}
+#get substring for barcodes
+sce$Barcode <- colnames(sce)
+sce$GEM_barcode <- substring(sce$Barcode, first = 1, last = 17)
+sce$sample_barcode <- substring(sce$Barcode, first = 18, last = 26)
+
+# occupancy
+sce$cells_per_GEM <- as.factor(table(sce$GEM_barcode)[sce$GEM_barcode])
+
+sce$cells_per_GEM %>% table()
+```
+
+
+As a reminder, we will not be considering any cells from droplets with a GEM occupancy > 3. 
+
+
+## Lenient metrics thresholding 
+
+To ensure that we're removing cells that are very unlikely to be real cells, we are going to implement some very lenient thresholds for commonly used QC metrics: library size (200), #genes detected (150) and %mito genes expressed (7%)
+
+First, lets add the necessary metrics.
+
+```{r}
+is.mito <- grepl(pattern = "^MT", rownames(sce))
+sce <- addPerCellQCMetrics(sce, subsets = list(mito = is.mito))
+
+new_meta <- sce@colData %>% as.data.frame() %>% #immediately clean up metadata
+  dplyr::rename(., nfeatures = detected, ncount = sum) %>%
+  select(., -c("subsets_mito_sum", "subsets_mito_detected", "total"))
+sce@colData <- new_meta %>% DataFrame()
+
+```
+
+Collect barcodes which surpass these thresholds.
+
+```{r}
+qc_metrics_barcodes <- sce$Barcode[ (sce$ncount >= 200) & (sce$nfeatures >= 150)  & (sce$subsets_mito_percent <= 7)] 
+
+qc_metrics_barcodes %>% length()
+```
+
+
+## Only keep `DropletUtils::emptyDrops()` cells 
+
+As an additional filter, we will use `DropletUtils::emptyDrops()` to detect non-empty cells. This will serve as a second cell detection approach complementary to `cellranger multi`.
+
+First, we need the unfiltered cellranger output
+
+```{r}
+raw_sce <- read10xCounts(here("data/Tonsils_10xFlex/raw_feature_bc_matrix"), col.names = T, row.names = "symbol")
+```
+
+
+```{r}
+# follow basic vignette: https://www.bioconductor.org/packages/devel/bioc//vignettes/DropletUtils/inst/doc/DropletUtils.html#detecting-empty-droplets
+set.seed(100)
+e.out <- emptyDrops(counts(raw_sce))
+is.cell <- e.out$FDR <= 0.01 
+is.cell[is.na(is.cell)] <- FALSE #NAs are not cells
+non_emptydrops <- raw_sce$Barcode[is.cell]
+
+non_emptydrops %>% length()
+```
+
+
+```{r, include=FALSE}
+rm(e.out, is.cell);gc()
+
+```
+
+
+## Only keep consensus-singlets 
+
+In order to ensure that cells are indeed high confidence singlets, we apply four different doublet detection tools and only consider cells which were called as singlets for all four tools. As the 10xFlex tonsil dataset contained 16 samples, doublet calling was performed on each sample individually, as is recommended by the authors. 
+
+Individual run scripts for the doublet detection tools can be found in `code/doublet_tools`. The tools were combined in a bash script and run for each sample. The code below shows the content of the script `code/doublet_tools/run_scds_scDblFinder_scrublet_doubletdetection.sh` (combined in `code/Tonsil_10xFlex/Tonsil_10xFlex_whole_dataset_eachSample_runDoubletTools.sh` for all samples. The output log for this can be found at `code/Tonsil_10xFlex/Tonsil_10xFlex_whole_dataset_eachSample_runDoubletTools.log`)
+
+The input for doublet calling was generated in [this analysis file](Tonsils_10xFlex_whole_dataset_uncorrected_scDblFinder.html). 
+
+The output for each Sample is a folder called `doublet_calls` and contains doublet calling results for each tool in a csv file, as well as quality control plots for scrublet and DoubletDetection. Finally, the file `{sample_name}_calling_consensus.csv` contains the results for all four doublet detection tools in one file. 
+
+
+```{bash, eval=FALSE}
+#!/bin/bash
+
+# This is a bash script that runs all doublet detection tools
+# always remember to pipe out and error logs to a file while running:
+# sh run_scds_scDblFinder_scrublet_doubletdetection.sh &> run_scds_scDblFinder_scrublet_doubletdetection.log
+
+# inputs based on order
+COUNTS=$1
+OUTPUT=$2
+
+mkdir ${OUTPUT}
+
+echo "##########################################################################"
+echo "Start doublet calling"
+echo "Inputs detected:"
+echo "  OUTPUT = ${OUTPUT}"
+echo "  COUNTS = ${COUNTS}"
+echo "##########################################################################"
+
+
+#need to go here for renv reasons
+cd /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell
+
+echo "##########################################################################"
+echo "Start scds"
+echo "##########################################################################"
+
+# SCDS
+Rscript ./code/doublet_tools/scds.R ${OUTPUT} ${COUNTS}
+
+echo "##########################################################################"
+echo "Start scDblFinder"
+echo "##########################################################################"
+
+# SCDBLFINDER
+Rscript ./code/doublet_tools/scDblFinder.R ${OUTPUT} ${COUNTS}
+
+# for mamba reasons
+source /Users/meiermichelle/miniforge3/bin/activate
+eval "$(mamba shell hook --shell bash)"
+
+echo "##########################################################################"
+echo "Start scrublet"
+echo "##########################################################################"
+
+# SCRUBLET
+mamba activate scrublet
+python ./code/doublet_tools/scrublet_tool.py ${OUTPUT} ${COUNTS}
+mamba deactivate
+
+echo "##########################################################################"
+echo "Start DoubletDetection"
+echo "##########################################################################"
+
+# DOUBLETDETECTION
+mamba activate DoubletDetection
+python ./code/doublet_tools/DoubletDetection_tool.py ${OUTPUT} ${COUNTS}
+mamba deactivate
+
+echo "##########################################################################"
+echo "Combine all doublet calling results"
+echo "##########################################################################"
+
+# COMBINE
+Rscript ./code/doublet_tools/combine_results.R ${OUTPUT}
+
+echo "##########################################################################"
+echo "Doublet calling completed"
+echo "##########################################################################"
+
+
+```
+
+
+Load all doublet calling results.
+
+```{r}
+list_doublet <- lapply(list.files(path = here("output/data/Tonsils_10xFlex/Samples/")), function(sample){
+  input <- sprintf("%s/%s/doublet_calls/%s_doublet_calling_consensus.csv" ,here("output/data/Tonsils_10xFlex/Samples/"), sample, sample)
+  df <- read_csv(input, show_col_types = F) 
+})
+
+doublets_result <- Reduce(rbind, list_doublet) %>% 
+  column_to_rownames("Barcode") %>% 
+  mutate(., Barcode = rownames(.)) %>% 
+  relocate(Barcode, consensus_singlet)
+
+knitr::kable(head(doublets_result)) 
+```
+
+
+We will now collect the barcodes of cells that are considered consensus-singlets. 
+
+```{r}
+consensus_singlets <- doublets_result %>% 
+  filter(., consensus_singlet == "singlet") %>% 
+  pull(Barcode)
+
+consensus_singlets %>% length()
+```
+
+## remove barcodes
+
+As a first filter step, we will now remove all barcodes that were not collected in the section above.  
+
+```{r}
+barcodes_to_keep <- Reduce(intersect, list(consensus_singlets, non_emptydrops, qc_metrics_barcodes))
+barcodes_to_keep %>% length()
+```
+
+Remove from object
+
+```{r}
+sce_filtered <- sce[, sce$Barcode %in% barcodes_to_keep]
+```
+
+Now, add post-QC GEM occupancy. 
+
+```{r}
+# occupancy
+sce_filtered$cells_per_GEM_postQC <- as.factor(table(sce_filtered$GEM_barcode)[sce_filtered$GEM_barcode])
+
+sce_filtered$cells_per_GEM_postQC %>% table()
+```
+
+
+## How has droplet occupancy changed?
+
+As we've now removed cells, the observed droplet occupancy has changed. It is important that we remove any cells for which this is the case as the original occupancy in a GEM can affect metrics such as library size which may influence doublet detection. 
+
+
+Compare to occupancies before and after QC
+
+```{r}
+table(sce_filtered$cells_per_GEM_postQC, sce_filtered$cells_per_GEM, dnn = c("post QC", "pre QC"))
+```
+
+You can see that for most (~80%) cells with droplet occupancy = 2 before QC the occupancy changes after removing cells. 
+
+
+```{r}
+sce_filtered$occupancy_changed <- ifelse(sce_filtered$cells_per_GEM_postQC == sce_filtered$cells_per_GEM, "no", "yes")
+
+sce_filtered$occupancy_changed %>% table()
+```
+
+Remove cells for which occupancy changes
+
+```{r}
+sce_filtered <- sce_filtered[, sce_filtered$occupancy_changed == "no"]
+```
+
+
+## only keep cells with 1 or 2 occupancy
+
+Finally, as we are only interested in doublets and not higher orders of multiplets, we will remove all cells whose GEM occupancy is higher than 2. 
+
+```{r}
+sce_filtered <- sce_filtered[, sce_filtered$cells_per_GEM_postQC %in% c(1,2)] #occupancy is a factor
+sce_filtered
+```
+
+## Final overview + export 
+
+Our final cell counts after filtering is:
+
+```{r}
+sce_filtered$cells_per_GEM_postQC %>% droplevels()%>% table() 
+```
+
+Which means that after combining cells into droplets (see later sections), we will have the following number of droplets:
+
+```{r}
+(sce_filtered$cells_per_GEM_postQC %>% droplevels() %>% table(., dnn="cell per droplet"))/as.numeric(names(sce_filtered$cells_per_GEM_postQC %>% droplevels() %>% table()))
+```
+
+Let's export this object as we will use it later. 
+
+```{r}
+qs_save(object = sce_filtered, 
+        file = here("output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_inputEngineered_CELLS.qs2"))
+
+```
+
+
+```{r, include=FALSE}
+#hidden clean up to get rid of some objects before we continue
+
+rm(doublets_result, list_doublet, new_meta, sce,barcodes_to_keep, consensus_singlets, is.mito, non_emptydrops, qc_metrics_barcodes, raw_sce);gc()
+
+```
+
+# 2. Combine: generate droplets from singlets
+
+As a next step, we combine the counts for cells originating from the same droplet. To achieve this we've written a function to generate droplet based gene expression matrices.
+
+```{r}
+# function written by Geroge Howitt
+makeGEMMatrix <- function(sce) {
+  counts_matrix <- counts(sce)
+  dimnames(counts_matrix)[[2]] <- substring(dimnames(counts_matrix)[[2]], first = 1, last = 17) #first 17 bases are droplet barcodes
+  counts_matrix <- as(counts_matrix, "TsparseMatrix")
+  nms <- colnames(counts_matrix)
+  uniquenms <- unique(nms)
+  GEM_counts <- sparseMatrix(i = counts_matrix@i+1,
+                             j = match(nms, uniquenms)[counts_matrix@j + 1],
+                             x = counts_matrix@x,
+                             dimnames = list(rownames(counts_matrix), uniquenms),
+                             repr = 'T')
+  return(as(GEM_counts, "CsparseMatrix"))
+}
+```
+
+
+Apply function to generate droplet object. 
+
+```{r}
+droplet_counts <- makeGEMMatrix(sce_filtered)
+```
+
+
+# 3. Annotate: add detailed information describing droplets
+
+Next, we need to collect relevant information for each of the droplets to generate metadata information. 
+
+## Add cell-based information
+
+This will be generated based on the *cell-based SingleCellExperiment* object.
+
+First, add fraction of RNA contributed for each cell to a droplet to the cell object. 
+
+```{r}
+new_meta <- sce_filtered@colData %>% as.data.frame() %>%
+  group_by(GEM_barcode) %>%
+  mutate(., fraction = ncount/sum(ncount))
+rownames(new_meta) <- new_meta$Barcode
+sce_filtered@colData <- new_meta %>% DataFrame()
+```
+
+```{r, include=FALSE}
+rm(new_meta);gc()
+```
+
+
+
+```{r}
+meta <- sce_filtered@colData %>% as.data.frame() %>%
+  select(., GEM_barcode, ncount, nfeatures, fraction, subsets_mito_percent,cells_per_GEM_postQC,Barcode) %>%
+  group_by(GEM_barcode) %>%
+  reframe(., doublet_class = ifelse(cells_per_GEM_postQC == 1, "singlet", "doublet"),
+            CT1_ngenes = nfeatures[1],
+            CT2_ngenes = nfeatures[2],
+            CT1_ncounts = ncount[1],
+            CT2_ncounts = ncount[2],
+            CT1_fraction = fraction[1],
+            CT2_fraction = fraction[2],
+            CT1_mito = subsets_mito_percent[1],
+            CT2_mito = subsets_mito_percent[2],
+            CT1_barcode = Barcode[1],
+            CT2_barcode = Barcode[2]) %>% as.data.frame() %>% 
+  distinct()
+
+# need to rearrange to match counts order
+rownames(meta) <- meta$GEM_barcode # add rownames
+meta <- meta[colnames(droplet_counts),] # reorder
+
+#check order
+all(meta$GEM_barcode == colnames(droplet_counts))
+
+```
+
+Now that this is sorted, we can make a droplet single-cell experiment. 
+
+```{r}
+droplet <- SingleCellExperiment(assays=list(counts=droplet_counts),
+                                       colData = meta %>% DataFrame())
+
+droplet
+```
+
+```{r, include=FALSE}
+#silent clean up
+rm(droplet_counts, meta);gc()
+```
+
+
+## Add cosine similarity
+
+For doublets, we also want to quantify how transcriptionally similar the cells within a doublet are. This serves as a proxy for homotypic vs heterotypic labels. We choose this option over cell type labels as it does not require us to make an arbitrary decision on the level of cell type level granularity. We compute the cosine similarity using `coop::cosine`, based on PCA dimension reductions. 
+
+```{r}
+#run dim reduction
+sce_filtered <- logNormCounts(sce_filtered) %>%
+  runPCA()
+```
+
+Computing cosine similariy is quite memory intensive, so we will subset to only include the barcodes we require this information for. 
+
+```{r}
+barcodes <- c(droplet$CT1_barcode[droplet$doublet_class == "doublet"], 
+              droplet$CT2_barcode[droplet$doublet_class == "doublet"])
+
+#filter object further
+sce_filtered <- sce_filtered[, sce_filtered$Barcode %in% barcodes]
+```
+
+```{r, include=FALSE}
+rm(barcodes, is.mito);gc()
+
+```
+
+
+
+Finally, compute cosine similarity and add to metadata. 
+
+```{r}
+#compute cosine similarity for all combinations
+cos_matrix <- coop::cosine(t(reducedDim(sce_filtered, "PCA")))
+
+#make a dataframe to collect relevant information
+df_tmp <- data.frame(barcode1 = droplet$CT1_barcode[droplet$doublet_class == "doublet"],
+                     barcode2 = droplet$CT2_barcode[droplet$doublet_class == "doublet"],
+                     GEM_barcode = droplet$GEM_barcode[droplet$doublet_class == "doublet"])
+
+#apply through dataframe and collect cosine similarity entry
+cos_output <- apply(df_tmp, 1, function(a){
+  data.frame(GEM_barcode = a[3],
+             cosine_similarity = cos_matrix[a[1], a[2]])
+}) %>% bind_rows()
+
+
+#add into metadata
+new_meta <- droplet@colData %>% as.data.frame() %>%
+  left_join(., cos_output)
+
+rownames(new_meta) <- new_meta$GEM_barcode #join removes rownames
+all(rownames(new_meta) == colnames(droplet))
+
+#add back
+droplet@colData <- new_meta %>% DataFrame()  #add back
+```
+
+```{r, include=FALSE}
+rm(new_meta, cos_output, df_tmp, cos_matrix)
+```
+
+
+## Add droplet based information
+
+This will be your usual library size, #genes and %mito
+
+```{r}
+is.mito <- grepl(pattern = "^MT", rownames(droplet))
+droplet <- addPerCellQCMetrics(droplet, subsets = list(mito = is.mito))
+
+new_meta <- droplet@colData %>% as.data.frame() %>% #immediately clean up metadata
+  dplyr::rename(., nfeatures_raw = detected, ncount_raw = sum, subsets_mito_percent_raw = subsets_mito_percent) %>%
+  select(., -c("subsets_mito_sum", "subsets_mito_detected", "total"))
+droplet@colData <- new_meta %>% DataFrame()
+```
+
+```{r, include=FALSE}
+#silent clean up
+rm(new_meta);gc()
+```
+
+
+## export
+
+Export the complete pseudo droplet object. 
+
+```{r}
+qs_save(object = droplet, 
+        file = here("output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_inputEngineered_DROPLET.qs2"))
+
+```
+
+# 4. Subset: reduce dataset size and doublet proportion
+
+Finally, we will subset the resulting pseudo droplet dataset to a desired dataset size and doublet proportion
+
+Writing a function to subset the object based on input #doublets and #singlets, then exports the resulting matrix. We will run this 5 times with different seeds. 
+
+```{r}
+
+run_subset_droplets <- function(object, 
+                                n_doub, 
+                                n_singlet,
+                                seed){
+  set.seed(seed)
+  #get random subsets
+  cells <- c(sample(object$GEM_barcode[object$doublet_class == "doublet"],  n_doub, replace = F), 
+           sample(object$GEM_barcode[object$doublet_class == "singlet"],  n_singlet, replace = F) 
+           )
+  #subset
+  sub <- object[, object$GEM_barcode %in% cells]
+  #export
+  filename <- sprintf("%s/Tonsils_10xFlex_engineered_%ik_%0.2fp_%is",
+                      here("output/data/Tonsils_10xFlex/Engineered/"), 
+                      (n_doub+n_singlet)/1000, 
+                      n_doub/(n_doub+n_singlet),
+                      seed)
+  print(basename(filename))
+
+  DropletUtils::write10xCounts(path = filename,
+                               x = counts(sub),
+                               version = "3")
+  #export metadata
+  filename_meta <- sprintf("%s/Tonsils_10xFlex_engineered_%ik_%0.2fp_%is/metadata.tsv",
+                      here("output/data/Tonsils_10xFlex/Engineered/"), 
+                      (n_doub+n_singlet)/1000, 
+                      n_doub/(n_doub+n_singlet),
+                      seed)
+  write_tsv(x=as.data.frame(sub@colData),
+            file=filename_meta)
+
+  rm(sub, cells)
+  
+}
+
+```
+
+
+Run for 5 random seeds.
+
+```{r}
+random_seeds <- sample(1000:9999, size = 5, replace = FALSE)
+
+cap <- sapply(random_seeds, function(S){
+  run_subset_droplets(object = droplet, n_doub = 1800, n_singlet = 10200, seed = S)
+})
+
+
+```
+
+
+
+

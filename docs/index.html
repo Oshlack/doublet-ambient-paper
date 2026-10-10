@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Order Matters: Ambient RNA Correction confounds Doublet Detection in single-cell RNA sequencing</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ambient_doublet_singlecell</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Order Matters: Ambient RNA Correction
+confounds Doublet Detection in single-cell RNA sequencing</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-10-10
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>ambient_doublet_singlecell/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommichellemeier27ambientdoubletsinglecelltreea897fc983dbc46cabe10d3fa0dd721409685f3e1targetblanka897fc9a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/tree/a897fc983dbc46cabe10d3fa0dd721409685f3e1" target="_blank">a897fc9</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcommichellemeier27ambientdoubletsinglecelltreea897fc983dbc46cabe10d3fa0dd721409685f3e1targetblanka897fc9a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/tree/a897fc983dbc46cabe10d3fa0dd721409685f3e1" target="_blank">a897fc9</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .RData
+    Ignored:    .Renviron
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    CLAUDE.md
+    Ignored:    analysis/figures_v1/
+    Ignored:    analysis/figures_v2/
+    Ignored:    analysis/figures_v3/
+    Ignored:    analysis/obsolete/
+    Ignored:    analysis/qc_filtered_ambient/
+    Ignored:    analysis/untracked_BAL_inflammation_10x_HTO_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BAL_inflammation_10x_HTO_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_QC_filtering_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x__LungCancer_10x_CMO_check_CMO_ADT_distribution.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_evaluate_doublet_calling_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_inspect_SampleOfOrigin_false_singlets.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_run_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_LungCancer_10x_CMO_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_LungCancer_10x_CMO_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_figure_05.Rmd
+    Ignored:    claude_logs/
+    Ignored:    code/TMP_notes.R
+    Ignored:    code/ambient_tools/
+    Ignored:    code/make_figures.R
+    Ignored:    code/useful_scripts/zenodo_export.R
+    Ignored:    output/.DS_Store
+    Ignored:    output/data/
+    Ignored:    output/data_zenodo/
+    Ignored:    output/figures/
+    Ignored:    output/package_refs/
+    Ignored:    output/results/.DS_Store
+    Ignored:    output/results/BAL_inflammation_10x/.DS_Store
+    Ignored:    output/results/BrainCortex_nuclei_10x/.DS_Store
+    Ignored:    output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/.DS_Store
+    Ignored:    output/results/LungCancer_10x/.DS_Store
+    Ignored:    output/results/LungCancer_10x/DoubletCallingPerformance/.DS_Store
+    Ignored:    output/results/Tonsils_10xFlex/.DS_Store
+    Ignored:    output/results/Tonsils_10xFlex/Engineered/.DS_Store
+    Ignored:    renv/
+    Ignored:    scp_file.txt
+
+Untracked files:
+    Untracked:  output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_TESTING_deMULTIplex2_correctAssignments_MCC.csv
+    Untracked:  output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_correctAssignments_MCC_qc_filtered_ambient.csv
+    Untracked:  output/results/LungCancer_10x/DoubletCallingPerformance/LungCancer_10x_correctAssignments_MCC_qc_filtered_ambient.csv
+
+Unstaged changes:
+    Modified:   .gitignore
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/index.Rmd</code>) and HTML
+(<code>docs/index.html</code>) files. If you’ve configured a remote Git
+repository (see <code>?wflow_git_remote</code>), click on the hyperlinks
+in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/5dce38f632169e93f34abba76204d91335786ad5/docs/index.html" target="_blank">5dce38f</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-09
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/0ac035bb83f4d25a97a648d0be66b7decde70ca3/analysis/index.Rmd" target="_blank">0ac035b</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-09
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/85dc8323e8c59d11f46c4bfef3032c63f2c9c120/docs/index.html" target="_blank">85dc832</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/689926ff436902917696d029a429a17a2f9d0802/analysis/index.Rmd" target="_blank">689926f</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-07
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/4cfa89ec349257b7bcbacf9dd8cb3f4c024e62fa/docs/index.html" target="_blank">4cfa89e</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/4683be9969287aeb65be9a93e17b6122568bbbfe/analysis/index.Rmd" target="_blank">4683be9</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-06
+</td>
+<td>
+wflow_publish(c("analysis/figure_01.Rmd", "analysis/figure_03.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/64fdd34fe1b73fb8d933e3fc51bc48fa5106a888/docs/index.html" target="_blank">64fdd34</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-26
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/b075c23a406f4182cb4eb050f0fa69068be4314f/analysis/index.Rmd" target="_blank">b075c23</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-26
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/7e87b35cb0a0cf187b2f8d188fa991abb6a0d054/docs/index.html" target="_blank">7e87b35</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/d1afc6a1725c8401ba0ecab85c9457f3b5be75a1/analysis/index.Rmd" target="_blank">d1afc6a</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+wflow_publish(c("analysis/figure_01.Rmd", "analysis/figure_03.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/e891169a14ffb19f5c146551741ed9a126fa8dd9/docs/index.html" target="_blank">e891169</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/79503f2c9d1479be494da39a86e9629cf593e485/analysis/index.Rmd" target="_blank">79503f2</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-19
+</td>
+<td>
+wflow_publish(c("analysis/index.Rmd", "analysis/supp_figure_01.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/506b6abd2cb8089d212ab589efd4acaf451e323b/docs/index.html" target="_blank">506b6ab</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/ff52f8dd06f10a035b67e97729fdd68624a77026/analysis/index.Rmd" target="_blank">ff52f8d</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-19
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/2a8dfa5c38f567e555d5c1df9b594f22cb4d059b/docs/index.html" target="_blank">2a8dfa5</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/0415da4d5e4cfe9bd0d5226a4cb2413c4aee3fef/analysis/index.Rmd" target="_blank">0415da4</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-19
+</td>
+<td>
+wflow_publish(c("analysis/figure_02.Rmd", "analysis/figure_04.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/32b0b0c7bcbc6c90bf7d3b1cf734888a66809278/docs/index.html" target="_blank">32b0b0c</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-12
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/5b2b06464e813e85c1a38e177a72da4d1fe7f09d/analysis/index.Rmd" target="_blank">5b2b064</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-12
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/7fe2674b31e2175b8f5a1945427bcfa44f57c333/docs/index.html" target="_blank">7fe2674</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/f9919d7f4475c30f179ce77c462d679831e65b94/analysis/index.Rmd" target="_blank">f9919d7</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-17
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/452daff199af2f3cb4e7161ca0adbe8b188045ec/docs/index.html" target="_blank">452daff</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-14
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/052c4ec001792f24c35c57c721ea70b7cc4d73dd/analysis/index.Rmd" target="_blank">052c4ec</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-14
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/7abb657789a3c2d6e0917c61b8f9295d992c0757/docs/index.html" target="_blank">7abb657</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-14
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/067b06db2c3979bc650d94044645e61176ccd568/analysis/index.Rmd" target="_blank">067b06d</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-14
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/5bff3580b7252683a7e704d98efa6a50a32c2cbb/docs/index.html" target="_blank">5bff358</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/f5d8238ca349cd1b092bded4c8bbb6b720dc1d15/analysis/index.Rmd" target="_blank">f5d8238</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-01
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/99065101df54a0b48c30d8ad43ba9f467ad69b1a/docs/index.html" target="_blank">9906510</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/ad5edb6451651c52ba17f6c956b5ff9ffc03c937/analysis/index.Rmd" target="_blank">ad5edb6</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-25
+</td>
+<td>
+wflow_publish(c("analysis/figure_03.Rmd", "analysis/index.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/3728e76fbcac5f4f986efdb1ce900125dacd6da8/docs/index.html" target="_blank">3728e76</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/b7d5411f998862fa6e03b82e5a47a6c0c39000eb/analysis/index.Rmd" target="_blank">b7d5411</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-19
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/ca7c6f9d481e42a85cd10f6fa1dc88d5c64471c4/docs/index.html" target="_blank">ca7c6f9</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/f9c741fa7f1925d110dda7efab0b2b1c5a297cdf/analysis/index.Rmd" target="_blank">f9c741f</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-17
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/cab57cfb3ee9b5b2681941bd8bdf1d3f988a0b34/docs/index.html" target="_blank">cab57cf</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/8186c96f99ccefef4c88500ec8316ed418bdbcb1/analysis/index.Rmd" target="_blank">8186c96</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/129e4a077ef5154d95c9e630acfd78351778608e/docs/index.html" target="_blank">129e4a0</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/fd755d8c7158c8beadb32653e2a49405546a0984/analysis/index.Rmd" target="_blank">fd755d8</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/6a376c7d66bd4e6ab335254f64b3197963661060/docs/index.html" target="_blank">6a376c7</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/378d83037b63b6c410a896ee652f631f044aa1dc/analysis/index.Rmd" target="_blank">378d830</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/706727c6e38417c734c86129a978c0a0b1612b48/docs/index.html" target="_blank">706727c</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/7426df4d6d67dc19a31b4c0ef55a37df11547141/analysis/index.Rmd" target="_blank">7426df4</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/6836381d41b721f96af0f16b3b4bc7e01f187f8c/docs/index.html" target="_blank">6836381</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/553e5f7b711edd5a92029fdaf3bf2d17a2bca1e1/analysis/index.Rmd" target="_blank">553e5f7</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/0b11040797c22dd4126ed73a88a0b1fdb1bb254d/docs/index.html" target="_blank">0b11040</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/5347dabcdb98846b9b445125de9f59ac570ba737/analysis/index.Rmd" target="_blank">5347dab</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/17e68c4cc69077e2a5fe59cc020b5dc3467f1bb4/docs/index.html" target="_blank">17e68c4</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/13ae3b44bfc53155974ca6fd2b4917baad4d7f7e/analysis/index.Rmd" target="_blank">13ae3b4</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/c3a23812939d62b9f245f9cb53cc742e3eb0d6c4/docs/index.html" target="_blank">c3a2381</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/b1626b40f37c31db05860e617635a33fe410f46a/analysis/index.Rmd" target="_blank">b1626b4</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/f8efa3843d3dc621336b9ca2d714de35502947fb/docs/index.html" target="_blank">f8efa38</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/8060601c81278c67e18acf6bcee86f94a030551e/analysis/index.Rmd" target="_blank">8060601</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/621dd2e7157ad3f79b252edb8196d8a79712a7a6/docs/index.html" target="_blank">621dd2e</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/2adc5dc996ea58f7a43d9346ac655d52f6d0f526/analysis/index.Rmd" target="_blank">2adc5dc</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-16
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/993353b3824d3f7de6ddcd591f0677feab81da0d/docs/index.html" target="_blank">993353b</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/44159a076d0e1dec93f1cf38b843794a7783583c/analysis/index.Rmd" target="_blank">44159a0</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-10
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/e8b8480ade1f76a264218852e2d5b1736cf10b08/docs/index.html" target="_blank">e8b8480</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/3c9e65b37053ad6004e341d9fe316c2525a6e6fa/analysis/index.Rmd" target="_blank">3c9e65b</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-05
+</td>
+<td>
+wflow_publish("analysis/index.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/53f39d03ed053c275829eec9dd82bf2294ee54b5/analysis/index.Rmd" target="_blank">53f39d0</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-05
+</td>
+<td>
+Start workflowr project.
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<p>This website contains all the code described in the manuscript:
+<em>Order Matters: Ambient RNA correction confounds doublet detection in
+single-cell RNA sequencing</em> (add link when available)</p>
+<p>All the code of this analysis is available on GitHub at <a
+href="https://github.com/Oshlack/doublet-ambient-paper"
+class="uri">https://github.com/Oshlack/doublet-ambient-paper</a></p>
+<div id="abstract" class="section level1">
+<h1><strong>Abstract</strong></h1>
+<p>A common technical artifact in droplet-based single-cell RNA
+sequencing (scRNA-seq) is the capture of two cells in the same droplet,
+termed doublets. Doublets may present as hybrid cell types, and their
+removal is a critical step during quality control. Another form of
+contamination is ambient RNA, which originates from free floating RNA
+released from other cells in suspension, likely during cell death. As
+with doublets, ambient RNA results in unexpected gene expression
+patterns. Most suggested analysis pipelines include ambient RNA
+correction before doublet detection however no formal investigation into
+how doublet detection is affected by ambient RNA correction has been
+conducted. Here, we evaluate the impact of ambient RNA correction on the
+performance of doublet detection using novel engineered and multiplexed
+datasets. We apply three of the most widely-used methods for removing
+ambient RNA (decontX, soupX, CellBender), in conjunction with up to six
+doublet detection methods (scDblFinder, scds, bcds, cxds scrublet,
+DoubletDetection). We find that doublet detection tools perform best
+when done prior to ambient RNA correction, with the exception of
+CellBender. Performing ambient RNA correction first, particularly for
+decontX, leads to an increased proportion of doublet droplets retained
+in the dataset compared with calling doublets on uncorrected data. We
+show that both decontX and soupX partially mask doublet signal by
+removing proportionally more ambient RNA from doublets that remain
+undetected after ambient RNA correction. Our results show that the
+performance of doublet detection is significantly impacted by the use of
+ambient RNA correction tools. We suggest a new workflow that implements
+doublet detection prior to ambient RNA correction unless using
+CellBender.</p>
+<div id="authors" class="section level2">
+<h2>Authors</h2>
+<p>Michelle Meier [1,2], George Howitt [1,2], Calandra V Grima [1,2],
+Gunjan Dixit [1,2], Hamish King [3], Liam Gubbels [4], Eric Levi [5,6],
+Karen Davies [5], Shivanthan Shanthikumar [7,8,9], Melanie R. Neeland
+[7,8], Jovana Maksimovic [1,2]+, Alicia Oshlack [1,2,10]*+</p>
+<p>[1] Peter MacCallum Cancer Centre, Melbourne, Victoria 3000,
+Australia</p>
+<p>[2] Sir Peter MacCallum Department of Oncology, The University of
+Melbourne, Victoria 3010, Australia</p>
+<p>[3] Walter and Eliza Hall Institute, Parkville, VIC, Australia</p>
+<p>[4] Infection, Immunity and Global Health, Murdoch Children’s
+Research Institute, Parkville, Australia</p>
+<p>[5] Department of Otolaryngology, Royal Children’s Hospital,
+Parkville, Australia</p>
+<p>[6] Clinical Sciences, Murdoch Children’s Research Institute,
+Parkville, Australia</p>
+<p>[7] Respiratory Diseases, Murdoch Children’s Research Institute,
+Parkville, VIC, Australia</p>
+<p>[8] Respiratory and Sleep Medicine, Royal Children’s Hospital,
+Parkville, VIC, Australia</p>
+<p>[9] Department of Paediatrics, University of Melbourne, Parkville,
+VIC, Australia</p>
+<p>[10] School of Mathematics and Statistics, The University of
+Melbourne, Victoria 3010, Australia</p>
+<ul>
+<li>co-last</li>
+<li>corresponding author (<a href="mailto:alicia.oshlack@petermac.org"
+class="email">alicia.oshlack@petermac.org</a>)</li>
+</ul>
+</div>
+</div>
+<div id="overview" class="section level1">
+<h1><strong>Overview</strong></h1>
+<p>This overview is structured into sections as they appear in the
+manuscript. Each section contains links to the markdowns that were used
+for data processing, analysis and generating the figures.</p>
+<div
+id="figure-1-performing-ambient-rna-correction-alters-doublet-detection-outcomes"
+class="section level2">
+<h2>FIGURE 1: PERFORMING AMBIENT RNA CORRECTION ALTERS DOUBLET DETECTION
+OUTCOMES</h2>
+<p><a href="figure_01.html">Generate Figure 1</a></p>
+<p><a href="supp_figure_01.html">Generate Supp Figure 1</a></p>
+<div id="processing-doublet-calling-for-all-presented-datasets"
+class="section level3 tabset">
+<h3 class="tabset">Processing + Doublet calling for all presented
+datasets</h3>
+<div id="x-flex-tonsil-dataset" class="section level4">
+<h4>10x Flex Tonsil dataset</h4>
+<ul>
+<li><p><a
+href="Tonsils_10xFlex_whole_dataset_uncorrected_scDblFinder.html">Tonsils
+10x Flex - scDblFinder on uncorrected data</a></p></li>
+<li><p><a
+href="Tonsils_10xFlex_whole_dataset_decontX_scDblFinder.html">Tonsils
+10x Flex - scDblFinder on decontX corrected data</a></p></li>
+</ul>
+</div>
+<div id="x-flex-pbmc-dataset" class="section level4">
+<h4>10x Flex PBMC dataset</h4>
+<ul>
+<li><p><a
+href="PBMC_10xFlex_whole_dataset_uncorrected_scDblFinder.html">PBMC 10x
+Flex - scDblFinder on uncorrected data</a></p></li>
+<li><p><a
+href="PBMC_10xFlex_whole_dataset_decontX_scDblFinder.html">PBMC 10x Flex
+- scDblFinder on decontX corrected data</a></p></li>
+</ul>
+</div>
+<div id="x-flex-ovarian-cancer-dataset" class="section level4">
+<h4>10x Flex Ovarian cancer dataset</h4>
+<ul>
+<li><p><a
+href="OvarianCancer_10xFlex_whole_dataset_uncorrected_scDblFinder.html">Ovarian
+Cancer 10x Flex - scDblFinder on uncorrected data</a></p></li>
+<li><p><a
+href="OvarianCancer_10xFlex_whole_dataset_decontX_scDblFinder.html">Ovarian
+Cancer 10x Flex - scDblFinder on decontX corrected data</a></p></li>
+</ul>
+</div>
+<div id="non-flex-tonsil-3-v2" class="section level4">
+<h4>Non-Flex Tonsil 3’ v2</h4>
+<ul>
+<li><p><a
+href="Tonsils_10x3pGEX_BCP002_uncorrected_scDblFinder.html">Tonsil 3’ v2
+- scDblFinder on uncorrected data</a></p></li>
+<li><p><a href="Tonsils_10x3pGEX_BCP002_decontX_scDblFinder.html">Tonsil
+3’ v2 - scDblFinder on decontX corrected data</a></p></li>
+</ul>
+</div>
+<div id="non-flex-tonsil-5-v2" class="section level4">
+<h4>Non-Flex Tonsil 5’ v2</h4>
+<ul>
+<li><p><a
+href="Tonsils_10x5pGEX_BCP003_uncorrected_scDblFinder.html">Tonsil 5’ v1
+- scDblFinder on uncorrected data</a></p></li>
+<li><p><a href="Tonsils_10x5pGEX_BCP003_decontX_scDblFinder.html">Tonsil
+5’ v1 - scDblFinder on decontX corrected data</a></p></li>
+</ul>
+</div>
+</div>
+</div>
+<div
+id="figure-03-doublet-detection-performance-is-reduced-after-ambient-rna-correction-in-engineered-datasets"
+class="section level2">
+<h2>FIGURE 03: DOUBLET DETECTION PERFORMANCE IS REDUCED AFTER AMBIENT
+RNA CORRECTION IN ENGINEERED DATASETS</h2>
+<p><a href="figure_03.html">Generate Figure 3</a></p>
+<p><a href="supp_figure_02.html">Generate Supp Figure 2</a></p>
+<div id="make-engineered-datasets" class="section level3">
+<h3>Make engineered datasets</h3>
+<ol style="list-style-type: decimal">
+<li><p><a href="Tonsils_10xFlex_make_engineered_datasets.html">Generate
+engineered datasets</a></p></li>
+<li><p><a
+href="Tonsils_10xFlex_make_engineered_emptyObject.html">Generate empty
+droplet object</a> - this is required for soupX and decontX with
+background</p></li>
+<li><p><a
+href="Tonsils_10xFlex_make_engineered_CellbenderInput.html">Generate
+cellranger ‘raw’ h5 file for cellbender</a> - make engineered ‘raw’
+cellranger h5 files which are a cellbender input requirement.</p></li>
+<li><p>Run ambient RNA correction tools</p>
+<p>4.1. <a href="Tonsils_10xFlex_clean_engineered_soupX.html">Apply
+soupX to engineered datasets</a></p>
+<p>4.2. <a href="Tonsils_10xFlex_clean_engineered_decontX.html">Apply
+decontX to engineered datasets</a></p>
+<p>4.3. <a href="Tonsils_10xFlex_clean_engineered_CellBender.html">Apply
+CellBender to engineered datasets</a></p></li>
+<li><p><a href="Tonsils_10xFlex_QC_engineered_datasets.html">Post
+ambient correction QC filter</a> - perform lenient QC before doublet
+detection</p></li>
+<li><p>Doublet Detection - bash scripts for doublet detection can be
+found in <code>code/Tonsil_10xFlex/Engineered</code></p></li>
+<li><p><a
+href="Tonsils_10xFlex_evaluate_engineered_datasets.html">Evaluation of
+doublet detection</a></p></li>
+</ol>
+</div>
+</div>
+<div
+id="figure-4-engineered-doublets-reveal-key-features-of-undetected-doublets-after-ambient-rna-correction"
+class="section level2">
+<h2>FIGURE 4: ENGINEERED DOUBLETS REVEAL KEY FEATURES OF UNDETECTED
+DOUBLETS AFTER AMBIENT RNA CORRECTION</h2>
+<p>This uses the engineered datasets generated above.</p>
+<p><a href="figure_04.html">Generate Figure 4</a></p>
+<p><a href="supp_figure_03.html">Generate Supp Figure 3</a></p>
+</div>
+<div
+id="figure-5-doublet-detection-performs-best-on-uncorrected-or-cellbender-corrected-data"
+class="section level2">
+<h2>FIGURE 5: DOUBLET DETECTION PERFORMS BEST ON UNCORRECTED OR
+CELLBENDER CORRECTED DATA</h2>
+<p><a href="figure_05.html">Generate Figure 5</a></p>
+<p><a href="supp_figure_04.html">Generate Supp Figure 4</a></p>
+<div id="processing-and-analysis" class="section level3 tabset">
+<h3 class="tabset">Processing and Analysis</h3>
+<div id="lung-cancer-dataset" class="section level4">
+<h4>Lung Cancer dataset</h4>
+<ol style="list-style-type: decimal">
+<li><p><a href="LungCancer_10x_CMO_prepare_for_analysis.html">Prepare
+data for analysis</a></p></li>
+<li><p><a href="LungCancer_10x_CMO_prepare_for_CellBender.html">Get
+CellBender inputs</a></p></li>
+<li><p>Run ambient RNA correction tools</p>
+<p>3.1. <a href="LungCancer_10x_CMO_clean_soupX.html">Apply
+soupX</a></p>
+<p>3.2. <a href="LungCancer_10x_CMO_clean_decontX.html">Apply
+decontX</a></p>
+<p>3.3. <a href="LungCancer_10x_CMO_clean_CellBender.html">Apply
+CellBender</a></p></li>
+<li><p><a href="LungCancer_10x_CMO_QC_filtering.html">Post ambient
+correction QC filter</a> - perform lenient QC before doublet
+detection</p></li>
+<li><p>Doublet Detection - see bash script
+<code>code/LungCancer_10x/LungCancer_10x_CMO_runDoubletTools.sh</code></p></li>
+<li><p><a
+href="LungCancer_10x_CMO_evaluate_doublet_calling.html">Evaluation of
+doublet detection</a></p></li>
+</ol>
+</div>
+<div id="bal-dataset" class="section level4">
+<h4>BAL dataset</h4>
+<ol style="list-style-type: decimal">
+<li><p><a
+href="BAL_inflammation_10x_HTO_prepare_for_analysis.html">Prepare data
+for analysis</a></p></li>
+<li><p><a
+href="BAL_inflammation_10x_HTO_prepare_for_CellBender.html">Get
+CellBender inputs</a></p></li>
+<li><p>Run ambient RNA correction tools</p>
+<p>3.1. <a href="BAL_inflammation_10x_HTO_clean_soupX.html">Apply
+soupX</a></p>
+<p>3.2. <a href="BAL_inflammation_10x_HTO_clean_decontX.html">Apply
+decontX</a></p>
+<p>3.3. <a href="BAL_inflammation_10x_HTO_clean_CellBender.html">Apply
+CellBender</a></p></li>
+<li><p><a href="BAL_inflammation_10x_HTO_QC_filtering.html">Post ambient
+correction QC filter</a> - perform lenient QC before doublet
+detection</p></li>
+<li><p>Doublet Detection - see bash script
+<code>code/BAL_inflammation_10x/BAL_inflammation_10x_runDoubletTools.sh</code></p></li>
+<li><p><a
+href="BAL_inflammation_10x_HTO_evaluate_doublet_calling.html">Evaluation
+of doublet detection</a></p></li>
+</ol>
+</div>
+<div id="brain-cortex-dataset" class="section level4">
+<h4>Brain Cortex dataset</h4>
+<ol style="list-style-type: decimal">
+<li><p><a
+href="BrainCortex_nuclei_10x_prepare_for_analysis.html">Prepare data for
+analysis</a> - this includes <code>deMULTIplex2</code></p></li>
+<li><p><a href="BrainCortex_nuclei_10x_prepare_for_CellBender.html">Get
+CellBender inputs</a></p></li>
+<li><p>Run ambient RNA correction tools</p>
+<p>3.1. <a href="BrainCortex_nuclei_10x_clean_soupX.html">Apply
+soupX</a></p>
+<p>3.2. <a href="BrainCortex_nuclei_10x_clean_decontX.html">Apply
+decontX</a></p>
+<p>3.3. <a href="BrainCortex_nuclei_10x_clean_CellBender.html">Apply
+CellBender</a></p></li>
+<li><p><a href="BrainCortex_nuclei_10x_QC_filtering.html">Post ambient
+correction QC filter</a> - perform lenient QC before doublet
+detection</p></li>
+<li><p>Doublet Detection - see bash script
+<code>code/BrainCortex_nuclei_10x/BrainCortex_nuclei_10x_runDoubletTools.sh</code></p></li>
+<li><p><a
+href="BrainCortex_nuclei_10x_evaluate_doublet_calling.html">Evaluation
+of doublet detection</a></p></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

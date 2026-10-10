@@ -1,0 +1,48 @@
+# R project files
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.Rapp.history
+.DS_Store
+.Renviron
+renv/
+
+# Analysis intermediates
+analysis/figure
+analysis/*png
+analysis/*html
+analysis/*_cache
+analysis/site_libs
+
+# Untracked/old analysis and docs folders
+analysis/untracked_*
+analysis/obsolete
+analysis/figures_v1
+analysis/figures_v2
+analysis/figures_v3
+docs/untracked_*
+docs/figure/untracked_*
+output/results/**/untracked_*
+
+# Data and output
+data
+output/data
+output/data_zenodo
+output/figures
+output/package_refs
+
+# University requirement: track claude activity
+CLAUDE.md
+claude_logs
+
+# Dealing with OneDrive
+docs/figure/figure_02.Rmd/
+docs/figure/figure_06.Rmd/
+docs/figure_02.html
+docs/figure_06.html
+code/ambient_tools/
+code/make_figures.R
+code/useful_scripts/zenodo_export.R
+code/TMP_notes.R
+scp_file.txt

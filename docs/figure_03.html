@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Michelle Meier" />
+
+
+<title>Figure 3: Doublet detection performance is reduced after ambient RNA correction in engineered datasets</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ambient_doublet_singlecell</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Figure 3: Doublet detection performance is
+reduced after ambient RNA correction in engineered datasets</h1>
+<h4 class="author">Michelle Meier</h4>
+<h4 class="date">10. October 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-10-10
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>ambient_doublet_singlecell/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260605code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260605)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260605code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260605)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommichellemeier27ambientdoubletsinglecelltreea897fc983dbc46cabe10d3fa0dd721409685f3e1targetblanka897fc9a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/tree/a897fc983dbc46cabe10d3fa0dd721409685f3e1" target="_blank">a897fc9</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcommichellemeier27ambientdoubletsinglecelltreea897fc983dbc46cabe10d3fa0dd721409685f3e1targetblanka897fc9a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/tree/a897fc983dbc46cabe10d3fa0dd721409685f3e1" target="_blank">a897fc9</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .RData
+    Ignored:    .Renviron
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    CLAUDE.md
+    Ignored:    analysis/figures_v1/
+    Ignored:    analysis/figures_v2/
+    Ignored:    analysis/figures_v3/
+    Ignored:    analysis/obsolete/
+    Ignored:    analysis/qc_filtered_ambient/
+    Ignored:    analysis/untracked_BAL_inflammation_10x_HTO_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BAL_inflammation_10x_HTO_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_QC_filtering_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x__LungCancer_10x_CMO_check_CMO_ADT_distribution.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_evaluate_doublet_calling_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_inspect_SampleOfOrigin_false_singlets.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_run_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_LungCancer_10x_CMO_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_LungCancer_10x_CMO_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_figure_05.Rmd
+    Ignored:    claude_logs/
+    Ignored:    code/TMP_notes.R
+    Ignored:    code/ambient_tools/
+    Ignored:    code/make_figures.R
+    Ignored:    code/useful_scripts/zenodo_export.R
+    Ignored:    output/.DS_Store
+    Ignored:    output/data/
+    Ignored:    output/data_zenodo/
+    Ignored:    output/figures/
+    Ignored:    output/package_refs/
+    Ignored:    output/results/.DS_Store
+    Ignored:    output/results/BAL_inflammation_10x/.DS_Store
+    Ignored:    output/results/BrainCortex_nuclei_10x/.DS_Store
+    Ignored:    output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/.DS_Store
+    Ignored:    output/results/LungCancer_10x/.DS_Store
+    Ignored:    output/results/LungCancer_10x/DoubletCallingPerformance/.DS_Store
+    Ignored:    output/results/Tonsils_10xFlex/.DS_Store
+    Ignored:    output/results/Tonsils_10xFlex/Engineered/.DS_Store
+    Ignored:    renv/
+    Ignored:    scp_file.txt
+
+Untracked files:
+    Untracked:  output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_TESTING_deMULTIplex2_correctAssignments_MCC.csv
+    Untracked:  output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_correctAssignments_MCC_qc_filtered_ambient.csv
+    Untracked:  output/results/LungCancer_10x/DoubletCallingPerformance/LungCancer_10x_correctAssignments_MCC_qc_filtered_ambient.csv
+
+Unstaged changes:
+    Modified:   .gitignore
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/figure_03.Rmd</code>) and HTML
+(<code>docs/figure_03.html</code>) files. If you’ve configured a remote
+Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/4cfa89ec349257b7bcbacf9dd8cb3f4c024e62fa/docs/figure_03.html" target="_blank">4cfa89e</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/4683be9969287aeb65be9a93e17b6122568bbbfe/analysis/figure_03.Rmd" target="_blank">4683be9</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-06
+</td>
+<td>
+wflow_publish(c("analysis/figure_01.Rmd", "analysis/figure_03.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/7e87b35cb0a0cf187b2f8d188fa991abb6a0d054/docs/figure_03.html" target="_blank">7e87b35</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/d1afc6a1725c8401ba0ecab85c9457f3b5be75a1/analysis/figure_03.Rmd" target="_blank">d1afc6a</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+wflow_publish(c("analysis/figure_01.Rmd", "analysis/figure_03.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/0cbe91c1157b929fa09fc4951f185505ba97e22b/docs/figure_03.html" target="_blank">0cbe91c</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/cf416b44f5a9552702f96c5f2e6216289084cc03/docs/figure_03.html" target="_blank">cf416b4</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/510e9bbc759b786444ca0288a198c6c1e6da2d51/analysis/figure_03.Rmd" target="_blank">510e9bb</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+wflow_publish("analysis/figure_03.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/30ca9c8a0bcffab7a84a71a4bcae559f587c86b6/docs/figure_03.html" target="_blank">30ca9c8</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/872b6c2e64e30e4eda78d0ab20bcce78046d3157/analysis/figure_03.Rmd" target="_blank">872b6c2</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+wflow_publish("analysis/figure_03.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/04b456246271c5a5a489f9ebbd5afd52719d0cb6/docs/figure_03.html" target="_blank">04b4562</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-12
+</td>
+<td>
+clean up
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/251076b0fda1ea007330c9fb40ac193a65e20923/analysis/figure_03.Rmd" target="_blank">251076b</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-10
+</td>
+<td>
+renaming files
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/1d422b28782b5d3e321b67ae365043d0ad23b9de/docs/figure_03.html" target="_blank">1d422b2</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-24
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/e06cdaa17c0e7ac4ac6377b9d65370af3b5b6eb3/analysis/figure_03.Rmd" target="_blank">e06cdaa</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-24
+</td>
+<td>
+wflow_publish("analysis/figure_03.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/ec944341b27408f52862cd0515051a927d97ca5f/docs/figure_03.html" target="_blank">ec94434</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-24
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/272d8f2c662afb59cf0b7cb52689936b1ffe75b0/analysis/figure_03.Rmd" target="_blank">272d8f2</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-24
+</td>
+<td>
+wflow_publish("analysis/figure_03.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/e5982c582f9dd5ddb2396cd9774334ca99064e2e/docs/figure_03.html" target="_blank">e5982c5</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-24
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/9075d58bf954914f02ffc6f6300ec9d4bbedc53b/analysis/figure_03.Rmd" target="_blank">9075d58</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-24
+</td>
+<td>
+wflow_publish("analysis/figure_03.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/6065bbc3b76ab59efc1f36b87c21cb14367c1b2c/docs/figure_03.html" target="_blank">6065bbc</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/35928d10783babf813d6ef4796ce386307d07697/analysis/figure_03.Rmd" target="_blank">35928d1</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+wflow_publish("analysis/figure_03.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/99ddc65dfba728fd03e7efb294750d77311b75cc/docs/figure_03.html" target="_blank">99ddc65</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/a26460c7dd6957b01fc34a2f3d8c669919571cde/analysis/figure_03.Rmd" target="_blank">a26460c</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+wflow_publish("analysis/figure_03.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/1d38ad3c7173641e71c049843cb26ee703d4c82a/docs/figure_03.html" target="_blank">1d38ad3</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/258030618ed19e025eb16c8c1364c16c47f71b71/analysis/figure_03.Rmd" target="_blank">2580306</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+wflow_publish("analysis/figure_03.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/1ed6a7bbb16d2bb1114e38ed8e998922bad5f14f/docs/figure_03.html" target="_blank">1ed6a7b</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/507b9d59b021858a111a9ed4db22509fcce1304c/analysis/figure_03.Rmd" target="_blank">507b9d5</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+wflow_publish("analysis/figure_03.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/c4c33bcdbdd356293405afacd421c56b402f464e/docs/figure_03.html" target="_blank">c4c33bc</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/41a776ff9b5b9582e950278daaf2d9dad1e1a858/analysis/figure_03.Rmd" target="_blank">41a776f</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+wflow_publish("analysis/figure_03.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/c9b450dd87c2b1645a6fe475e92b9095ea268671/docs/figure_03.html" target="_blank">c9b450d</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/6e4379279fcfb56255b79b6688165bc2b121cbf4/analysis/figure_03.Rmd" target="_blank">6e43792</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+wflow_publish("analysis/figure_03.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/a55c52b37772e07d353200c58a178314e4905bd6/docs/figure_03.html" target="_blank">a55c52b</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/ee594da889076a0d03239f704b7b5decc05ccf74/analysis/figure_03.Rmd" target="_blank">ee594da</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-07
+</td>
+<td>
+wflow_publish(c("analysis/figure_03.Rmd", "analysis/figure_05.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/49ab52f3e8f415e95cec293129150d12c5bafd66/docs/figure_03.html" target="_blank">49ab52f</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-30
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/99065101df54a0b48c30d8ad43ba9f467ad69b1a/docs/figure_03.html" target="_blank">9906510</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/ad5edb6451651c52ba17f6c956b5ff9ffc03c937/analysis/figure_03.Rmd" target="_blank">ad5edb6</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-25
+</td>
+<td>
+wflow_publish(c("analysis/figure_03.Rmd", "analysis/index.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/ad6dd47998f042625274654faad90acb4ae2f356/docs/figure_03.html" target="_blank">ad6dd47</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/1cf2e0c13ad8cbfb7e995a2f1d10364ca2e89bac/analysis/figure_03.Rmd" target="_blank">1cf2e0c</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-25
+</td>
+<td>
+wflow_publish(c("analysis/figure_03.Rmd",
+"analysis/Tonsils_10xFlex_evaluate_engineered_datasets.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/e75c93fb5fb9850534ad380e9893947aa6e107ea/docs/figure_03.html" target="_blank">e75c93f</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/c2b9e77730250a6f556b1e6b588bf2a3676cb3e5/analysis/figure_03.Rmd" target="_blank">c2b9e77</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-25
+</td>
+<td>
+wflow_publish("analysis/figure_03.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="set-up" class="section level1">
+<h1>Set-up</h1>
+<p>This markdown makes the plots for Figure 3: Doublet detection
+performance is reduced after ambient RNA correction in engineered
+datasets</p>
+<p>In this markdown, we will evaluate the performance of doublet calling
+using <code>scDblFinder</code> on all engineered dataset, both
+uncorrected as well as ambient corrected (<code>decontX BG</code>,
+<code>decontX</code>, <code>soupX</code>, <code>CellBender</code>).</p>
+<div id="load-libraries" class="section level2">
+<h2>Load libraries</h2>
+<pre class="r"><code>suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+  library(patchwork)
+  library(rstatix)
+  library(yardstick)
+  library(caret)
+  library(ComplexHeatmap)
+  library(ggrepel)
+  library(png)
+})</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 4.5.2</code></pre>
+</div>
+<div id="load-data" class="section level2">
+<h2>Load data</h2>
+<p>These performance metrics were computed in <a href="">this
+file</a>.</p>
+<pre class="r"><code>performance_results &lt;- read_tsv(here(&quot;output/results/Tonsils_10xFlex/Engineered/DoubletCallingPerformance/Tonsils_10xFlex_engineered_12k_0.15p_AllBatches_correctAssignments_MCC.csv&quot;), show_col_types = F, col_types = c(&quot;ccnnnnnnnnnnnn&quot;))</code></pre>
+</div>
+<div id="plotting-shortcuts" class="section level2">
+<h2>plotting shortcuts</h2>
+<pre class="r"><code>plot_sizing &lt;- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = &quot;black&quot;),
+        plot.title = element_text(size = 22),
+         plot.subtitle= element_text(size = 18),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank())
+
+
+plot_sizing_keep_legend &lt;- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = &quot;black&quot;),
+        plot.title = element_text(size = 22),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size=16)) 
+
+rotate_x &lt;- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+strip_fix &lt;- theme(strip.background = element_rect(fill = &quot;white&quot;), 
+                   strip.text = element_text(size = 14))
+
+title_size &lt;- theme(plot.title = element_text(size = 22, face = &quot;italic&quot;))</code></pre>
+</div>
+<div id="colours" class="section level2">
+<h2>Colours</h2>
+<pre class="r"><code># method colours
+ambient_tools_colours &lt;- c( &quot;#67BF5C&quot;, &quot;#AD8BC9&quot;, 
+                     &quot;#A8786E&quot;, &quot;#CDCC5D&quot;, &quot;#6DCCDA&quot;)
+
+names(ambient_tools_colours) &lt;- c(&quot;uncorrected&quot;, &quot;decontX&quot;, &quot;decontX_BG&quot;,
+                                            &quot;soupX&quot;, &quot;CellBender&quot;)
+
+ambient_tool_levels &lt;- c(&quot;uncorrected&quot;, &quot;CellBender&quot;, &quot;soupX&quot;, &quot;decontX&quot;, &quot;decontX_BG&quot;)
+
+# doublet/singlet colours
+doublet_colours &lt;- c(&quot;#2E91E5&quot;, &quot;#EB663B&quot;); names(doublet_colours) &lt;- c(&quot;singlet&quot;, &quot;doublet&quot;)</code></pre>
+</div>
+<div id="directory-names" class="section level2">
+<h2>Directory names</h2>
+<pre class="r"><code>save_dir &lt;- here(&quot;output/figures/v4&quot;)</code></pre>
+</div>
+<div id="initiate-list" class="section level2">
+<h2>Initiate list</h2>
+<p>Initate list used to store plots for the figures.</p>
+<pre class="r"><code>main_figure &lt;- list()</code></pre>
+</div>
+</div>
+<div id="proportion-of-correctly-assigned-classes"
+class="section level1">
+<h1>Proportion of correctly assigned classes</h1>
+<div id="scatterplot-overviews" class="section level2">
+<h2>Scatterplot overviews</h2>
+<p>Scatterplot overview for all batches with summary mean+-1sd.</p>
+<pre class="r"><code>data_summary &lt;- performance_results %&gt;%
+  mutate(ambient_tool = factor(ambient_tool, levels = ambient_tool_levels)) %&gt;%
+  group_by(ambient_tool) %&gt;%
+  summarise(., singlet_mean = mean(singlet_Sensitivity),
+            singlet_min = singlet_mean - sd(singlet_Sensitivity), 
+              singlet_max = singlet_mean + sd(singlet_Sensitivity),
+            doublet_mean = mean(doublet_Sensitivity), 
+            doublet_min = doublet_mean - sd(doublet_Sensitivity), 
+              doublet_max = doublet_mean + sd(doublet_Sensitivity))
+
+
+p_main &lt;- performance_results %&gt;%
+  mutate(ambient_tool = factor(ambient_tool, levels = ambient_tool_levels)) %&gt;%
+  ggplot(.) +
+  geom_point(aes(x = doublet_Sensitivity, y = singlet_Sensitivity, colour=ambient_tool), size = 1) +
+  geom_errorbar(data=data_summary,
+    aes(y =singlet_mean, 
+        x = doublet_mean,
+        ymin = singlet_min,
+        ymax = singlet_max, 
+        colour = ambient_tool),
+    width = 0
+  ) +
+  geom_errorbarh(data=data_summary,
+    aes(x = doublet_mean, 
+        y =singlet_mean,
+        xmin = doublet_min,
+        xmax = doublet_max, 
+        colour = ambient_tool),
+    height = 0
+  ) +
+    geom_point(data = data_summary, aes(x = doublet_mean, y =singlet_mean, colour = ambient_tool), size=5) +
+  ggrepel::geom_text_repel(data = data_summary, aes(x = doublet_mean, y =singlet_mean, colour = ambient_tool, label = ambient_tool), size=6, fontface = &quot;bold&quot;) +
+  scale_colour_manual(values = ambient_tools_colours)+
+  plot_sizing + 
+  ylab(&quot;proportion true singlets&quot;) + xlab(&quot;proportion true doublets\n(doublet sensitivity)&quot;)+
+  ylim(c(0,1.05)) + xlim(c(0,1)) + ggtitle(&quot;Correct droplet assignments&quot;) +
+    geom_rect(aes(xmin =0.33, xmax = 0.9,
+                ymin = 0.9, ymax = 1.05),
+            fill = NA, colour = &quot;black&quot;, linetype = &quot;dashed&quot;, linewidth = 0.5) + theme(legend.position = &quot;none&quot;)</code></pre>
+<pre><code>Warning: `geom_errorbarh()` was deprecated in ggplot2 4.0.0.
+ℹ Please use the `orientation` argument of `geom_errorbar()` instead.
+This warning is displayed once per session.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+generated.</code></pre>
+<pre class="r"><code>p_zoom &lt;- performance_results %&gt;%
+  mutate(ambient_tool = factor(ambient_tool, levels = ambient_tool_levels)) %&gt;%
+  ggplot(.) +
+  geom_point(aes(x = doublet_Sensitivity, y = singlet_Sensitivity, colour=ambient_tool), size = 1) +
+  geom_errorbar(data=data_summary,
+    aes(y =singlet_mean, 
+        x = doublet_mean,
+        ymin = singlet_min,
+        ymax = singlet_max, 
+        colour = ambient_tool),
+    width = 0
+  ) +
+  geom_errorbarh(data=data_summary,
+    aes(x = doublet_mean, 
+        y =singlet_mean,
+        xmin = doublet_min,
+        xmax = doublet_max, 
+        colour = ambient_tool),
+    height = 0
+  ) +
+    geom_point(data = data_summary, aes(x = doublet_mean, y =singlet_mean, colour = ambient_tool), size=4) +
+  ggrepel::geom_text_repel(data = data_summary, aes(x = doublet_mean, y =singlet_mean, colour = ambient_tool, label = ambient_tool), size=6, fontface = &quot;bold&quot;) +
+  scale_colour_manual(values = ambient_tools_colours)+
+  plot_sizing + theme(legend.position = &quot;none&quot;)+
+  ylab(&quot;proportion true singlets&quot;) + xlab(&quot;proportion true doublets\n(doublet sensitivity)&quot;)+
+  xlim(c(0.33,0.9)) + ylim(c(0.955,0.99)) + ggtitle(&quot;highlighted area&quot;)</code></pre>
+<pre class="r"><code>layout &lt;- c(&quot;AAABB
+             AAAXX&quot;)
+
+main_figure$performance_props &lt;-(p_main + p_zoom + plot_layout(design =layout) &amp;title_size)
+main_figure$performance_props</code></pre>
+<pre><code>Warning in geom_rect(aes(xmin = 0.33, xmax = 0.9, ymin = 0.9, ymax = 1.05), : All aesthetics have length 1, but the data has 25 rows.
+ℹ Please consider using `annotate()` or provide this layer with data containing
+  a single row.</code></pre>
+<pre><code>`height` was translated to `width`.
+`height` was translated to `width`.</code></pre>
+<p><img src="figure/figure_03.Rmd/unnamed-chunk-8-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/30ca9c8a0bcffab7a84a71a4bcae559f587c86b6/docs/figure/figure_03.Rmd/unnamed-chunk-8-1.png" target="_blank">30ca9c8</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="barplot-remaining-doublets" class="section level3">
+<h3>Barplot, remaining doublets</h3>
+<p>Show remaining doublets</p>
+<pre class="r"><code>data_summary &lt;- performance_results %&gt;%
+  mutate(., prop_missed_doublets = 1-doublet_Sensitivity) %&gt;% 
+  mutate(ambient_tool = factor(ambient_tool, levels = ambient_tool_levels)) %&gt;%
+  group_by(ambient_tool) %&gt;%
+  summarise(., mean_missing = mean(prop_missed_doublets),
+            missing_min = mean_missing - sd(prop_missed_doublets), 
+              missing_max = mean_missing + sd(prop_missed_doublets), 
+            mean_count = median(missed_doublet_n))
+
+
+main_figure$undetected_doublets &lt;- data_summary %&gt;% 
+  ggplot(.) +
+  geom_bar(aes(x=ambient_tool, y = mean_missing, fill=ambient_tool),stat=&quot;identity&quot;)+
+  geom_errorbar(data=data_summary, aes(x=ambient_tool, ymin=missing_min, ymax=missing_max), width=0.2) +
+  plot_sizing + rotate_x + xlab(&quot;&quot;) + ylab(&quot;proportion of\nall doublets&quot;)+
+  scale_fill_manual(values = ambient_tools_colours) +
+  geom_text(aes(x=ambient_tool, y = mean_missing, label=paste0(&quot;n=&quot;, mean_count)), vjust=2.2, size=5) +
+  geom_text(aes(x=ambient_tool, y = mean_missing, label=paste0(&quot;(&quot;, round(mean_missing,2), &quot;)&quot;)), vjust=4.2, size=5) + 
+  theme(legend.position = &quot;none&quot;)+
+  ggtitle(&quot;Undetected doublets&quot;) +title_size
+
+main_figure$undetected_doublets</code></pre>
+<p><img src="figure/figure_03.Rmd/unnamed-chunk-9-1.png" width="576" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/30ca9c8a0bcffab7a84a71a4bcae559f587c86b6/docs/figure/figure_03.Rmd/unnamed-chunk-9-1.png" target="_blank">30ca9c8</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="mcc" class="section level1">
+<h1>MCC</h1>
+<div id="barplot-mcc" class="section level2">
+<h2>Barplot MCC</h2>
+<pre class="r"><code>data_summary &lt;- performance_results %&gt;%
+  mutate(ambient_tool = factor(ambient_tool, levels = ambient_tool_levels)) %&gt;%
+  group_by(ambient_tool) %&gt;%
+  summarise(., mean_MCC = mean(mcc),
+            MCC_min = mean_MCC - sd(mcc), 
+              MCC_max = mean_MCC + sd(mcc))
+
+
+main_figure$mcc &lt;- data_summary %&gt;% 
+  ggplot(.) +
+  geom_bar(aes(x=ambient_tool, y = mean_MCC, fill=ambient_tool),stat=&quot;identity&quot;)+
+  geom_errorbar(data=data_summary, aes(x=ambient_tool, ymin=MCC_min, ymax=MCC_max), width=0.2) +
+  plot_sizing + rotate_x + xlab(&quot;&quot;) + ylab(&quot;MCC&quot;)+
+  scale_fill_manual(values = ambient_tools_colours) +
+  geom_text(aes(x=ambient_tool, y = mean_MCC, label=paste0(&quot;(&quot;, round(mean_MCC,3), &quot;)&quot;)), vjust=2, size=5) + 
+  theme(legend.position = &quot;none&quot;)+
+  ggtitle(&quot;MCC&quot;) + title_size
+
+main_figure$mcc</code></pre>
+<p><img src="figure/figure_03.Rmd/unnamed-chunk-10-1.png" width="576" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/30ca9c8a0bcffab7a84a71a4bcae559f587c86b6/docs/figure/figure_03.Rmd/unnamed-chunk-10-1.png" target="_blank">30ca9c8</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="main-figure" class="section level1">
+<h1>Main Figure</h1>
+<p>Read in workflow image from drawio.</p>
+<pre class="r"><code>my_image &lt;- readPNG(here(&quot;output/figures/workflow_figure_04.png&quot;))
+image_workflow &lt;- rasterGrob(my_image)</code></pre>
+<pre class="r"><code>design_layout &lt;- c(&quot;AABBBB
+                    AABBBB
+                    AABBBB
+                    CCDDXX
+                    CCDDXX&quot;)
+
+patch &lt;- wrap_elements(image_workflow) +
+  wrap_elements(main_figure$performance_props) +
+  wrap_elements(main_figure$mcc) +
+  wrap_elements(main_figure$undetected_doublets) +
+  plot_layout(design = design_layout) + 
+  plot_annotation(tag_levels =&quot;A&quot;) &amp; 
+  theme(plot.tag = element_text(size = 20,face = &quot;bold&quot;))
+
+ggsave(plot = patch,
+       filename = &quot;Figure_03_EngineeredDataset_DoubletEvaluation.png&quot;,
+       path = save_dir,
+       device = &quot;png&quot;,
+       width = 18,
+       height =12,
+       dpi = 1200,
+       bg = &quot;transparent&quot;)</code></pre>
+<pre><code>Warning in geom_rect(aes(xmin = 0.33, xmax = 0.9, ymin = 0.9, ymax = 1.05), : All aesthetics have length 1, but the data has 25 rows.
+ℹ Please consider using `annotate()` or provide this layer with data containing
+  a single row.</code></pre>
+<pre><code>`height` was translated to `width`.
+`height` was translated to `width`.</code></pre>
+<pre class="r"><code>patch</code></pre>
+<pre><code>Warning in geom_rect(aes(xmin = 0.33, xmax = 0.9, ymin = 0.9, ymax = 1.05), : All aesthetics have length 1, but the data has 25 rows.
+ℹ Please consider using `annotate()` or provide this layer with data containing
+  a single row.</code></pre>
+<pre><code>`height` was translated to `width`.
+`height` was translated to `width`.</code></pre>
+<p><img src="figure/figure_03.Rmd/unnamed-chunk-12-1.png" width="1728" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/30ca9c8a0bcffab7a84a71a4bcae559f587c86b6/docs/figure/figure_03.Rmd/unnamed-chunk-12-1.png" target="_blank">30ca9c8</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/1ed6a7bbb16d2bb1114e38ed8e998922bad5f14f/docs/figure/figure_03.Rmd/unnamed-chunk-12-1.png" target="_blank">1ed6a7b</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/c9b450dd87c2b1645a6fe475e92b9095ea268671/docs/figure/figure_03.Rmd/unnamed-chunk-12-1.png" target="_blank">c9b450d</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/e75c93fb5fb9850534ad380e9893947aa6e107ea/docs/figure/figure_03.Rmd/unnamed-chunk-12-1.png" target="_blank">e75c93f</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.9
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] grid      stats4    stats     graphics  grDevices datasets  utils    
+[8] methods   base     
+
+other attached packages:
+ [1] png_0.1-8                   ggrepel_0.9.6              
+ [3] ComplexHeatmap_2.24.0       caret_7.0-1                
+ [5] lattice_0.22-6              yardstick_1.3.2            
+ [7] rstatix_0.7.2               patchwork_1.3.2            
+ [9] DropletUtils_1.28.0         qs2_0.1.5                  
+[11] scater_1.36.0               scuttle_1.18.0             
+[13] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+[15] sp_2.2-0                    here_1.0.1                 
+[17] lubridate_1.9.4             forcats_1.0.0              
+[19] stringr_1.5.1               dplyr_1.1.4                
+[21] purrr_1.2.0                 readr_2.1.5                
+[23] tidyr_1.3.1                 tibble_3.3.0               
+[25] ggplot2_4.0.3               tidyverse_2.0.0            
+[27] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[29] Biobase_2.68.0              GenomicRanges_1.60.0       
+[31] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[33] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[35] generics_0.1.4              MatrixGenerics_1.20.0      
+[37] matrixStats_1.5.0           workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] fs_2.1.0                  spatstat.sparse_3.1-0    
+  [3] doParallel_1.0.17         httr_1.4.7               
+  [5] RColorBrewer_1.1-3        tools_4.5.0              
+  [7] sctransform_0.4.2         backports_1.5.0          
+  [9] R6_2.6.1                  HDF5Array_1.36.0         
+ [11] lazyeval_0.2.2            uwot_0.2.3               
+ [13] GetoptLong_1.0.5          rhdf5filters_1.20.0      
+ [15] withr_3.0.2               gridExtra_2.3            
+ [17] progressr_0.15.1          textshaping_1.0.1        
+ [19] cli_3.6.6                 spatstat.explore_3.4-3   
+ [21] fastDummies_1.7.5         labeling_0.4.3           
+ [23] sass_0.4.10               S7_0.2.1                 
+ [25] spatstat.data_3.1-6       ggridges_0.5.6           
+ [27] pbapply_1.7-2             systemfonts_1.2.3        
+ [29] R.utils_2.13.0            parallelly_1.45.0        
+ [31] limma_3.64.1              rstudioapi_0.17.1        
+ [33] shape_1.4.6.1             vroom_1.6.5              
+ [35] ica_1.0-3                 spatstat.random_3.4-1    
+ [37] car_3.1-3                 Matrix_1.7-3             
+ [39] ggbeeswarm_0.7.2          abind_1.4-8              
+ [41] R.methodsS3_1.8.2         lifecycle_1.0.5          
+ [43] whisker_0.4.1             yaml_2.3.10              
+ [45] edgeR_4.6.2               carData_3.0-5            
+ [47] rhdf5_2.52.1              recipes_1.3.1            
+ [49] SparseArray_1.8.0         Rtsne_0.17               
+ [51] promises_1.3.3            dqrng_0.4.1              
+ [53] crayon_1.5.3              miniUI_0.1.2             
+ [55] beachmat_2.24.0           cowplot_1.1.3            
+ [57] pillar_1.10.2             knitr_1.50               
+ [59] rjson_0.2.23              future.apply_1.20.0      
+ [61] codetools_0.2-20          glue_1.8.0               
+ [63] getPass_0.2-4             spatstat.univar_3.1-3    
+ [65] data.table_1.17.4         vctrs_0.6.5              
+ [67] spam_2.11-1               gtable_0.3.6             
+ [69] cachem_1.1.0              gower_1.0.2              
+ [71] xfun_0.52                 prodlim_2025.04.28       
+ [73] S4Arrays_1.8.1            mime_0.13                
+ [75] survival_3.8-3            timeDate_4041.110        
+ [77] iterators_1.0.14          hardhat_1.4.2            
+ [79] lava_1.8.1                statmod_1.5.0            
+ [81] fitdistrplus_1.2-2        ipred_0.9-15             
+ [83] ROCR_1.0-11               nlme_3.1-168             
+ [85] bit64_4.6.0-1             RcppAnnoy_0.0.22         
+ [87] rprojroot_2.1.1           bslib_0.9.0              
+ [89] irlba_2.3.5.1             rpart_4.1.24             
+ [91] vipor_0.4.7               KernSmooth_2.23-26       
+ [93] colorspace_2.1-1          nnet_7.3-20              
+ [95] tidyselect_1.2.1          processx_3.8.6           
+ [97] bit_4.6.0                 compiler_4.5.0           
+ [99] git2r_0.36.2              BiocNeighbors_2.2.0      
+[101] h5mread_1.0.1             DelayedArray_0.34.1      
+[103] plotly_4.10.4             stringfish_0.17.0        
+[105] scales_1.4.0              lmtest_0.9-40            
+[107] callr_3.7.6               digest_0.6.37            
+[109] goftest_1.2-3             spatstat.utils_3.1-4     
+[111] rmarkdown_2.29            XVector_0.48.0           
+[113] htmltools_0.5.8.1         pkgconfig_2.0.3          
+[115] sparseMatrixStats_1.20.0  fastmap_1.2.0            
+[117] GlobalOptions_0.1.2       rlang_1.3.0              
+[119] htmlwidgets_1.6.4         UCSC.utils_1.4.0         
+[121] shiny_1.10.0              DelayedMatrixStats_1.30.0
+[123] farver_2.1.2              jquerylib_0.1.4          
+[125] zoo_1.8-14                jsonlite_2.0.0           
+[127] BiocParallel_1.42.1       ModelMetrics_1.2.2.2     
+[129] R.oo_1.27.1               BiocSingular_1.24.0      
+[131] magrittr_2.0.4            Formula_1.2-5            
+[133] GenomeInfoDbData_1.2.14   dotCall64_1.2            
+[135] Rhdf5lib_1.30.0           Rcpp_1.1.2               
+[137] viridis_0.6.5             reticulate_1.42.0        
+[139] pROC_1.18.5               stringi_1.8.7            
+[141] MASS_7.3-65               plyr_1.8.9               
+[143] parallel_4.5.0            listenv_0.9.1            
+[145] deldir_2.0-4              splines_4.5.0            
+[147] tensor_1.5                circlize_0.4.16          
+[149] hms_1.1.3                 locfit_1.5-9.12          
+[151] ps_1.9.1                  igraph_2.1.4             
+[153] spatstat.geom_3.4-1       RcppHNSW_0.6.0           
+[155] reshape2_1.4.4            ScaledMatrix_1.16.0      
+[157] evaluate_1.0.5            RcppParallel_5.1.10      
+[159] renv_1.1.4                BiocManager_1.30.26      
+[161] tzdb_0.5.0                foreach_1.5.2            
+[163] httpuv_1.6.16             RANN_2.6.2               
+[165] polyclip_1.10-7           clue_0.3-66              
+[167] future_1.58.0             scattermore_1.2          
+[169] rsvd_1.0.5                broom_1.0.8              
+[171] xtable_1.8-4              RSpectra_0.16-2          
+[173] later_1.4.2               ragg_1.4.0               
+[175] class_7.3-23              viridisLite_0.4.2        
+[177] beeswarm_0.4.0            cluster_2.1.8.1          
+[179] timechange_0.3.0          globals_0.18.0           </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

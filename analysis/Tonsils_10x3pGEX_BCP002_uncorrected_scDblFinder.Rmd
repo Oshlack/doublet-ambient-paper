@@ -1,0 +1,279 @@
+---
+title: "Tonsil 3' GEX: doublet calling using scDblFinder "
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown performs doublet calling using scDblFinder on a tonsil sample presented in [Single-cell analysis of human B cell maturation   predicts how antibody class switching shapes   selection dynamics](https://www.science.org/doi/10.1126/sciimmunol.abe6291) - we selected sample BCP002, which was sequenced using 10X Chromium 3' v2.
+
+This analysis includes:
+
+- removal of low quality cells 
+
+- scDblFinder doublet calling
+
+- export of results as `qs2` object, as well as in 10X cellranger output format
+
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(here)
+  library(glue)
+  library(DropletUtils)
+  library(scran)
+  library(scater)
+  library(scuttle)
+  library(scales)
+  library(readr)
+  library(Seurat)
+  library(scDblFinder)
+  library(scMerge)
+  library(ggpubr)
+  library(BiocParallel)
+  library(clustree)
+  library(SingleCellExperiment)
+  library(scMerge)
+  library(Matrix)
+  library(SeuratDisk)
+  library(qs2)
+  library(patchwork)
+})
+
+
+```
+
+## General plotting themes
+
+```{r}
+plot_sizing <- theme_bw()+
+  theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14, colour = "black"),
+        plot.title = element_text(size = 18),
+        plot.subtitle = element_text(size = 16),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank()) 
+
+plot_sizing_keep_title <- theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14, colour = "black"),
+        plot.title = element_text(size = 18),
+        plot.subtitle = element_text(size = 16),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size = 14) )
+
+rotate_x <- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+strip_fix <- theme(strip.background = element_rect(fill = "white"), 
+                   strip.text = element_text(size = 14))
+
+```
+
+
+
+## Load data
+
+The cellranger outputs for this sample were downloaded from BioStudies, accession number [E-MTAB-9005](https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-9005). 
+
+```{r}
+
+counts <- Read10X(here('data/Tonsils_King/scRNA-seq/BCP002_Total_3GEX_filtered_feature_bc_matrix'))
+sce <- SingleCellExperiment(assays = c("counts" = counts))
+sce
+
+```
+
+
+# QC filtering 
+
+Low quality cells will be removed prior to performing doublet detection. Our main goal here is to eliminate cells with a very low library size and/or number of genes detected, as well as cells with unusually high % mitochondrial reads as their presence may interfere with doublet calling. 
+
+
+Add per cell summary metrics
+
+```{r}
+is.mito <- grepl(pattern = "^MT", rownames(sce))
+sce <- addPerCellQCMetrics(sce, subsets = list(mito = is.mito))
+
+new_meta <- sce@colData %>% as.data.frame() %>% #immediately clean up metadata
+  dplyr::rename(., nfeatures = detected, ncount = sum) %>%
+  select(., -c("subsets_mito_sum", "subsets_mito_detected", "total"))
+sce@colData <- new_meta %>% DataFrame()
+
+sce$Sample <- "BCP002" #there only is one sample, but adding for plotting reasons
+```
+
+```{r, include=FALSE}
+rm(new_meta, is.mito); gc()
+```
+
+
+Plot distribution of library sizes, detected genes and %mito. The dotted lines indicate selected thresholds. Note that compared to 10X Flex datasets, the %mito threshold needs to be increased. The probes for mito genes in 10X flex data are less abundant than for other genes to reduce the amount of mito genes captured. This is not true for non-probe based sequencing. 
+
+
+```{r, fig.align='center', fig.height=10, fig.width=10}
+p1 <- plotColData(
+    sce,
+    "ncount",
+    x = "Sample",
+    colour_by = "Sample",
+    point_size = 1) +
+    scale_y_log10() +
+    theme(axis.text.x = element_blank()) +
+    geom_hline(yintercept = 200,
+               linetype = "dotted")
+
+p2 <- plotColData(
+    sce,
+    "nfeatures",
+    x = "Sample",
+    colour_by = "Sample",
+    point_size = 1) +
+    scale_y_log10() +
+    theme(axis.text.x = element_blank()) +
+    geom_hline(yintercept = 150,
+               linetype = "dotted")
+  
+p3 <- plotColData(
+    sce,
+    "subsets_mito_percent",
+    x = "Sample",
+    colour_by = "Sample",
+    point_size = 1) +
+    theme(axis.text.x = element_blank()) +
+    geom_hline(yintercept = 25,
+               linetype = "dotted")
+
+p1+p2+p3 + plot_layout(ncol=2)
+```
+
+
+Remove cells. 
+
+```{r}
+sce$high_quality_cell <- (sce$ncount >= 200) & (sce$nfeatures >= 150)  & (sce$subsets_mito_percent <= 25) 
+
+sce@colData %>% as.data.frame() %>% 
+  group_by(Sample,high_quality_cell) %>% 
+  summarise(count = n()) %>% 
+  group_by(Sample) %>% 
+  mutate(., percent_kept = round(count/sum(count),5)) %>% 
+  filter(., high_quality_cell == FALSE) %>% 
+  select(Sample, count, percent_kept) %>% 
+  dplyr::rename(removed_cell=count) %>% 
+  knitr::kable() 
+
+```
+
+```{r}
+sce_filtered <- sce[rowSums(counts(sce)) > 50, sce$high_quality_cell == T] #also remove genes that are barely expressed
+sce_filtered
+```
+
+Plot distributions post filtering
+
+```{r, fig.align='center', fig.height=10, fig.width=10}
+p1 <- plotColData(
+    sce_filtered,
+    "ncount",
+    x = "Sample",
+    colour_by = "Sample",
+    point_size = 1) +
+    scale_y_log10() +
+    theme(axis.text.x = element_blank()) 
+
+p2 <- plotColData(
+    sce_filtered,
+    "nfeatures",
+    x = "Sample",
+    colour_by = "Sample",
+    point_size = 1) +
+    scale_y_log10() +
+    theme(axis.text.x = element_blank()) 
+  
+p3 <- plotColData(
+    sce_filtered,
+    "subsets_mito_percent",
+    x = "Sample",
+    colour_by = "Sample",
+    point_size = 1) +
+    theme(axis.text.x = element_blank())
+
+p1+p2+p3 + plot_layout(ncol=2)
+```
+
+
+```{r, include=FALSE}
+rm(sce, p1, p2, p3, cells_to_keep);gc()
+```
+
+
+# Doublet calling - scDblFinder
+
+Running scDblFinder for doublet detection. We have already removed cells with very low library size and very high mitochondrial content. scDblFinder requires a standard workflow to be run on the SCE. 
+
+```{r}
+#standard workflow
+sce_filtered <- logNormCounts(sce_filtered) %>%
+  runPCA() %>%
+  runUMAP()
+
+#scDblFinder
+set.seed(1997)
+sce_filtered <- scDblFinder(sce_filtered,
+                   clusters = T,
+                   dbr.sd = 1, #removing doublet rate assumption 
+                   verbose=F) 
+```
+
+```{r, include=FALSE}
+gc()
+```
+
+
+# Clean up metadata
+
+Before we export the data, lets tidy up the metadata. 
+
+```{r}
+new_meta <- sce_filtered@colData %>% as.data.frame() %>% 
+  select(., c("Sample", "ncount", "nfeatures", "subsets_mito_percent", "sizeFactor", "scDblFinder.class", "scDblFinder.score"))
+sce_filtered@colData <- new_meta %>% DataFrame()
+
+```
+
+```{r, include=FALSE}
+rm(new_meta);gc()
+```
+
+
+# Export
+
+## qs2 export
+
+Exporting whole object.
+
+```{r}
+filename <- here("output/data/Tonsils_3pGEX/Tonsils_3pGEX_BCP002_processed_scdblfinder.qs2")
+qs_save(object = sce_filtered, file = filename)
+```
+
+## 10x v3 folder format whole dataset
+
+Using the cellranger output format also saves a lot of space and allows us to load in specific things we need, such as just the metadata, or just barcodes. 
+
+```{r}
+DropletUtils::write10xCounts(path = here("output/data/Tonsils_3pGEX/Tonsils_3pGEX_BCP002_processed/"),
+                               x = counts(sce_filtered),
+                               version = "3")
+#export metadata
+write_tsv(x=as.data.frame(sce_filtered@colData), file=here("output/data/Tonsils_3pGEX/Tonsils_3pGEX_BCP002_processed/metadata.tsv"))
+
+```
+

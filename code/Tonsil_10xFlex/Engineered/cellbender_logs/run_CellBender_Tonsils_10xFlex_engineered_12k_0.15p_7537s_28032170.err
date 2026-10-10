@@ -1,0 +1,408 @@
+cellbender:remove-background: Command:
+cellbender remove-background --input /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered//Tonsils_10xFlex_engineered_12k_0.15p_7537s_cellbenderInput_feature_bc_matrix.h5 --output /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender.h5 --expected-cells 12000 --total-droplets-included 45000 --cuda --learning-rate 0.000001
+cellbender:remove-background: CellBender 0.3.2
+cellbender:remove-background: (Workflow hash 7f9e87491c)
+cellbender:remove-background: 2026-06-16 11:19:09
+cellbender:remove-background: Running remove-background
+cellbender:remove-background: Loading data from /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered//Tonsils_10xFlex_engineered_12k_0.15p_7537s_cellbenderInput_feature_bc_matrix.h5
+cellbender:remove-background: CellRanger v3 format
+cellbender:remove-background: Features in dataset: 14955 Gene Expression
+cellbender:remove-background: Trimming features for inference.
+cellbender:remove-background: 14955 features have nonzero counts.
+cellbender:remove-background: Prior on counts for cells is 3011
+cellbender:remove-background: Prior on counts for empty droplets is 24
+cellbender:remove-background: Excluding 2451 features that are estimated to have <= 0.1 background counts in cells.
+cellbender:remove-background: Including 12504 features in the analysis.
+cellbender:remove-background: Trimming barcodes for inference.
+cellbender:remove-background: Excluding barcodes with counts below 12
+cellbender:remove-background: Using 12000 probable cell barcodes, plus an additional 33000 barcodes, and 179422 empty droplets.
+cellbender:remove-background: Largest surely-empty droplet has 24 UMI counts.
+cellbender:remove-background: Attempting to unpack tarball "ckpt.tar.gz" to /tmp/tmph344mweg
+cellbender:remove-background: No saved checkpoint.
+cellbender:remove-background: No checkpoint loaded.
+cellbender:remove-background: Running inference...
+cellbender:remove-background: [epoch 001]  average training loss: 2609.9673
+cellbender:remove-background: [epoch 002]  average training loss: 2587.1947  (18.0 seconds per epoch)
+cellbender:remove-background: Will checkpoint every 24 epochs
+cellbender:remove-background: [epoch 003]  average training loss: 2593.9843
+cellbender:remove-background: [epoch 004]  average training loss: 2572.0028
+cellbender:remove-background: [epoch 005]  average training loss: 2532.9495
+cellbender:remove-background: [epoch 005] average test loss: 2548.5973
+cellbender:remove-background: [epoch 006]  average training loss: 2525.0853
+cellbender:remove-background: [epoch 007]  average training loss: 2496.8830
+cellbender:remove-background: [epoch 008]  average training loss: 2483.8170
+cellbender:remove-background: [epoch 009]  average training loss: 2436.5641
+cellbender:remove-background: [epoch 010]  average training loss: 2416.0784
+cellbender:remove-background: [epoch 010] average test loss: 2412.0594
+cellbender:remove-background: [epoch 011]  average training loss: 2380.6215
+cellbender:remove-background: [epoch 012]  average training loss: 2337.8495
+cellbender:remove-background: [epoch 013]  average training loss: 2299.3747
+cellbender:remove-background: [epoch 014]  average training loss: 2247.2066
+cellbender:remove-background: [epoch 015]  average training loss: 2207.5767
+cellbender:remove-background: [epoch 015] average test loss: 2186.1371
+cellbender:remove-background: [epoch 016]  average training loss: 2169.5642
+cellbender:remove-background: [epoch 017]  average training loss: 2133.6466
+cellbender:remove-background: [epoch 018]  average training loss: 2076.5022
+cellbender:remove-background: [epoch 019]  average training loss: 2037.7276
+cellbender:remove-background: [epoch 020]  average training loss: 2003.5234
+cellbender:remove-background: [epoch 020] average test loss: 1962.6524
+cellbender:remove-background: [epoch 021]  average training loss: 1966.1385
+cellbender:remove-background: [epoch 022]  average training loss: 1928.8537
+cellbender:remove-background: [epoch 023]  average training loss: 1895.8345
+cellbender:remove-background: [epoch 024]  average training loss: 1867.6503
+cellbender:remove-background: Saving a checkpoint...
+cellbender:remove-background: Saved checkpoint as /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/ckpt.tar.gz
+cellbender:remove-background: [epoch 025]  average training loss: 1848.7623
+cellbender:remove-background: [epoch 025] average test loss: 1836.2465
+cellbender:remove-background: [epoch 026]  average training loss: 1826.5017
+cellbender:remove-background: [epoch 027]  average training loss: 1821.9164
+cellbender:remove-background: [epoch 028]  average training loss: 1797.3771
+cellbender:remove-background: [epoch 029]  average training loss: 1795.9065
+cellbender:remove-background: [epoch 030]  average training loss: 1790.3906
+cellbender:remove-background: [epoch 030] average test loss: 1799.7875
+cellbender:remove-background: [epoch 031]  average training loss: 1786.5076
+cellbender:remove-background: [epoch 032]  average training loss: 1785.0854
+cellbender:remove-background: [epoch 033]  average training loss: 1776.2160
+cellbender:remove-background: [epoch 034]  average training loss: 1776.2486
+cellbender:remove-background: [epoch 035]  average training loss: 1776.5489
+cellbender:remove-background: [epoch 035] average test loss: 1766.1461
+cellbender:remove-background: [epoch 036]  average training loss: 1768.8810
+cellbender:remove-background: [epoch 037]  average training loss: 1769.1314
+cellbender:remove-background: [epoch 038]  average training loss: 1771.5711
+cellbender:remove-background: [epoch 039]  average training loss: 1775.3175
+cellbender:remove-background: [epoch 040]  average training loss: 1770.8744
+cellbender:remove-background: [epoch 040] average test loss: 1775.9093
+cellbender:remove-background: [epoch 041]  average training loss: 1774.3288
+cellbender:remove-background: [epoch 042]  average training loss: 1769.2238
+cellbender:remove-background: [epoch 043]  average training loss: 1767.4137
+cellbender:remove-background: [epoch 044]  average training loss: 1762.1310
+cellbender:remove-background: [epoch 045]  average training loss: 1764.2436
+cellbender:remove-background: [epoch 045] average test loss: 1760.9972
+cellbender:remove-background: [epoch 046]  average training loss: 1763.0302
+cellbender:remove-background: [epoch 047]  average training loss: 1766.1715
+cellbender:remove-background: [epoch 048]  average training loss: 1761.1347
+cellbender:remove-background: Saving a checkpoint...
+cellbender:remove-background: Saved checkpoint as /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/ckpt.tar.gz
+cellbender:remove-background: [epoch 049]  average training loss: 1758.9607
+cellbender:remove-background: [epoch 050]  average training loss: 1761.6161
+cellbender:remove-background: [epoch 050] average test loss: 1769.6955
+cellbender:remove-background: [epoch 051]  average training loss: 1754.6410
+cellbender:remove-background: [epoch 052]  average training loss: 1758.9739
+cellbender:remove-background: [epoch 053]  average training loss: 1756.7857
+cellbender:remove-background: [epoch 054]  average training loss: 1759.1715
+cellbender:remove-background: [epoch 055]  average training loss: 1754.2828
+cellbender:remove-background: [epoch 055] average test loss: 1749.9695
+cellbender:remove-background: [epoch 056]  average training loss: 1756.6858
+cellbender:remove-background: [epoch 057]  average training loss: 1755.8922
+cellbender:remove-background: [epoch 058]  average training loss: 1758.4361
+cellbender:remove-background: [epoch 059]  average training loss: 1753.0533
+cellbender:remove-background: [epoch 060]  average training loss: 1754.3564
+cellbender:remove-background: [epoch 060] average test loss: 1754.5779
+cellbender:remove-background: [epoch 061]  average training loss: 1748.7703
+cellbender:remove-background: [epoch 062]  average training loss: 1749.0556
+cellbender:remove-background: [epoch 063]  average training loss: 1750.9979
+cellbender:remove-background: [epoch 064]  average training loss: 1748.2494
+cellbender:remove-background: [epoch 065]  average training loss: 1751.7038
+cellbender:remove-background: [epoch 065] average test loss: 1757.0170
+cellbender:remove-background: [epoch 066]  average training loss: 1740.7257
+cellbender:remove-background: [epoch 067]  average training loss: 1750.3883
+cellbender:remove-background: [epoch 068]  average training loss: 1748.5443
+cellbender:remove-background: [epoch 069]  average training loss: 1742.5429
+cellbender:remove-background: [epoch 070]  average training loss: 1739.6222
+cellbender:remove-background: [epoch 070] average test loss: 1741.1619
+cellbender:remove-background: [epoch 071]  average training loss: 1740.0567
+cellbender:remove-background: [epoch 072]  average training loss: 1733.8115
+cellbender:remove-background: Saving a checkpoint...
+cellbender:remove-background: Saved checkpoint as /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/ckpt.tar.gz
+cellbender:remove-background: [epoch 073]  average training loss: 1735.5113
+cellbender:remove-background: [epoch 074]  average training loss: 1741.9081
+cellbender:remove-background: [epoch 075]  average training loss: 1736.4268
+cellbender:remove-background: [epoch 075] average test loss: 1740.3082
+cellbender:remove-background: [epoch 076]  average training loss: 1736.0524
+cellbender:remove-background: [epoch 077]  average training loss: 1735.1537
+cellbender:remove-background: [epoch 078]  average training loss: 1734.3384
+cellbender:remove-background: [epoch 079]  average training loss: 1732.4940
+cellbender:remove-background: [epoch 080]  average training loss: 1731.8606
+cellbender:remove-background: [epoch 080] average test loss: 1741.7163
+cellbender:remove-background: [epoch 081]  average training loss: 1728.2402
+cellbender:remove-background: [epoch 082]  average training loss: 1730.9093
+cellbender:remove-background: [epoch 083]  average training loss: 1728.6875
+cellbender:remove-background: [epoch 084]  average training loss: 1728.2922
+cellbender:remove-background: [epoch 085]  average training loss: 1726.4504
+cellbender:remove-background: [epoch 085] average test loss: 1739.5369
+cellbender:remove-background: [epoch 086]  average training loss: 1729.3245
+cellbender:remove-background: [epoch 087]  average training loss: 1726.3503
+cellbender:remove-background: [epoch 088]  average training loss: 1728.9926
+cellbender:remove-background: [epoch 089]  average training loss: 1729.1661
+cellbender:remove-background: [epoch 090]  average training loss: 1725.8879
+cellbender:remove-background: [epoch 090] average test loss: 1739.1149
+cellbender:remove-background: [epoch 091]  average training loss: 1723.1812
+cellbender:remove-background: [epoch 092]  average training loss: 1725.9583
+cellbender:remove-background: [epoch 093]  average training loss: 1722.6368
+cellbender:remove-background: [epoch 094]  average training loss: 1724.8640
+cellbender:remove-background: [epoch 095]  average training loss: 1725.9832
+cellbender:remove-background: [epoch 095] average test loss: 1722.2904
+cellbender:remove-background: [epoch 096]  average training loss: 1721.4089
+cellbender:remove-background: Saving a checkpoint...
+cellbender:remove-background: Saved checkpoint as /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/ckpt.tar.gz
+cellbender:remove-background: [epoch 097]  average training loss: 1721.2549
+cellbender:remove-background: [epoch 098]  average training loss: 1721.9388
+cellbender:remove-background: [epoch 099]  average training loss: 1722.7487
+cellbender:remove-background: [epoch 100]  average training loss: 1723.4666
+cellbender:remove-background: [epoch 100] average test loss: 1728.9161
+cellbender:remove-background: [epoch 101]  average training loss: 1724.2341
+cellbender:remove-background: [epoch 102]  average training loss: 1720.0507
+cellbender:remove-background: [epoch 103]  average training loss: 1722.0270
+cellbender:remove-background: [epoch 104]  average training loss: 1718.3523
+cellbender:remove-background: [epoch 105]  average training loss: 1725.3993
+cellbender:remove-background: [epoch 105] average test loss: 1730.4861
+cellbender:remove-background: [epoch 106]  average training loss: 1722.5380
+cellbender:remove-background: [epoch 107]  average training loss: 1721.6316
+cellbender:remove-background: [epoch 108]  average training loss: 1719.4108
+cellbender:remove-background: [epoch 109]  average training loss: 1722.4260
+cellbender:remove-background: [epoch 110]  average training loss: 1718.8685
+cellbender:remove-background: [epoch 110] average test loss: 1723.4222
+cellbender:remove-background: [epoch 111]  average training loss: 1720.4705
+cellbender:remove-background: [epoch 112]  average training loss: 1718.7092
+cellbender:remove-background: [epoch 113]  average training loss: 1719.9700
+cellbender:remove-background: [epoch 114]  average training loss: 1717.3619
+cellbender:remove-background: [epoch 115]  average training loss: 1718.1285
+cellbender:remove-background: [epoch 115] average test loss: 1733.9214
+cellbender:remove-background: [epoch 116]  average training loss: 1715.5655
+cellbender:remove-background: [epoch 117]  average training loss: 1716.5276
+cellbender:remove-background: [epoch 118]  average training loss: 1716.9190
+cellbender:remove-background: [epoch 119]  average training loss: 1718.5401
+cellbender:remove-background: [epoch 120]  average training loss: 1718.7100
+cellbender:remove-background: [epoch 120] average test loss: 1721.7389
+cellbender:remove-background: Saving a checkpoint...
+cellbender:remove-background: Saved checkpoint as /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/ckpt.tar.gz
+cellbender:remove-background: [epoch 121]  average training loss: 1716.7353
+cellbender:remove-background: [epoch 122]  average training loss: 1718.6718
+cellbender:remove-background: [epoch 123]  average training loss: 1716.0219
+cellbender:remove-background: [epoch 124]  average training loss: 1716.7273
+cellbender:remove-background: [epoch 125]  average training loss: 1716.8570
+cellbender:remove-background: [epoch 125] average test loss: 1724.4645
+cellbender:remove-background: [epoch 126]  average training loss: 1715.2086
+cellbender:remove-background: [epoch 127]  average training loss: 1718.9315
+cellbender:remove-background: [epoch 128]  average training loss: 1716.9797
+cellbender:remove-background: [epoch 129]  average training loss: 1718.1162
+cellbender:remove-background: [epoch 130]  average training loss: 1714.5373
+cellbender:remove-background: [epoch 130] average test loss: 1718.6552
+cellbender:remove-background: [epoch 131]  average training loss: 1717.2858
+cellbender:remove-background: [epoch 132]  average training loss: 1714.5898
+cellbender:remove-background: [epoch 133]  average training loss: 1715.4611
+cellbender:remove-background: [epoch 134]  average training loss: 1713.1530
+cellbender:remove-background: [epoch 135]  average training loss: 1715.6236
+cellbender:remove-background: [epoch 135] average test loss: 1725.4109
+cellbender:remove-background: [epoch 136]  average training loss: 1714.8080
+cellbender:remove-background: [epoch 137]  average training loss: 1716.8166
+cellbender:remove-background: [epoch 138]  average training loss: 1715.0049
+cellbender:remove-background: [epoch 139]  average training loss: 1715.6184
+cellbender:remove-background: [epoch 140]  average training loss: 1713.7392
+cellbender:remove-background: [epoch 140] average test loss: 1726.3566
+cellbender:remove-background: [epoch 141]  average training loss: 1715.0309
+cellbender:remove-background: [epoch 142]  average training loss: 1719.0007
+cellbender:remove-background: [epoch 143]  average training loss: 1713.6967
+cellbender:remove-background: [epoch 144]  average training loss: 1715.2748
+cellbender:remove-background: Saving a checkpoint...
+cellbender:remove-background: Saved checkpoint as /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/ckpt.tar.gz
+cellbender:remove-background: [epoch 145]  average training loss: 1714.4818
+cellbender:remove-background: [epoch 145] average test loss: 1719.1473
+cellbender:remove-background: [epoch 146]  average training loss: 1711.7330
+cellbender:remove-background: [epoch 147]  average training loss: 1713.5181
+cellbender:remove-background: [epoch 148]  average training loss: 1713.5961
+cellbender:remove-background: [epoch 149]  average training loss: 1713.1554
+cellbender:remove-background: [epoch 150]  average training loss: 1716.2354
+cellbender:remove-background: [epoch 150] average test loss: 1720.8883
+cellbender:remove-background: Saving a checkpoint...
+cellbender:remove-background: Saved checkpoint as /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/ckpt.tar.gz
+cellbender:remove-background: 2026-06-16 12:10:41
+cellbender:remove-background: Inference procedure complete.
+cellbender:remove-background: Attempting to unpack tarball "ckpt.tar.gz" to /tmp/tmp5xk57vr6
+cellbender:remove-background: Successfully unpacked tarball to /tmp/tmp5xk57vr6
+/tmp/tmp5xk57vr6/7f9e87491c_random.pyro
+/tmp/tmp5xk57vr6/7f9e87491c_random.cuda
+/tmp/tmp5xk57vr6/7f9e87491c_model.torch
+/tmp/tmp5xk57vr6/7f9e87491c_optim.torch
+/tmp/tmp5xk57vr6/7f9e87491c_optim.pyro
+/tmp/tmp5xk57vr6/7f9e87491c_params.pyro
+/tmp/tmp5xk57vr6/7f9e87491c_train.loaderstate
+/tmp/tmp5xk57vr6/7f9e87491c_test.loaderstate
+/tmp/tmp5xk57vr6/7f9e87491c_args.npy
+cellbender:remove-background: Posterior not currently included in checkpoint.
+cellbender:remove-background: Computing posterior noise count probabilities in mini-batches.
+cellbender:remove-background: Working on chunk (1/107)
+cellbender:remove-background:     [0.04 mins per chunk]
+cellbender:remove-background: Working on chunk (2/107)
+cellbender:remove-background: Working on chunk (3/107)
+cellbender:remove-background: Working on chunk (4/107)
+cellbender:remove-background: Working on chunk (5/107)
+cellbender:remove-background: Working on chunk (6/107)
+cellbender:remove-background: Working on chunk (7/107)
+cellbender:remove-background: Working on chunk (8/107)
+cellbender:remove-background: Working on chunk (9/107)
+cellbender:remove-background: Working on chunk (10/107)
+cellbender:remove-background: Working on chunk (11/107)
+cellbender:remove-background: Working on chunk (12/107)
+cellbender:remove-background: Working on chunk (13/107)
+cellbender:remove-background: Working on chunk (14/107)
+cellbender:remove-background: Working on chunk (15/107)
+cellbender:remove-background: Working on chunk (16/107)
+cellbender:remove-background: Working on chunk (17/107)
+cellbender:remove-background: Working on chunk (18/107)
+cellbender:remove-background: Working on chunk (19/107)
+cellbender:remove-background: Working on chunk (20/107)
+cellbender:remove-background: Working on chunk (21/107)
+cellbender:remove-background: Working on chunk (22/107)
+cellbender:remove-background: Working on chunk (23/107)
+cellbender:remove-background: Working on chunk (24/107)
+cellbender:remove-background: Working on chunk (25/107)
+cellbender:remove-background: Working on chunk (26/107)
+cellbender:remove-background: Working on chunk (27/107)
+cellbender:remove-background: Working on chunk (28/107)
+cellbender:remove-background: Working on chunk (29/107)
+cellbender:remove-background: Working on chunk (30/107)
+cellbender:remove-background: Working on chunk (31/107)
+cellbender:remove-background: Working on chunk (32/107)
+cellbender:remove-background: Working on chunk (33/107)
+cellbender:remove-background: Working on chunk (34/107)
+cellbender:remove-background: Working on chunk (35/107)
+cellbender:remove-background: Working on chunk (36/107)
+cellbender:remove-background: Working on chunk (37/107)
+cellbender:remove-background: Working on chunk (38/107)
+cellbender:remove-background: Working on chunk (39/107)
+cellbender:remove-background: Working on chunk (40/107)
+cellbender:remove-background: Working on chunk (41/107)
+cellbender:remove-background: Working on chunk (42/107)
+cellbender:remove-background: Working on chunk (43/107)
+cellbender:remove-background: Working on chunk (44/107)
+cellbender:remove-background: Working on chunk (45/107)
+cellbender:remove-background: Working on chunk (46/107)
+cellbender:remove-background: Working on chunk (47/107)
+cellbender:remove-background: Working on chunk (48/107)
+cellbender:remove-background: Working on chunk (49/107)
+cellbender:remove-background: Working on chunk (50/107)
+cellbender:remove-background: Working on chunk (51/107)
+cellbender:remove-background: Working on chunk (52/107)
+cellbender:remove-background: Working on chunk (53/107)
+cellbender:remove-background: Working on chunk (54/107)
+cellbender:remove-background: Working on chunk (55/107)
+cellbender:remove-background: Working on chunk (56/107)
+cellbender:remove-background: Working on chunk (57/107)
+cellbender:remove-background: Working on chunk (58/107)
+cellbender:remove-background: Working on chunk (59/107)
+cellbender:remove-background: Working on chunk (60/107)
+cellbender:remove-background: Working on chunk (61/107)
+cellbender:remove-background: Working on chunk (62/107)
+cellbender:remove-background: Working on chunk (63/107)
+cellbender:remove-background: Working on chunk (64/107)
+cellbender:remove-background: Working on chunk (65/107)
+cellbender:remove-background: Working on chunk (66/107)
+cellbender:remove-background: Working on chunk (67/107)
+cellbender:remove-background: Working on chunk (68/107)
+cellbender:remove-background: Working on chunk (69/107)
+cellbender:remove-background: Working on chunk (70/107)
+cellbender:remove-background: Working on chunk (71/107)
+cellbender:remove-background: Working on chunk (72/107)
+cellbender:remove-background: Working on chunk (73/107)
+cellbender:remove-background: Working on chunk (74/107)
+cellbender:remove-background: Working on chunk (75/107)
+cellbender:remove-background: Working on chunk (76/107)
+cellbender:remove-background: Working on chunk (77/107)
+cellbender:remove-background: Working on chunk (78/107)
+cellbender:remove-background: Working on chunk (79/107)
+cellbender:remove-background: Working on chunk (80/107)
+cellbender:remove-background: Working on chunk (81/107)
+cellbender:remove-background: Working on chunk (82/107)
+cellbender:remove-background: Working on chunk (83/107)
+cellbender:remove-background: Working on chunk (84/107)
+cellbender:remove-background: Working on chunk (85/107)
+cellbender:remove-background: Working on chunk (86/107)
+cellbender:remove-background: Working on chunk (87/107)
+cellbender:remove-background: Working on chunk (88/107)
+cellbender:remove-background: Working on chunk (89/107)
+cellbender:remove-background: Working on chunk (90/107)
+cellbender:remove-background: Working on chunk (91/107)
+cellbender:remove-background: Working on chunk (92/107)
+cellbender:remove-background: Working on chunk (93/107)
+cellbender:remove-background: Working on chunk (94/107)
+cellbender:remove-background: Working on chunk (95/107)
+cellbender:remove-background: Working on chunk (96/107)
+cellbender:remove-background: Working on chunk (97/107)
+cellbender:remove-background: Working on chunk (98/107)
+cellbender:remove-background: Working on chunk (99/107)
+cellbender:remove-background: Working on chunk (100/107)
+cellbender:remove-background: Working on chunk (101/107)
+cellbender:remove-background: Working on chunk (102/107)
+cellbender:remove-background: Working on chunk (103/107)
+cellbender:remove-background: Working on chunk (104/107)
+cellbender:remove-background: Working on chunk (105/107)
+cellbender:remove-background: Working on chunk (106/107)
+cellbender:remove-background: Working on chunk (107/107)
+cellbender:remove-background: Writing full posterior to /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender_posterior.h5
+cellbender:remove-background: Succeeded in writing posterior to file /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender_posterior.h5
+cellbender:remove-background: Added posterior object to checkpoint file.
+cellbender:remove-background: 2026-06-16 12:16:43
+
+cellbender:remove-background: Saved summary plots as /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender.pdf
+cellbender:remove-background: Saved cell barcodes in /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender_cell_barcodes.csv
+cellbender:remove-background: Computing target noise counts per gene for MCKP estimator
+cellbender:remove-background: Using MCKP noise targets computed for FPR 0.01
+cellbender:remove-background: Computing denoised counts using mckp estimator
+cellbender:remove-background: Working on chunk (1/2)
+cellbender:remove-background:     [2.61 mins per chunk]
+cellbender:remove-background: Working on chunk (2/2)
+cellbender:remove-background: 2026-06-16 12:22:51 Total MCKP estimation time = 309.98 sec
+cellbender:remove-background: Succeeded in writing CellRanger format output to file /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender.h5
+cellbender:remove-background: Succeeded in writing CellRanger format output to file /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender_filtered.h5
+cellbender:remove-background: Saved output metrics as /oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender_metrics.csv
+[NbConvertApp] Converting notebook tmp.report.ipynb to notebook
+[NbConvertApp] Writing 440988 bytes to tmp.report.nbconvert.ipynb
+[NbConvertApp] Converting notebook tmp.report.nbconvert.ipynb to html
+Traceback (most recent call last):
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/bin/jupyter-nbconvert", line 8, in <module>
+    sys.exit(main())
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/lib/python3.7/site-packages/jupyter_core/application.py", line 269, in launch_instance
+    return super().launch_instance(argv=argv, **kwargs)
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/lib/python3.7/site-packages/traitlets/config/application.py", line 1043, in launch_instance
+    app.start()
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/lib/python3.7/site-packages/nbconvert/nbconvertapp.py", line 423, in start
+    self.convert_notebooks()
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/lib/python3.7/site-packages/nbconvert/nbconvertapp.py", line 597, in convert_notebooks
+    self.convert_single_notebook(notebook_filename)
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/lib/python3.7/site-packages/nbconvert/nbconvertapp.py", line 561, in convert_single_notebook
+    notebook_filename, resources, input_buffer=input_buffer
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/lib/python3.7/site-packages/nbconvert/nbconvertapp.py", line 489, in export_single_notebook
+    notebook_filename, resources=resources
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/lib/python3.7/site-packages/nbconvert/exporters/exporter.py", line 189, in from_filename
+    return self.from_file(f, resources=resources, **kw)
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/lib/python3.7/site-packages/nbconvert/exporters/exporter.py", line 207, in from_file
+    nbformat.read(file_stream, as_version=4), resources=resources, **kw
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/lib/python3.7/site-packages/nbconvert/exporters/html.py", line 223, in from_notebook_node
+    return super().from_notebook_node(nb, resources, **kw)
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/lib/python3.7/site-packages/nbconvert/exporters/templateexporter.py", line 413, in from_notebook_node
+    output = self.template.render(nb=nb_copy, resources=resources)
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/lib/python3.7/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/lib/python3.7/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/mmeier/.local/share/jupyter/nbconvert/templates/lab/index.html.j2", line 1, in top-level template code
+    {%- extends 'base.html.j2' -%}
+  File "/home/mmeier/.conda/envs/cellbender_v3.0.2/lib/python3.7/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/mmeier/.local/share/jupyter/nbconvert/templates/lab/base.html.j2", line 318, in template
+    {{ output.data[datatype] | json_dumps | escape_html_script }}
+jinja2.exceptions.TemplateAssertionError: No filter named 'escape_html_script'.
+cellbender:remove-background: Unable to create report.
+cellbender:remove-background: Traceback (most recent call last):
+  File "/oshlack_lab/michelle.meier/cellbender/CellBender/cellbender/remove_background/run.py", line 373, in compute_output_denoised_counts_reports_metrics
+    output=html_report_file,
+  File "/oshlack_lab/michelle.meier/cellbender/CellBender/cellbender/remove_background/report.py", line 84, in run_notebook_make_html
+    html_file = _to_html(file=_run_notebook(file), output=output)
+  File "/oshlack_lab/michelle.meier/cellbender/CellBender/cellbender/remove_background/report.py", line 54, in _to_html
+    os.replace(file.replace(".ipynb", ".html"), output)
+FileNotFoundError: [Errno 2] No such file or directory: 'tmp.report.nbconvert.html' -> '/oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender/Tonsils_10xFlex_engineered_12k_0.15p_7537s_CellBender_report.html'
+
+cellbender:remove-background: Completed remove-background.
+cellbender:remove-background: 2026-06-16 12:23:41
+

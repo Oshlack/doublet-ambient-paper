@@ -1,0 +1,237 @@
+---
+title: "Tonsil 10x Flex: evaluate doublet calling (scDblFinder) in all engineered datasets"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+In this markdown, we will evaluate the performance of doublet calling using `scDblFinder` on all engineered dataset, both uncorrected as well as ambient corrected (`decontX BG`, `decontX`, `soupX`, `CellBender`). 
+
+
+As we have engineered these datasets, we know the ground truth, which is that we have 10,200 singlets and 1,800 doublets in this dataset. For each dataset, we will calculate performance metrics using `caret` and `yardstick` (AUPRC, MCC) packages.
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+  library(patchwork)
+  library(rstatix)
+  library(yardstick)
+  library(caret)
+  library(ComplexHeatmap)
+  library(ggrepel)
+})
+```
+
+
+## Load data
+
+```{r}
+files <- list.dirs(path = here("output/data/Tonsils_10xFlex/Engineered/"), full.names = T, recursive = F)
+files <- files[grepl("Tonsils_10xFlex_engineered_12k_0.15p", files)]
+```
+
+```{r}
+
+run_read_data <- function(path){
+  #original metadata (from uncorrected) 
+  meta <- read_tsv(paste0(str_match(path, "^(.*?\\d+s)(?:_.*)?$")[,2], "/metadata.tsv"), show_col_types = F)
+  #doublet calling results 
+  doublet_file <- list.files(path = paste0(path, "/doublet_calls/"),
+                             pattern = "scDblFinder",
+                             full.names = T)
+  dbl_res <- read_csv(doublet_file, show_col_types = F)
+  #combine, full
+  if ("Barcode" %in% names(meta)){
+    combined_res <- full_join(dbl_res, meta)
+  } else {
+    combined_res <- full_join(dbl_res, meta %>% mutate(., Barcode=GEM_barcode))
+  }
+  #replace NAs in doublet calling with "Missing"
+  combined_res$scDblFinder_DropletType[is.na(combined_res$scDblFinder_DropletType)] <- "Missing"
+  
+  #add metadata
+  if (is.na(str_match(basename(path), "\\d+s(?:_(.+))?$")[,2])){
+    combined_res$ambient_tool <- "uncorrected"
+  } else {
+    combined_res$ambient_tool <- str_match(basename(path), "\\d+s(?:_(.+))?$")[,2]
+  }
+  combined_res$batch <- stringr::str_extract(basename(path), "\\d+s(?=($|_))")
+  
+    
+  return(combined_res)
+} 
+
+
+```
+
+Run for all.
+
+
+```{r, message=FALSE}
+list_results <- lapply(files, run_read_data)
+names(list_results) <- basename(files)
+```
+
+
+# Compute metrics using `caret` package
+
+Write a function that computes all confusion matrix performance metrics using the `caret::confusionMatrix()` function. Note that we consider doublets the positive class in this analysis.
+
+```{r}
+run_evaluation_confusion_matrix <- function(entry){
+  CM <- entry %>% 
+    select(doublet_class, scDblFinder_DropletType) %>% 
+    mutate(., doublet_class = factor(doublet_class, levels = c("singlet", "doublet", "Missing")),
+           scDblFinder_DropletType = factor(scDblFinder_DropletType, levels = c("singlet", "doublet", "Missing"))) %>% 
+    table() %>% t() #transform because confusionMatrix makes assumption of which is col and row
+  
+  dimnames(CM) <- list(Predicted = c("singlet", "doublet", "Missing"),
+                       Actual = c("singlet", "doublet", "Missing"))
+  
+  stats <- caret::confusionMatrix(data = CM, mode = "everything")
+  
+  res <- stats$byClass %>% as.data.frame() %>% 
+    filter(rownames(.) %in% c("Class: doublet", "Class: singlet")) %>% #we consider detecting a doublet a "positive" event, but we need singlet sensitivity as well
+      filter(rownames(.) %in% c("Class: doublet", "Class: singlet")) %>% 
+  rownames_to_column("class") %>%
+  mutate(class = sub("^Class: ", "", class)) %>%
+  mutate(., ambient_tool = unique(entry$ambient_tool),
+         batch = unique(entry$batch),
+         doublet_tool = "scDblFinder") %>% 
+  pivot_wider(
+    id_cols     = c(ambient_tool, batch, doublet_tool),
+    names_from  = class,
+    values_from = where(is.numeric),
+    names_glue  = "{class}_{.value}"
+  ) %>% 
+    mutate(missed_doublet_n = stats$table %>% as.data.frame() %>% filter(., Actual == "doublet" & Predicted != "doublet") %>% pull(Freq) %>% sum()) %>% #add #of missed doublets 
+    select(doublet_tool, ambient_tool, batch, everything())
+  
+  return(res)
+}
+
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+caret_metrics <- lapply(list_results, run_evaluation_confusion_matrix) %>% bind_rows()
+```
+
+
+```{r}
+DT::datatable(caret_metrics, rownames = F)
+```
+
+
+
+
+# Compute metrics using `yardstick` package
+
+## Compute AUPRC
+
+Note that this metric does not take the Missing barcodes into account, but removes them as they do not have a doublet score.
+
+Write function.
+
+```{r}
+run_evaluation_auprc <- function(entry){
+  input <- entry %>%
+    select(doublet_class, scDblFinder_score, scDblFinder_DropletType) %>% 
+    dplyr::rename(truth = doublet_class, doublet_score = scDblFinder_score, predicted = scDblFinder_DropletType) %>% 
+    mutate(., truth = factor(truth, levels = c("doublet", "singlet")),
+           predicted = factor(predicted, levels = c("doublet", "singlet"))) # doublet considered "true" event
+  
+  out_doubl <- pr_auc(input, truth, doublet_score) %>%
+    rename(., pr_auc = `.estimate`) %>% 
+    mutate(., ambient_tool = unique(entry$ambient_tool),
+              batch = unique(entry$batch),
+              doublet_tool = "scDblFinder") %>% 
+    select(doublet_tool, ambient_tool, batch, pr_auc)
+  
+  return(out_doubl)
+}
+
+```
+
+```{r}
+all_results_auprc <- lapply(list_results, run_evaluation_auprc) %>% bind_rows()
+
+```
+
+```{r}
+DT::datatable(all_results_auprc, rownames = F)
+```
+
+
+## Compute MCC
+
+Compute MCC, make sure to add Missing to the levels! 
+
+```{r}
+run_mcc <- function(entry){
+  input <- data.frame(truth = factor(entry$doublet_class, levels = c("singlet", "doublet", "Missing")), 
+                      predicted = factor(entry$scDblFinder_DropletType, levels = c("singlet", "doublet", "Missing")))
+    
+  OUT <- data.frame(ambient_tool = unique(entry$ambient_tool),
+             batch = unique(entry$batch),
+             mcc = mcc(input, truth, predicted)$`.estimate`)
+  
+  return(OUT)
+
+}
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+all_MCC <- lapply(list_results, run_mcc) %>% bind_rows()
+```
+
+
+```{r}
+DT::datatable(all_MCC, rownames = F)
+```
+
+
+# Export 
+
+## Combine and clean up
+
+
+```{r}
+
+combined_results <- full_join(full_join(caret_metrics, all_MCC, by=c("ambient_tool", "batch")), 
+                              all_results_auprc, by=c("ambient_tool", "doublet_tool","batch"))
+
+colnames(combined_results)
+
+```
+
+
+```{r}
+DT::datatable(combined_results, rownames = F)
+```
+
+## Write to file
+
+Export results for plotting for figures. 
+
+
+```{r}
+filename <- here("output/results/Tonsils_10xFlex/Engineered/DoubletCallingPerformance/Tonsils_10xFlex_engineered_12k_0.15p_AllBatches_correctAssignments_MCC.csv")
+
+write_tsv(x = combined_results, file = filename, col_names = TRUE)
+
+```

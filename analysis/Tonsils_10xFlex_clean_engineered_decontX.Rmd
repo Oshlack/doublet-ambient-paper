@@ -1,0 +1,167 @@
+---
+title: "Tonsil 10x Flex: Clean engineered datasets with decontX (with + without background)"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown will apply decontX to all of the engineered datasets (generated [here](Tonsils_10xFlex_make_engineered_datasets.html)) using the appropriate background (generated [here](Tonsils_10xFlex_make_engineered_emptyObject.html)). 
+
+
+decontX has two settings, one with and one without background. We will be running both settings. 
+
+According to [their vignette](https://bioconductor.org/packages/release/bioc/vignettes/decontX/inst/doc/decontX.html), the background parameter is the raw (or droplet matrix):
+
+*The raw/droplet matrix can be used to empirically estimate the distribution of ambient RNA, which is especially useful when cells that contributed to the ambient RNA are not accurately represented in the filtered count matrix containing the cells. For example, cells that were removed via flow cytometry or that were more sensitive to lysis during dissociation may have contributed to the ambient RNA but were not measured in the filtered/cell matrix. The raw/droplet matrix can be input as an SCE object or a sparse matrix using the background parameter.*
+
+*Only empty droplets in the background matrix should be used to estimate the ambient RNA. If any cell ids (i.e. colnames) in the raw/droplet matrix supplied to the background parameter are also found in the filtered counts matrix (x), decontX will automatically remove them from the raw matrix. However, if the cell ids are not available for the input matrices, decontX will treat the entire background input as empty droplets. All of the outputs are the same as when running decontX without setting the background parameter.*
+
+In these engineered datasets, we can't use `decontX` by simply supplying it the raw matrix because of how we've engineered it. However, we can provide it with the empty object (~background) we've created.
+
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(decontX)
+  library(qs2)
+  library(DropletUtils)
+})
+```
+
+
+## Load data
+
+```{r}
+background <- read10xCounts(here("output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_emptyObject"), row.names = "symbol", col.names = T)
+
+files <- list.files(path = here("output/data/Tonsils_10xFlex/Engineered/"), pattern = "Tonsils_10xFlex*.*s$", full.names = T)
+
+engineered_in <- sapply(files, function(P) read10xCounts(P, row.names = "symbol", col.names = T))
+names(engineered_in) <- basename(files)
+  
+```
+
+
+# Run decontX
+
+## Write function
+
+```{r}
+run_decontx <- function(cells, empties, name){
+  #ensure matching gene universe
+  gene_universe <- intersect(rownames(cells), rownames(empties))
+  cells <- cells[gene_universe, ]
+  empties <- empties[gene_universe,]
+  
+  #add QC metrics
+  is.mito <- grepl(pattern = "^MT", rownames(cells))
+  cells <- addPerCellQCMetrics(cells, subsets = list(mito = is.mito))
+  #clean
+  new_meta <- cells@colData %>% as.data.frame() %>%
+    dplyr::rename(., ncount_raw =sum ,  nfeatures_raw =detected, subsets_mito_percent_raw=subsets_mito_percent) %>%
+    select(., -c("total", "subsets_mito_detected", "subsets_mito_sum"))
+  cells@colData <- new_meta %>% DataFrame()
+  
+  #run decontX with background ----
+  set.seed(1997)
+  cells_BG <- decontX(cells,
+                   background = empties) 
+  
+  #cleanup
+  counts(cells_BG) <- decontXcounts(cells_BG) #replace
+  cells_BG@assays@data$decontXcounts <- NULL #remove to save memory
+  cells_BG@metadata$decontX <- NULL #remove to save memory
+  cells_BG@int_colData$reducedDims$decontX_UMAP <- NULL #remove to save memory
+  
+  #add mitochondrial and ribo genes content
+  is.mito <- grepl(pattern = "^MT", rownames(cells_BG))
+  cells_BG <- addPerCellQCMetrics(cells_BG, subsets = list(mito = is.mito))
+  new_meta <- cells_BG@colData %>% as.data.frame() %>%
+    dplyr::rename(., ncount =sum ,  nfeatures =detected) %>%
+    select(., -c("total", "subsets_mito_detected", "subsets_mito_sum"))
+  cells_BG@colData <- new_meta %>% DataFrame()
+  
+  cells_BG$nfeatures_rounded <- colSums(assay(cells_BG, "counts") > 0.5) #add info on how many ngenes were removed (fraction)
+  cells_BG$nfeature_frac_removed <- (cells_BG$nfeatures_raw  - cells_BG$nfeatures_rounded)/cells_BG$nfeatures_raw
+
+  #cleanup
+  cells_BG$ncount_frac_removed <- cells_BG$decontX_contamination
+  cells_BG$decontX_clusters <- cells_BG$decontX_contamination <-  NULL
+  
+  #export file
+  out_file <- sprintf("%s/%s_decontX_BG", 
+                      here("output/data/Tonsils_10xFlex/Engineered"),
+                      name)
+  DropletUtils::write10xCounts(path = out_file,
+                             x = counts(cells_BG),
+                             version = "3", 
+                             overwrite = TRUE)
+  write_tsv(x = cells_BG@colData %>% as.data.frame(),
+          file = sprintf("%s/metadata.tsv", out_file))
+  
+  rm(cells_BG);gc()
+  
+  #run decontX NO background ----
+  set.seed(1997)
+  cells_noBG <- decontX(cells) 
+  
+  #cleanup
+  counts(cells_noBG) <- decontXcounts(cells_noBG) #replace
+  cells_noBG@assays@data$decontXcounts <- NULL #remove to save memory
+  cells_noBG@metadata$decontX <- NULL #remove to save memory
+  cells_noBG@int_colData$reducedDims$decontX_UMAP <- NULL #remove to save memory
+  
+  #add mitochondrial and ribo genes content
+  is.mito <- grepl(pattern = "^MT", rownames(cells_noBG))
+  cells_noBG <- addPerCellQCMetrics(cells_noBG, subsets = list(mito = is.mito))
+  new_meta <- cells_noBG@colData %>% as.data.frame() %>%
+    dplyr::rename(., ncount =sum ,  nfeatures =detected) %>%
+    select(., -c("total", "subsets_mito_detected", "subsets_mito_sum"))
+  cells_noBG@colData <- new_meta %>% DataFrame()
+  
+  cells_noBG$nfeatures_rounded <- colSums(assay(cells_noBG, "counts") > 0.5) #add info on how many ngenes were removed (fraction)
+  cells_noBG$nfeature_frac_removed <- (cells_noBG$nfeatures_raw  - cells_noBG$nfeatures_rounded)/cells_noBG$nfeatures_raw
+
+  #cleanup
+  cells_noBG$ncount_frac_removed <- cells_noBG$decontX_contamination
+  cells_noBG$decontX_clusters <- cells_noBG$decontX_contamination <-  NULL
+  
+  #export file
+  out_file <- sprintf("%s/%s_decontX", 
+                      here("output/data/Tonsils_10xFlex/Engineered"),
+                      name)
+  DropletUtils::write10xCounts(path = out_file,
+                             x = counts(cells_noBG),
+                             version = "3", 
+                             overwrite = TRUE)
+  write_tsv(x = cells_noBG@colData %>% as.data.frame(),
+          file = sprintf("%s/metadata.tsv", out_file))
+  
+  
+  
+}
+```
+
+## Run for all engineered datasets
+
+This will give us the decontX corrected outputs 
+
+```{r, warning=FALSE, fig.align='center'}
+
+corrected <- sapply(1:length(engineered_in), function(IN){
+  run_decontx(cells = engineered_in[[IN]], empties = background, name=names(engineered_in)[IN])
+})
+
+```
+

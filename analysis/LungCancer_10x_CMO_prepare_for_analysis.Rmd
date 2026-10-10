@@ -1,0 +1,227 @@
+---
+title: "Lung Cancer 10x CMO, whole dataset: prepare for analysis"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown prepares the Lung Cancer dataset for analysis. The dataset was downloaded from the [10X Genomics website](https://www.10xgenomics.com/datasets/20k-mixture-of-nsclc-dtcs-from-7-donors-3-v3-1-with-intronic-reads-3-1-standard). The files downloaded are 
+
+- the filtered feature_bc_matrix.h5 files per sample 
+
+- CMO config file
+
+- raw feature_bc_matrix.h5 file (all samples)
+
+- multiplexing results file 
+
+To generate a dataset with ground-truth doublet labels (based on CMO counts), we need to export a `cellranger` like output strucutre that contains both singlets and doublets. Currently, the doublets are filtered out from the filtered output matrix and hidden in the raw `h5` file. 
+
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(here)
+  library(glue)
+  library(DropletUtils)
+  library(scran)
+  library(scater)
+  library(scuttle)
+  library(scales)
+  library(readr)
+  library(Seurat)
+  library(scDblFinder)
+  library(scMerge)
+  library(ggpubr)
+  library(BiocParallel)
+  library(clustree)
+  library(SingleCellExperiment)
+  library(scMerge)
+  library(Matrix)
+  library(SeuratDisk)
+  library(qs2)
+  library(patchwork)
+})
+
+
+```
+
+## General plotting themes
+
+```{r}
+plot_sizing <- theme_bw()+
+  theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14, colour = "black"),
+        plot.title = element_text(size = 18),
+        plot.subtitle = element_text(size = 16),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank()) 
+
+plot_sizing_keep_title <- theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14, colour = "black"),
+        plot.title = element_text(size = 18),
+        plot.subtitle = element_text(size = 16),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size = 14) )
+
+rotate_x <- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+strip_fix <- theme(strip.background = element_rect(fill = "white"), 
+                   strip.text = element_text(size = 14))
+
+```
+
+
+
+## Load data
+
+```{r}
+# load raw counts
+counts_raw <- Read10X_h5(here("data/LungCancer_10x/20k_NSCLC_DTC_3p_nextgem_intron_Multiplex_count_raw_feature_bc_matrix.h5"))$`Gene Expression`
+
+#load per sample filtered counts
+samples <- paste0("donor_", 1:7)
+list_barcodes <- lapply(samples, function(sample){
+  file_in <- sprintf("%s/20k_NSCLC_DTC_3p_nextgem_intron_%s_count_sample_feature_bc_matrix.h5",  here("data/LungCancer_10x"), sample)
+  counts <- Read10X_h5(file_in)$`Gene Expression`
+  barcodes <- colnames(counts) %>% as.data.frame()
+  rm(counts);gc()
+  return(barcodes)
+})
+names(list_barcodes) <- samples
+all_barcodes <- list_barcodes %>% bind_rows(., .id="Sample") %>%
+  dplyr::rename(Barcode=".")
+
+#load multiplexing results
+CMO_information <- read_csv(file = here("data/LungCancer_10x/20k_NSCLC_DTC_3p_nextgem_intron_Multiplex_multiplexing_analysis_tag_calls_per_cell.csv"), show_col_types = F)
+
+```
+
+
+# Inspect CMO results
+
+The following CMOs were assigned:
+
+```{r}
+donor_cmo <- data.frame(donor=paste0("donor_", seq(1,7,1)),
+           CMO = c("CMO301", "CMO302", "CMO303", "CMO304", "CMO306", "CMO307", "CMO308"))
+
+donor_cmo %>% knitr::kable()
+```
+
+
+What are is the distribution of singlets, doublets and higher order multiplets
+
+```{r}
+CMO_information$num_features %>% table()
+```
+
+
+What shall we do with the higher order multiplets? They make up a very small proportion of the whole dataset. 
+
+
+# Prepare metadata
+
+## Prepare cell metadata
+
+We only have demultiplexing results for cells called by `cellranger`, so that will be our baseline. In addition, we're adding all multiplets, though we will give them different names for now depending on what their occupancy is. 
+
+```{r}
+cell_info <- CMO_information %>%
+  mutate(., doublet_class = case_when(num_features == 1 ~ "singlet", 
+                                      num_features == 2 ~ "doublet",
+                                      num_features>2 ~ "multiplet")) %>% 
+  select(., cell_barcode, doublet_class) %>%
+  dplyr::rename(Barcode = cell_barcode) %>%
+  left_join(., all_barcodes) %>% 
+  mutate(., Sample = ifelse(is.na(Sample), "CMO_multiplet", Sample))
+
+cell_info %>% head() %>% knitr::kable()
+```
+
+
+## Prepare raw metadata
+
+Make metadata for the raw object as well. This should make it easier later to determine what the background is! 
+
+```{r}
+df_raw_meta <- data.frame(Barcode = colnames(counts_raw), 
+                          type= NA)
+
+df_raw_meta <- df_raw_meta %>% 
+  left_join(., cell_info) %>% 
+  mutate(., type = ifelse(is.na(doublet_class), "empty", doublet_class)) %>% 
+  select(., Barcode, type)
+
+#export
+write_tsv(x=df_raw_meta, file = here("output/data/LungCancer_10x/LungCancer_10x_raw_metadata.tsv"),
+          col_names = T)
+```
+
+
+# Prepare `cellranger` output that contains CMO doublets
+
+As the original `cellranger` objects did not contain CMO doublets, we need to make these outputs using the cellinfo we derived above. 
+
+## Filter raw `h5` object
+
+```{r}
+#add rownames
+rownames(cell_info) <- cell_info$Barcode
+cell_info <- cell_info %>% DataFrame() #SCE requirement
+
+#filter data
+counts_filtered <- counts_raw[, rownames(cell_info)]
+
+#check order is correct
+all(colnames(counts_filtered) == rownames(cell_info))
+
+
+```
+
+## Make SCE object and add QC metrics
+
+```{r}
+#Make SCE
+sce <- SingleCellExperiment(assays = c("counts" = counts_filtered), colData =cell_info)
+sce <- sce[rowSums(counts(sce) ) > 0,]
+
+#add QC metrics
+is.mito <- grepl(pattern = "^MT", rownames(sce))
+is.ribo <- grepl(pattern = "^RP[SL]", rownames(sce))
+sce <- addPerCellQCMetrics(sce, subsets = list(mito = is.mito, ribo=is.ribo))
+
+#clean up
+new_meta <- sce@colData %>% as.data.frame() %>%
+  dplyr::rename(.,nfeatures_raw = detected, ncount_raw = sum, subsets_mito_percent_raw = subsets_mito_percent, subsets_ribo_percent_raw=subsets_ribo_percent) %>%
+  select(., -c("subsets_mito_sum", "subsets_mito_detected", "total", "subsets_ribo_sum", "subsets_ribo_detected"))
+sce@colData <- new_meta %>% DataFrame()
+```
+
+## Export 
+
+Export in `cellranger` output format, including metadata.
+
+```{r}
+#export counts
+output_dir <- here("output/data/LungCancer_10x/LungCancer_10x_cellranger_allmultiplets/")
+DropletUtils::write10xCounts(path = output_dir,
+                             x = counts(sce),
+                             version = "3",
+                             overwrite = T)
+#and export metadata
+write_tsv(x= as.data.frame(sce@colData), file = paste0(output_dir, "metadata.tsv"),
+          col_names = T)
+
+```
+
+
+
+
+

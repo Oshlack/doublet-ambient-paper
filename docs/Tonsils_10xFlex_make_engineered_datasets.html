@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Michelle Meier" />
+
+
+<title>Tonsil 10x Flex: Make engineered datasets</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ambient_doublet_singlecell</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Tonsil 10x Flex: Make engineered
+datasets</h1>
+<h4 class="author">Michelle Meier</h4>
+<h4 class="date">11. June 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-06-11
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>ambient_doublet_singlecell/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260605code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260605)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260605code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260605)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong33fcf30">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong> 33fcf30
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrong33fcf30"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version 33fcf30.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .RData
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/data/
+    Ignored:    output/figures/
+
+Untracked files:
+    Untracked:  .Renviron
+    Untracked:  analysis/Tonsils_10xFlex_make_engineered_CellbenderInput.Rmd
+    Untracked:  code/Tonsil_10xFlex/
+    Untracked:  code/ambient_tools/
+    Untracked:  code/doublet_tools/
+    Untracked:  renv.lock
+    Untracked:  renv/
+
+Unstaged changes:
+    Modified:   .Rprofile
+    Modified:   .gitignore
+    Modified:   analysis/Tonsils_10xFlex_make_engineered_emptyObject.Rmd
+    Modified:   analysis/index.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/Tonsils_10xFlex_make_engineered_datasets.Rmd</code>) and
+HTML (<code>docs/Tonsils_10xFlex_make_engineered_datasets.html</code>)
+files. If you’ve configured a remote Git repository (see
+<code>?wflow_git_remote</code>), click on the hyperlinks in the table
+below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+33fcf30
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-11
+</td>
+<td>
+wflow_publish("analysis/Tonsils_10xFlex_make_engineered_datasets.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+1234133
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-11
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+7d51041
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-11
+</td>
+<td>
+wflow_publish("analysis/Tonsils_10xFlex_make_engineered_datasets.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+fedd57f
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+c7ad9d9
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-10
+</td>
+<td>
+wflow_publish("analysis/Tonsils_10xFlex_make_engineered_datasets.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+0184f5b
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+9dd7607
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-06-10
+</td>
+<td>
+wflow_publish("analysis/Tonsils_10xFlex_make_engineered_datasets.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="set-up" class="section level1">
+<h1>Set-up</h1>
+<p>This markdown generates the engineered dataset using the 10xFlex
+tonsil dataset. This process has four key steps: <strong>Filter,
+combine, annotate and subset</strong>. To avoid confusion, please review
+the following table for commonly used terminology in this markdown”</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Term(s)</th>
+<th align="center">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">cell/pseudo-GEM/pseudo_droplet</td>
+<td align="center">We use these terms interchangeably with barcodes. It
+describes a unique combination of sample and droplet barcode, which
+ideally would be one single-cell, and corresponds to a GEM in regular
+single-cell</td>
+</tr>
+<tr class="even">
+<td align="center">droplet/GEM</td>
+<td align="center">We refer to a droplet/GEM as the combination of all
+cells that carry the same droplet barcode. These cells were co-captured
+in GEMs during the sequencing process and are therefore true multiplets
+that we can re-create</td>
+</tr>
+<tr class="odd">
+<td align="center">pre-QC GEM occupancy</td>
+<td align="center">The number of cells that carry the same droplet
+barcode <strong>prior</strong> to performing QC filtering. This
+corresponds to the occupancy of the droplet at sequencing</td>
+</tr>
+<tr class="even">
+<td align="center">post-QC GEM occupancy</td>
+<td align="center">The number of cells that carry the same droplet
+barcode <strong>after</strong> performing QC filtering.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>1. Filter: get a set of high-confidence singlets</strong></p>
+<p>The purpose of these filtering strategies is to ensure that we start
+off with a collection of high confident single cells. To this end,
+we</p>
+<ul>
+<li><p>remove cells with a library size &lt; 200, &lt; 150 unique genes
+expressed and %mito content &gt; 7%. Note that these thresholds are
+purposefully lenient to ensure we still capture the full cell type
+diversity present in the dataset.</p></li>
+<li><p>remove cells that were not called as ‘cells’ by both
+<code>DropletUtils::emptyDrops()</code> and
+<code>cellranger multi</code>. This consensus approach increases the
+likelihood of barcodes being true cells.</p></li>
+<li><p>only keep cells that were considered singlets by 4 different
+doublet detection tools (scDblFinder, scrublet, DoubletDetection, scds).
+This is to maximise the likelihood of remaining singlets to be true
+singlets, and prevents us from adding more than two cells when creating
+pseudo-droplets.</p></li>
+<li><p>only keep cells for whose pre and post-QC GEM occupancy is 1 or
+2. These correspond will then become singlets (1) and doublets (2) after
+combining them into pseudo-droplets.</p></li>
+</ul>
+<p>As a final comment, we recognise that some resulting cells may not be
+perfect single cells but in general they can be considered high
+confident single cells.</p>
+<p><strong>2. Combine: generate pseudo-droplets from
+singlets</strong></p>
+<p>The resulting set of high confidence singlets are then combined based
+on their droplet barcodes. For doublets, the gene expression is combined
+for the two cells.</p>
+<p><strong>3. Annotate: add detailed information describing
+pseudo-droplets</strong></p>
+<p>Finally, we add in-depth information for each pseudo-droplet. This is
+particularly unique and useful for the doublets! Metrics include:</p>
+<ul>
+<li><p>RNA contribution of each cell to pseudo-droplet content (in
+fraction + absolute library size)</p></li>
+<li><p>cosine similarity between cells within doublets</p></li>
+</ul>
+<p><strong>4. Subset: reduce dataset size and doublet
+proportion</strong></p>
+<p>The resulting dataset can then be subset to desired dataset size as
+well as doublet proportion.</p>
+<div id="load-libraries" class="section level2">
+<h2>Load libraries</h2>
+<pre class="r"><code>suppressPackageStartupMessages({
+  library(tidyverse)
+  library(here)
+  library(glue)
+  library(DropletUtils)
+  library(scran)
+  library(scater)
+  library(scuttle)
+  library(scales)
+  library(readr)
+  library(Seurat)
+  library(scDblFinder)
+  library(scMerge)
+  library(ggpubr)
+  library(BiocParallel)
+  library(clustree)
+  library(SingleCellExperiment)
+  library(scMerge)
+  library(Matrix)
+  library(SeuratDisk)
+  library(qs2)
+  library(patchwork)
+})</code></pre>
+</div>
+</div>
+<div id="filter-get-a-set-of-high-confidence-singlets"
+class="section level1">
+<h1>1. Filter: get a set of high-confidence singlets</h1>
+<div id="starting-point---all-cells" class="section level2">
+<h2>Starting point - all cells</h2>
+<p>We will start off with all cells from all samples and gradually
+remove the ones we are not interested in. See <a
+href="Tonsils_10xFlex_whole_dataset_uncorrected_scDblFinder.html">this
+analysis file</a> for how this object was generated.</p>
+<pre class="r"><code>sce &lt;- readRDS(here(&quot;data/Tonsils_10xFlex/G000231_Neeland_batch9_Tonsils.CellRanger_filtered.SCE.rds&quot;))</code></pre>
+<p>First thing, we will compute the pre-QC GEM occupancy. We will need
+this later.</p>
+<pre class="r"><code>#get substring for barcodes
+sce$Barcode &lt;- colnames(sce)
+sce$GEM_barcode &lt;- substring(sce$Barcode, first = 1, last = 17)
+sce$sample_barcode &lt;- substring(sce$Barcode, first = 18, last = 26)
+
+# occupancy
+sce$cells_per_GEM &lt;- as.factor(table(sce$GEM_barcode)[sce$GEM_barcode])
+
+sce$cells_per_GEM %&gt;% table()</code></pre>
+<pre><code>.
+    1     2     3     4     5     6     7 
+28885 44304 35115 19668  9160  4020  1645 </code></pre>
+<p>As a reminder, we will not be considering any cells from droplets
+with a GEM occupancy &gt; 3.</p>
+</div>
+<div id="lenient-metrics-thresholding" class="section level2">
+<h2>Lenient metrics thresholding</h2>
+<p>To ensure that we’re removing cells that are very unlikely to be real
+cells, we are going to implement some very lenient thresholds for
+commonly used QC metrics: library size (200), #genes detected (150) and
+%mito genes expressed (7%)</p>
+<p>First, lets add the necessary metrics.</p>
+<pre class="r"><code>is.mito &lt;- grepl(pattern = &quot;^MT&quot;, rownames(sce))
+sce &lt;- addPerCellQCMetrics(sce, subsets = list(mito = is.mito))
+
+new_meta &lt;- sce@colData %&gt;% as.data.frame() %&gt;% #immediately clean up metadata
+  dplyr::rename(., nfeatures = detected, ncount = sum) %&gt;%
+  select(., -c(&quot;subsets_mito_sum&quot;, &quot;subsets_mito_detected&quot;, &quot;total&quot;))
+sce@colData &lt;- new_meta %&gt;% DataFrame()</code></pre>
+<p>Collect barcodes which surpass these thresholds.</p>
+<pre class="r"><code>qc_metrics_barcodes &lt;- sce$Barcode[ (sce$ncount &gt;= 200) &amp; (sce$nfeatures &gt;= 150)  &amp; (sce$subsets_mito_percent &lt;= 7)] 
+
+qc_metrics_barcodes %&gt;% length()</code></pre>
+<pre><code>[1] 142227</code></pre>
+</div>
+<div id="only-keep-dropletutilsemptydrops-cells" class="section level2">
+<h2>Only keep <code>DropletUtils::emptyDrops()</code> cells</h2>
+<p>As an additional filter, we will use
+<code>DropletUtils::emptyDrops()</code> to detect non-empty cells. This
+will serve as a second cell detection approach complementary to
+<code>cellranger multi</code>.</p>
+<p>First, we need the unfiltered cellranger output</p>
+<pre class="r"><code>raw_sce &lt;- read10xCounts(here(&quot;data/Tonsils_10xFlex/raw_feature_bc_matrix&quot;), col.names = T, row.names = &quot;symbol&quot;)</code></pre>
+<pre class="r"><code># follow basic vignette: https://www.bioconductor.org/packages/devel/bioc//vignettes/DropletUtils/inst/doc/DropletUtils.html#detecting-empty-droplets
+set.seed(100)
+e.out &lt;- emptyDrops(counts(raw_sce))
+is.cell &lt;- e.out$FDR &lt;= 0.01 
+is.cell[is.na(is.cell)] &lt;- FALSE #NAs are not cells
+non_emptydrops &lt;- raw_sce$Barcode[is.cell]
+
+non_emptydrops %&gt;% length()</code></pre>
+<pre><code>[1] 157143</code></pre>
+</div>
+<div id="only-keep-consensus-singlets" class="section level2">
+<h2>Only keep consensus-singlets</h2>
+<p>In order to ensure that cells are indeed high confidence singlets, we
+apply four different doublet detection tools and only consider cells
+which were called as singlets for all four tools. As the 10xFlex tonsil
+dataset contained 16 samples, doublet calling was performed on each
+sample individually, as is recommended by the authors.</p>
+<p>Individual run scripts for the doublet detection tools can be found
+in <code>code/doublet_tools</code>. The tools were combined in a bash
+script and run for each sample. The code below shows the content of the
+script
+<code>code/doublet_tools/run_scds_scDblFinder_scrublet_doubletdetection.sh</code>
+(combined in
+<code>code/Tonsil_10xFlex/Tonsil_10xFlex_whole_dataset_eachSample_runDoubletTools.sh</code>
+for all samples. The output log for this can be found at
+<code>code/Tonsil_10xFlex/Tonsil_10xFlex_whole_dataset_eachSample_runDoubletTools.log</code>)</p>
+<p>The input for doublet calling was generated in <a
+href="Tonsils_10xFlex_whole_dataset_uncorrected_scDblFinder.html">this
+analysis file</a>.</p>
+<p>The output for each Sample is a folder called
+<code>doublet_calls</code> and contains doublet calling results for each
+tool in a csv file, as well as quality control plots for scrublet and
+DoubletDetection. Finally, the file
+<code>{sample_name}_calling_consensus.csv</code> contains the results
+for all four doublet detection tools in one file.</p>
+<pre class="bash"><code>#!/bin/bash
+
+# This is a bash script that runs all doublet detection tools
+# always remember to pipe out and error logs to a file while running:
+# sh run_scds_scDblFinder_scrublet_doubletdetection.sh &amp;&gt; run_scds_scDblFinder_scrublet_doubletdetection.log
+
+# inputs based on order
+COUNTS=$1
+OUTPUT=$2
+
+mkdir ${OUTPUT}
+
+echo &quot;##########################################################################&quot;
+echo &quot;Start doublet calling&quot;
+echo &quot;Inputs detected:&quot;
+echo &quot;  OUTPUT = ${OUTPUT}&quot;
+echo &quot;  COUNTS = ${COUNTS}&quot;
+echo &quot;##########################################################################&quot;
+
+
+#need to go here for renv reasons
+cd /Users/meiermichelle/Library/CloudStorage/OneDrive-PeterMac/OSHLACK_LAB/PhD/ambient_doublet_singlecell
+
+echo &quot;##########################################################################&quot;
+echo &quot;Start scds&quot;
+echo &quot;##########################################################################&quot;
+
+# SCDS
+Rscript ./code/doublet_tools/scds.R ${OUTPUT} ${COUNTS}
+
+echo &quot;##########################################################################&quot;
+echo &quot;Start scDblFinder&quot;
+echo &quot;##########################################################################&quot;
+
+# SCDBLFINDER
+Rscript ./code/doublet_tools/scDblFinder.R ${OUTPUT} ${COUNTS}
+
+# for mamba reasons
+source /Users/meiermichelle/miniforge3/bin/activate
+eval &quot;$(mamba shell hook --shell bash)&quot;
+
+echo &quot;##########################################################################&quot;
+echo &quot;Start scrublet&quot;
+echo &quot;##########################################################################&quot;
+
+# SCRUBLET
+mamba activate scrublet
+python ./code/doublet_tools/scrublet_tool.py ${OUTPUT} ${COUNTS}
+mamba deactivate
+
+echo &quot;##########################################################################&quot;
+echo &quot;Start DoubletDetection&quot;
+echo &quot;##########################################################################&quot;
+
+# DOUBLETDETECTION
+mamba activate DoubletDetection
+python ./code/doublet_tools/DoubletDetection_tool.py ${OUTPUT} ${COUNTS}
+mamba deactivate
+
+echo &quot;##########################################################################&quot;
+echo &quot;Combine all doublet calling results&quot;
+echo &quot;##########################################################################&quot;
+
+# COMBINE
+Rscript ./code/doublet_tools/combine_results.R ${OUTPUT}
+
+echo &quot;##########################################################################&quot;
+echo &quot;Doublet calling completed&quot;
+echo &quot;##########################################################################&quot;
+</code></pre>
+<p>Load all doublet calling results.</p>
+<pre class="r"><code>list_doublet &lt;- lapply(list.files(path = here(&quot;output/data/Tonsils_10xFlex/Samples/&quot;)), function(sample){
+  input &lt;- sprintf(&quot;%s/%s/doublet_calls/%s_doublet_calling_consensus.csv&quot; ,here(&quot;output/data/Tonsils_10xFlex/Samples/&quot;), sample, sample)
+  df &lt;- read_csv(input, show_col_types = F) 
+})
+
+doublets_result &lt;- Reduce(rbind, list_doublet) %&gt;% 
+  column_to_rownames(&quot;Barcode&quot;) %&gt;% 
+  mutate(., Barcode = rownames(.)) %&gt;% 
+  relocate(Barcode, consensus_singlet)
+
+knitr::kable(head(doublets_result)) </code></pre>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="12%" />
+<col width="8%" />
+<col width="13%" />
+<col width="8%" />
+<col width="11%" />
+<col width="5%" />
+<col width="8%" />
+<col width="10%" />
+<col width="7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">Barcode</th>
+<th align="left">consensus_singlet</th>
+<th align="left">DoubletDetection_DropletType</th>
+<th align="right">scDblFinder_score</th>
+<th align="left">scDblFinder_DropletType</th>
+<th align="right">scds_score</th>
+<th align="left">scds_DropletType</th>
+<th align="left">scrublet_DropletType</th>
+<th align="right">scrublet_Scores</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">AAACAAGCAAAGGGATACTTTAGG-1</td>
+<td align="left">AAACAAGCAAAGGGATACTTTAGG-1</td>
+<td align="left">singlet</td>
+<td align="left">singlet</td>
+<td align="right">0.0248644</td>
+<td align="left">singlet</td>
+<td align="right">0.7103260</td>
+<td align="left">singlet</td>
+<td align="left">singlet</td>
+<td align="right">0.0769231</td>
+</tr>
+<tr class="even">
+<td align="left">AAACAAGCAATAGCTGACTTTAGG-1</td>
+<td align="left">AAACAAGCAATAGCTGACTTTAGG-1</td>
+<td align="left">singlet</td>
+<td align="left">singlet</td>
+<td align="right">0.0005050</td>
+<td align="left">singlet</td>
+<td align="right">0.1942721</td>
+<td align="left">singlet</td>
+<td align="left">singlet</td>
+<td align="right">0.0487805</td>
+</tr>
+<tr class="odd">
+<td align="left">AAACAAGCACGTTACTACTTTAGG-1</td>
+<td align="left">AAACAAGCACGTTACTACTTTAGG-1</td>
+<td align="left">non-singlet</td>
+<td align="left">singlet</td>
+<td align="right">0.6309417</td>
+<td align="left">doublet</td>
+<td align="right">0.6435216</td>
+<td align="left">singlet</td>
+<td align="left">singlet</td>
+<td align="right">0.2482599</td>
+</tr>
+<tr class="even">
+<td align="left">AAACAAGCAGGCTGTGACTTTAGG-1</td>
+<td align="left">AAACAAGCAGGCTGTGACTTTAGG-1</td>
+<td align="left">non-singlet</td>
+<td align="left">singlet</td>
+<td align="right">0.0932629</td>
+<td align="left">singlet</td>
+<td align="right">1.0406421</td>
+<td align="left">doublet</td>
+<td align="left">singlet</td>
+<td align="right">0.0211480</td>
+</tr>
+<tr class="odd">
+<td align="left">AAACCAATCATAATCCACTTTAGG-1</td>
+<td align="left">AAACCAATCATAATCCACTTTAGG-1</td>
+<td align="left">non-singlet</td>
+<td align="left">singlet</td>
+<td align="right">0.0094378</td>
+<td align="left">singlet</td>
+<td align="right">0.9603744</td>
+<td align="left">doublet</td>
+<td align="left">singlet</td>
+<td align="right">0.1818182</td>
+</tr>
+<tr class="even">
+<td align="left">AAACCAATCATAATGGACTTTAGG-1</td>
+<td align="left">AAACCAATCATAATGGACTTTAGG-1</td>
+<td align="left">singlet</td>
+<td align="left">singlet</td>
+<td align="right">0.0117291</td>
+<td align="left">singlet</td>
+<td align="right">0.1683252</td>
+<td align="left">singlet</td>
+<td align="left">singlet</td>
+<td align="right">0.0957944</td>
+</tr>
+</tbody>
+</table>
+<p>We will now collect the barcodes of cells that are considered
+consensus-singlets.</p>
+<pre class="r"><code>consensus_singlets &lt;- doublets_result %&gt;% 
+  filter(., consensus_singlet == &quot;singlet&quot;) %&gt;% 
+  pull(Barcode)
+
+consensus_singlets %&gt;% length()</code></pre>
+<pre><code>[1] 116391</code></pre>
+</div>
+<div id="remove-barcodes" class="section level2">
+<h2>remove barcodes</h2>
+<p>As a first filter step, we will now remove all barcodes that were not
+collected in the section above.</p>
+<pre class="r"><code>barcodes_to_keep &lt;- Reduce(intersect, list(consensus_singlets, non_emptydrops, qc_metrics_barcodes))
+barcodes_to_keep %&gt;% length()</code></pre>
+<pre><code>[1] 112291</code></pre>
+<p>Remove from object</p>
+<pre class="r"><code>sce_filtered &lt;- sce[, sce$Barcode %in% barcodes_to_keep]</code></pre>
+<p>Now, add post-QC GEM occupancy.</p>
+<pre class="r"><code># occupancy
+sce_filtered$cells_per_GEM_postQC &lt;- as.factor(table(sce_filtered$GEM_barcode)[sce_filtered$GEM_barcode])
+
+sce_filtered$cells_per_GEM_postQC %&gt;% table()</code></pre>
+<pre><code>.
+    1     2     3     4     5     6     7 
+31888 39252 25209 11104  3810   888   140 </code></pre>
+</div>
+<div id="how-has-droplet-occupancy-changed" class="section level2">
+<h2>How has droplet occupancy changed?</h2>
+<p>As we’ve now removed cells, the observed droplet occupancy has
+changed. It is important that we remove any cells for which this is the
+case as the original occupancy in a GEM can affect metrics such as
+library size which may influence doublet detection.</p>
+<p>Compare to occupancies before and after QC</p>
+<pre class="r"><code>table(sce_filtered$cells_per_GEM_postQC, sce_filtered$cells_per_GEM, dnn = c(&quot;post QC&quot;, &quot;pre QC&quot;))</code></pre>
+<pre><code>       pre QC
+post QC     1     2     3     4     5     6     7
+      1 23265  7065  1305   205    38     8     2
+      2     0 28292  8770  1692   382    92    24
+      3     0     0 17523  5958  1335   297    96
+      4     0     0     0  7404  2688   800   212
+      5     0     0     0     0  2395  1080   335
+      6     0     0     0     0     0   600   288
+      7     0     0     0     0     0     0   140</code></pre>
+<p>You can see that for most (~80%) cells with droplet occupancy = 2
+before QC the occupancy changes after removing cells.</p>
+<pre class="r"><code>sce_filtered$occupancy_changed &lt;- ifelse(sce_filtered$cells_per_GEM_postQC == sce_filtered$cells_per_GEM, &quot;no&quot;, &quot;yes&quot;)
+
+sce_filtered$occupancy_changed %&gt;% table()</code></pre>
+<pre><code>.
+   no   yes 
+79619 32672 </code></pre>
+<p>Remove cells for which occupancy changes</p>
+<pre class="r"><code>sce_filtered &lt;- sce_filtered[, sce_filtered$occupancy_changed == &quot;no&quot;]</code></pre>
+</div>
+<div id="only-keep-cells-with-1-or-2-occupancy" class="section level2">
+<h2>only keep cells with 1 or 2 occupancy</h2>
+<p>Finally, as we are only interested in doublets and not higher orders
+of multiplets, we will remove all cells whose GEM occupancy is higher
+than 2.</p>
+<pre class="r"><code>sce_filtered &lt;- sce_filtered[, sce_filtered$cells_per_GEM_postQC %in% c(1,2)] #occupancy is a factor
+sce_filtered</code></pre>
+<pre><code>class: SingleCellExperiment 
+dim: 18082 51557 
+metadata(0):
+assays(2): counts logcounts
+rownames(18082): SAMD11 NOC2L ... MT-ND6 MT-CYB
+rowData names(1): subsets_mito
+colnames(51557): AAACAAGCAATAGCTGACTTTAGG-1 AAACCAATCCGCCTCTACTTTAGG-1
+  ... TTTGGACGTCGAGGCAATTCGGTT-1 TTTGTGAGTTTCACCCATTCGGTT-1
+colData names(14): orig.ident nCount_RNA ... cells_per_GEM_postQC
+  occupancy_changed
+reducedDimNames(0):
+mainExpName: RNA
+altExpNames(0):</code></pre>
+</div>
+<div id="final-overview-export" class="section level2">
+<h2>Final overview + export</h2>
+<p>Our final cell counts after filtering is:</p>
+<pre class="r"><code>sce_filtered$cells_per_GEM_postQC %&gt;% droplevels()%&gt;% table() </code></pre>
+<pre><code>.
+    1     2 
+23265 28292 </code></pre>
+<p>Which means that after combining cells into droplets (see later
+sections), we will have the following number of droplets:</p>
+<pre class="r"><code>(sce_filtered$cells_per_GEM_postQC %&gt;% droplevels() %&gt;% table(., dnn=&quot;cell per droplet&quot;))/as.numeric(names(sce_filtered$cells_per_GEM_postQC %&gt;% droplevels() %&gt;% table()))</code></pre>
+<pre><code>cell per droplet
+    1     2 
+23265 14146 </code></pre>
+<p>Let’s export this object as we will use it later.</p>
+<pre class="r"><code>qs_save(object = sce_filtered, 
+        file = here(&quot;output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_inputEngineered_CELLS.qs2&quot;))</code></pre>
+</div>
+</div>
+<div id="combine-generate-droplets-from-singlets"
+class="section level1">
+<h1>2. Combine: generate droplets from singlets</h1>
+<p>As a next step, we combine the counts for cells originating from the
+same droplet. To achieve this we’ve written a function to generate
+droplet based gene expression matrices.</p>
+<pre class="r"><code># function written by Geroge Howitt
+makeGEMMatrix &lt;- function(sce) {
+  counts_matrix &lt;- counts(sce)
+  dimnames(counts_matrix)[[2]] &lt;- substring(dimnames(counts_matrix)[[2]], first = 1, last = 17) #first 17 bases are droplet barcodes
+  counts_matrix &lt;- as(counts_matrix, &quot;TsparseMatrix&quot;)
+  nms &lt;- colnames(counts_matrix)
+  uniquenms &lt;- unique(nms)
+  GEM_counts &lt;- sparseMatrix(i = counts_matrix@i+1,
+                             j = match(nms, uniquenms)[counts_matrix@j + 1],
+                             x = counts_matrix@x,
+                             dimnames = list(rownames(counts_matrix), uniquenms),
+                             repr = &#39;T&#39;)
+  return(as(GEM_counts, &quot;CsparseMatrix&quot;))
+}</code></pre>
+<p>Apply function to generate droplet object.</p>
+<pre class="r"><code>droplet_counts &lt;- makeGEMMatrix(sce_filtered)</code></pre>
+</div>
+<div id="annotate-add-detailed-information-describing-droplets"
+class="section level1">
+<h1>3. Annotate: add detailed information describing droplets</h1>
+<p>Next, we need to collect relevant information for each of the
+droplets to generate metadata information.</p>
+<div id="add-cell-based-information" class="section level2">
+<h2>Add cell-based information</h2>
+<p>This will be generated based on the <em>cell-based
+SingleCellExperiment</em> object.</p>
+<p>First, add fraction of RNA contributed for each cell to a droplet to
+the cell object.</p>
+<pre class="r"><code>new_meta &lt;- sce_filtered@colData %&gt;% as.data.frame() %&gt;%
+  group_by(GEM_barcode) %&gt;%
+  mutate(., fraction = ncount/sum(ncount))
+rownames(new_meta) &lt;- new_meta$Barcode</code></pre>
+<pre><code>Warning: Setting row names on a tibble is deprecated.</code></pre>
+<pre class="r"><code>sce_filtered@colData &lt;- new_meta %&gt;% DataFrame()</code></pre>
+<pre class="r"><code>meta &lt;- sce_filtered@colData %&gt;% as.data.frame() %&gt;%
+  select(., GEM_barcode, ncount, nfeatures, fraction, subsets_mito_percent,cells_per_GEM_postQC,Barcode) %&gt;%
+  group_by(GEM_barcode) %&gt;%
+  reframe(., doublet_class = ifelse(cells_per_GEM_postQC == 1, &quot;singlet&quot;, &quot;doublet&quot;),
+            CT1_ngenes = nfeatures[1],
+            CT2_ngenes = nfeatures[2],
+            CT1_ncounts = ncount[1],
+            CT2_ncounts = ncount[2],
+            CT1_fraction = fraction[1],
+            CT2_fraction = fraction[2],
+            CT1_mito = subsets_mito_percent[1],
+            CT2_mito = subsets_mito_percent[2],
+            CT1_barcode = Barcode[1],
+            CT2_barcode = Barcode[2]) %&gt;% as.data.frame() %&gt;% 
+  distinct()
+
+# need to rearrange to match counts order
+rownames(meta) &lt;- meta$GEM_barcode # add rownames
+meta &lt;- meta[colnames(droplet_counts),] # reorder
+
+#check order
+all(meta$GEM_barcode == colnames(droplet_counts))</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<p>Now that this is sorted, we can make a droplet single-cell
+experiment.</p>
+<pre class="r"><code>droplet &lt;- SingleCellExperiment(assays=list(counts=droplet_counts),
+                                       colData = meta %&gt;% DataFrame())
+
+droplet</code></pre>
+<pre><code>class: SingleCellExperiment 
+dim: 18082 37411 
+metadata(0):
+assays(1): counts
+rownames(18082): SAMD11 NOC2L ... MT-ND6 MT-CYB
+rowData names(0):
+colnames(37411): AAACAAGCAATAGCTGA AAACCAATCCGCCTCTA ...
+  TTTGCCCGTCCATAGTA TTTGGACGTCGAGGCAA
+colData names(12): GEM_barcode doublet_class ... CT1_barcode
+  CT2_barcode
+reducedDimNames(0):
+mainExpName: NULL
+altExpNames(0):</code></pre>
+</div>
+<div id="add-cosine-similarity" class="section level2">
+<h2>Add cosine similarity</h2>
+<p>For doublets, we also want to quantify how transcriptionally similar
+the cells within a doublet are. This serves as a proxy for homotypic vs
+heterotypic labels. We choose this option over cell type labels as it
+does not require us to make an arbitrary decision on the level of cell
+type level granularity. We compute the cosine similarity using
+<code>coop::cosine</code>, based on PCA dimension reductions.</p>
+<pre class="r"><code>#run dim reduction
+sce_filtered &lt;- logNormCounts(sce_filtered) %&gt;%
+  runPCA()</code></pre>
+<p>Computing cosine similariy is quite memory intensive, so we will
+subset to only include the barcodes we require this information for.</p>
+<pre class="r"><code>barcodes &lt;- c(droplet$CT1_barcode[droplet$doublet_class == &quot;doublet&quot;], 
+              droplet$CT2_barcode[droplet$doublet_class == &quot;doublet&quot;])
+
+#filter object further
+sce_filtered &lt;- sce_filtered[, sce_filtered$Barcode %in% barcodes]</code></pre>
+<p>Finally, compute cosine similarity and add to metadata.</p>
+<pre class="r"><code>#compute cosine similarity for all combinations
+cos_matrix &lt;- coop::cosine(t(reducedDim(sce_filtered, &quot;PCA&quot;)))
+
+#make a dataframe to collect relevant information
+df_tmp &lt;- data.frame(barcode1 = droplet$CT1_barcode[droplet$doublet_class == &quot;doublet&quot;],
+                     barcode2 = droplet$CT2_barcode[droplet$doublet_class == &quot;doublet&quot;],
+                     GEM_barcode = droplet$GEM_barcode[droplet$doublet_class == &quot;doublet&quot;])
+
+#apply through dataframe and collect cosine similarity entry
+cos_output &lt;- apply(df_tmp, 1, function(a){
+  data.frame(GEM_barcode = a[3],
+             cosine_similarity = cos_matrix[a[1], a[2]])
+}) %&gt;% bind_rows()
+
+
+#add into metadata
+new_meta &lt;- droplet@colData %&gt;% as.data.frame() %&gt;%
+  left_join(., cos_output)</code></pre>
+<pre><code>Joining with `by = join_by(GEM_barcode)`</code></pre>
+<pre class="r"><code>rownames(new_meta) &lt;- new_meta$GEM_barcode #join removes rownames
+all(rownames(new_meta) == colnames(droplet))</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<pre class="r"><code>#add back
+droplet@colData &lt;- new_meta %&gt;% DataFrame()  #add back</code></pre>
+</div>
+<div id="add-droplet-based-information" class="section level2">
+<h2>Add droplet based information</h2>
+<p>This will be your usual library size, #genes and %mito</p>
+<pre class="r"><code>is.mito &lt;- grepl(pattern = &quot;^MT&quot;, rownames(droplet))
+droplet &lt;- addPerCellQCMetrics(droplet, subsets = list(mito = is.mito))
+
+new_meta &lt;- droplet@colData %&gt;% as.data.frame() %&gt;% #immediately clean up metadata
+  dplyr::rename(., nfeatures_raw = detected, ncount_raw = sum, subsets_mito_percent_raw = subsets_mito_percent) %&gt;%
+  select(., -c(&quot;subsets_mito_sum&quot;, &quot;subsets_mito_detected&quot;, &quot;total&quot;))
+droplet@colData &lt;- new_meta %&gt;% DataFrame()</code></pre>
+</div>
+<div id="export" class="section level2">
+<h2>export</h2>
+<p>Export the complete pseudo droplet object.</p>
+<pre class="r"><code>qs_save(object = droplet, 
+        file = here(&quot;output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_inputEngineered_DROPLET.qs2&quot;))</code></pre>
+</div>
+</div>
+<div id="subset-reduce-dataset-size-and-doublet-proportion"
+class="section level1">
+<h1>4. Subset: reduce dataset size and doublet proportion</h1>
+<p>Finally, we will subset the resulting pseudo droplet dataset to a
+desired dataset size and doublet proportion</p>
+<p>Writing a function to subset the object based on input #doublets and
+#singlets, then exports the resulting matrix. We will run this 5 times
+with different seeds.</p>
+<pre class="r"><code>run_subset_droplets &lt;- function(object, 
+                                n_doub, 
+                                n_singlet,
+                                seed){
+  set.seed(seed)
+  #get random subsets
+  cells &lt;- c(sample(object$GEM_barcode[object$doublet_class == &quot;doublet&quot;],  n_doub, replace = F), 
+           sample(object$GEM_barcode[object$doublet_class == &quot;singlet&quot;],  n_singlet, replace = F) 
+           )
+  #subset
+  sub &lt;- object[, object$GEM_barcode %in% cells]
+  #export
+  filename &lt;- sprintf(&quot;%s/Tonsils_10xFlex_engineered_%ik_%0.2fp_%is&quot;,
+                      here(&quot;output/data/Tonsils_10xFlex/Engineered/&quot;), 
+                      (n_doub+n_singlet)/1000, 
+                      n_doub/(n_doub+n_singlet),
+                      seed)
+  print(basename(filename))
+
+  DropletUtils::write10xCounts(path = filename,
+                               x = counts(sub),
+                               version = &quot;3&quot;)
+  #export metadata
+  filename_meta &lt;- sprintf(&quot;%s/Tonsils_10xFlex_engineered_%ik_%0.2fp_%is/metadata.tsv&quot;,
+                      here(&quot;output/data/Tonsils_10xFlex/Engineered/&quot;), 
+                      (n_doub+n_singlet)/1000, 
+                      n_doub/(n_doub+n_singlet),
+                      seed)
+  write_tsv(x=as.data.frame(sub@colData),
+            file=filename_meta)
+
+  rm(sub, cells)
+  
+}</code></pre>
+<p>Run for 5 random seeds.</p>
+<pre class="r"><code>random_seeds &lt;- sample(1000:9999, size = 5, replace = FALSE)
+
+cap &lt;- sapply(random_seeds, function(S){
+  run_subset_droplets(object = droplet, n_doub = 1800, n_singlet = 10200, seed = S)
+})</code></pre>
+<pre><code>[1] &quot;Tonsils_10xFlex_engineered_12k_0.15p_8140s&quot;
+[1] &quot;Tonsils_10xFlex_engineered_12k_0.15p_1542s&quot;
+[1] &quot;Tonsils_10xFlex_engineered_12k_0.15p_7537s&quot;
+[1] &quot;Tonsils_10xFlex_engineered_12k_0.15p_8524s&quot;
+[1] &quot;Tonsils_10xFlex_engineered_12k_0.15p_9372s&quot;</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.4
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices datasets  utils     methods  
+[8] base     
+
+other attached packages:
+ [1] patchwork_1.3.2             qs2_0.1.5                  
+ [3] SeuratDisk_0.0.0.9021       Matrix_1.7-3               
+ [5] clustree_0.5.1              ggraph_2.2.1               
+ [7] BiocParallel_1.42.1         ggpubr_0.6.0               
+ [9] scMerge_1.24.0              scDblFinder_1.22.0         
+[11] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+[13] sp_2.2-0                    scales_1.4.0               
+[15] scater_1.36.0               scran_1.36.0               
+[17] scuttle_1.18.0              DropletUtils_1.28.0        
+[19] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[21] Biobase_2.68.0              GenomicRanges_1.60.0       
+[23] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[25] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[27] generics_0.1.4              MatrixGenerics_1.20.0      
+[29] matrixStats_1.5.0           glue_1.8.0                 
+[31] here_1.0.1                  lubridate_1.9.4            
+[33] forcats_1.0.0               stringr_1.5.1              
+[35] dplyr_1.1.4                 purrr_1.2.0                
+[37] readr_2.1.5                 tidyr_1.3.1                
+[39] tibble_3.3.0                ggplot2_4.0.1              
+[41] tidyverse_2.0.0             workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] R.methodsS3_1.8.2         vroom_1.6.5              
+  [3] nnet_7.3-20               goftest_1.2-3            
+  [5] Biostrings_2.76.0         HDF5Array_1.36.0         
+  [7] rstan_2.32.7              vctrs_0.6.5              
+  [9] spatstat.random_3.4-1     digest_0.6.37            
+ [11] png_0.1-8                 git2r_0.36.2             
+ [13] ggrepel_0.9.6             deldir_2.0-4             
+ [15] parallelly_1.45.0         batchelor_1.24.0         
+ [17] renv_1.1.4                MASS_7.3-65              
+ [19] reshape2_1.4.4            httpuv_1.6.16            
+ [21] withr_3.0.2               xfun_0.52                
+ [23] survival_3.8-3            memoise_2.0.1            
+ [25] proxyC_0.5.2              ggbeeswarm_0.7.2         
+ [27] zoo_1.8-14                gtools_3.9.5             
+ [29] V8_8.0.1                  pbapply_1.7-2            
+ [31] DEoptimR_1.1-3-1          R.oo_1.27.1              
+ [33] Formula_1.2-5             promises_1.3.3           
+ [35] httr_1.4.7                rstatix_0.7.2            
+ [37] restfulr_0.0.15           globals_0.18.0           
+ [39] fitdistrplus_1.2-2        cvTools_0.3.3            
+ [41] rhdf5filters_1.20.0       stringfish_0.17.0        
+ [43] ps_1.9.1                  rhdf5_2.52.1             
+ [45] rstudioapi_0.17.1         UCSC.utils_1.4.0         
+ [47] miniUI_0.1.2              base64enc_0.1-3          
+ [49] processx_3.8.6            curl_7.0.0               
+ [51] sfsmisc_1.1-20            ScaledMatrix_1.16.0      
+ [53] h5mread_1.0.1             polyclip_1.10-7          
+ [55] GenomeInfoDbData_1.2.14   SparseArray_1.8.0        
+ [57] xtable_1.8-4              evaluate_1.0.3           
+ [59] S4Arrays_1.8.1            hms_1.1.3                
+ [61] irlba_2.3.5.1             colorspace_2.1-1         
+ [63] hdf5r_1.3.12              ROCR_1.0-11              
+ [65] reticulate_1.42.0         spatstat.data_3.1-6      
+ [67] magrittr_2.0.4            lmtest_0.9-40            
+ [69] later_1.4.2               viridis_0.6.5            
+ [71] lattice_0.22-6            robustbase_0.99-4-1      
+ [73] spatstat.geom_3.4-1       future.apply_1.20.0      
+ [75] getPass_0.2-4             scattermore_1.2          
+ [77] XML_3.99-0.18             cowplot_1.1.3            
+ [79] RcppAnnoy_0.0.22          Hmisc_5.2-3              
+ [81] pillar_1.10.2             StanHeaders_2.32.10      
+ [83] nlme_3.1-168              caTools_1.18.3           
+ [85] compiler_4.5.0            beachmat_2.24.0          
+ [87] RSpectra_0.16-2           stringi_1.8.7            
+ [89] tensor_1.5                GenomicAlignments_1.44.0 
+ [91] plyr_1.8.9                crayon_1.5.3             
+ [93] abind_1.4-8               BiocIO_1.18.0            
+ [95] locfit_1.5-9.12           bit_4.6.0                
+ [97] graphlayouts_1.2.2        whisker_0.4.1            
+ [99] codetools_0.2-20          BiocSingular_1.24.0      
+[101] coop_0.6-3                bslib_0.9.0              
+[103] QuickJSR_1.8.0            plotly_4.10.4            
+[105] mime_0.13                 splines_4.5.0            
+[107] Rcpp_1.0.14               fastDummies_1.7.5        
+[109] sparseMatrixStats_1.20.0  knitr_1.50               
+[111] reldist_1.7-2             fs_1.6.6                 
+[113] listenv_0.9.1             checkmate_2.3.2          
+[115] DelayedMatrixStats_1.30.0 pkgbuild_1.4.8           
+[117] ggsignif_0.6.4            callr_3.7.6              
+[119] statmod_1.5.0             tzdb_0.5.0               
+[121] tweenr_2.0.3              startupmsg_1.0.0         
+[123] pkgconfig_2.0.3           tools_4.5.0              
+[125] cachem_1.1.0              viridisLite_0.4.2        
+[127] numDeriv_2016.8-1.1       fastmap_1.2.0            
+[129] rmarkdown_2.29            grid_4.5.0               
+[131] ica_1.0-3                 Rsamtools_2.24.0         
+[133] broom_1.0.8               sass_0.4.10              
+[135] BiocManager_1.30.26       dotCall64_1.2            
+[137] carData_3.0-5             RANN_2.6.2               
+[139] rpart_4.1.24              farver_2.1.2             
+[141] tidygraph_1.3.1           mgcv_1.9-1               
+[143] yaml_2.3.10               foreign_0.8-90           
+[145] rtracklayer_1.68.0        cli_3.6.5                
+[147] lifecycle_1.0.4           uwot_0.2.3               
+[149] M3Drop_1.34.0             mvtnorm_1.3-3            
+[151] bluster_1.18.0            backports_1.5.0          
+[153] distr_2.9.7               timechange_0.3.0         
+[155] gtable_0.3.6              rjson_0.2.23             
+[157] ggridges_0.5.6            densEstBayes_1.0-2.2     
+[159] progressr_0.15.1          parallel_4.5.0           
+[161] limma_3.64.1              jsonlite_2.0.0           
+[163] edgeR_4.6.2               RcppHNSW_0.6.0           
+[165] bitops_1.0-9              bit64_4.6.0-1            
+[167] xgboost_1.7.11.1          Rtsne_0.17               
+[169] spatstat.utils_3.1-4      BiocNeighbors_2.2.0      
+[171] RcppParallel_5.1.10       bdsmatrix_1.3-7          
+[173] jquerylib_0.1.4           metapod_1.16.0           
+[175] dqrng_0.4.1               loo_2.8.0                
+[177] spatstat.univar_3.1-3     R.utils_2.13.0           
+[179] lazyeval_0.2.2            shiny_1.10.0             
+[181] ruv_0.9.7.1               htmltools_0.5.8.1        
+[183] sctransform_0.4.2         spam_2.11-1              
+[185] ResidualMatrix_1.18.0     XVector_0.48.0           
+[187] RCurl_1.98-1.17           rprojroot_2.0.4          
+[189] gridExtra_2.3             igraph_2.1.4             
+[191] R6_2.6.1                  gplots_3.2.0             
+[193] cluster_2.1.8.1           bbmle_1.0.25.1           
+[195] Rhdf5lib_1.30.0           rstantools_2.4.0         
+[197] DelayedArray_0.34.1       tidyselect_1.2.1         
+[199] vipor_0.4.7               htmlTable_2.4.3          
+[201] ggforce_0.5.0             inline_0.3.21            
+[203] car_3.1-3                 future_1.58.0            
+[205] rsvd_1.0.5                KernSmooth_2.23-26       
+[207] S7_0.2.1                  data.table_1.17.4        
+[209] htmlwidgets_1.6.4         RColorBrewer_1.1-3       
+[211] rlang_1.1.6               spatstat.sparse_3.1-0    
+[213] spatstat.explore_3.4-3    beeswarm_0.4.0           </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

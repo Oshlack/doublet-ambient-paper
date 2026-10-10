@@ -1,0 +1,235 @@
+---
+title: "BrainCortex nuclei 10x: prepare for analysis (including deMULTIplex2)"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown prepares the BrainCortex nuclei dataset for analysis. The dataset was downloaded from [docker container](https://hub.docker.com/r/regevlab/demuxem) provided by the original authors. 
+
+The files downloaded are 
+
+- experiment4_human_st_1500_demux_10x.h5 (raw counts, RNA)
+
+- experiment4_human_st_1500_ADT.csv (raw counts, ADT, hashing)
+
+- experiment4_human_st_1500_demux.h5ad (filtered counts)
+
+
+We will export a `cellranger` like output structure.
+
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(here)
+  library(glue)
+  library(DropletUtils)
+  library(scran)
+  library(scater)
+  library(scuttle)
+  library(scales)
+  library(readr)
+  library(Seurat)
+  library(scDblFinder)
+  library(scMerge)
+  library(ggpubr)
+  library(BiocParallel)
+  library(clustree)
+  library(SingleCellExperiment)
+  library(scMerge)
+  library(Matrix)
+  library(SeuratDisk)
+  library(qs2)
+  library(patchwork)
+  library(zellkonverter)
+  library(deMULTIplex2)
+})
+
+
+```
+
+## General plotting themes
+
+```{r}
+plot_sizing <- theme_bw()+
+  theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14, colour = "black"),
+        plot.title = element_text(size = 18),
+        plot.subtitle = element_text(size = 16),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank()) 
+
+plot_sizing_keep_title <- theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14, colour = "black"),
+        plot.title = element_text(size = 18),
+        plot.subtitle = element_text(size = 16),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size = 14) )
+
+rotate_x <- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+strip_fix <- theme(strip.background = element_rect(fill = "white"), 
+                   strip.text = element_text(size = 14))
+
+```
+
+
+
+## Load data
+
+```{r, warning=FALSE}
+# load raw counts (RNA)
+counts_raw <- Read10X_h5(here("data/BrainCortex_nuclei_10x/experiment4_human_st_1500_demux_10x.h5"))
+
+#load count filtered h5ad (provided by authors via running the docker container)
+#read in using zellconverter to read in python format
+sce <- readH5AD(here("data/BrainCortex_nuclei_10x/experiment4_human_st_1500_demux.h5ad"))
+
+#load raw ADT data
+tag_mtx <-read_csv(here("data/BrainCortex_nuclei_10x/experiment4_human_st_1500_ADT.csv"), show_col_types = F) %>% column_to_rownames("Antibody")
+
+```
+
+Get filtered barcode from the sce object. 
+
+```{r}
+barcodes <- colnames(sce)
+```
+
+```{r, include=FALSE}
+rm(sce);gc()
+```
+
+
+
+# Run deMULTIplex2
+
+I am following their vignette on their [GitHub](https://github.com/Gartner-Lab/deMULTIplex2)
+
+*User must provide a tag count matrix where rows are individual cells and columns represent unique sample tags.*
+
+
+```{r, message=FALSE, warning=FALSE}
+#GET DATA IN ORDER
+tag_mtx <- tag_mtx[, barcodes]  #subset to only cells
+tag_mtx <- tag_mtx %>% t() #needs to be transposed to match the required format
+
+# RUN FUNCTION
+res_demultiplex2 <- demultiplexTags(tag_mtx, # Required, the tag count matrix from your experiment, can be either dense or sparse
+                       plot.path = here("output/data/BrainCortex_nuclei_10x/deMULTIplex2_demultiplexing"), # Where to output a summary plot
+                       plot.name = "BrainCortex_nuclei_10x", # text append to the name of the summary plot file
+                       plot.diagnostics = TRUE) # Whether to output diagnostics plots for each tag
+                       # set plot.umap = "none" to not produce any plots
+```
+
+```{r}
+table(res_demultiplex2$final_assign)
+```
+
+Rewrite results to fit in with other structure.
+
+```{r}
+meta_sce <- as.data.frame(res_demultiplex2$final_assign) %>%
+  dplyr::rename(assignment=`res_demultiplex2$final_assign`) %>% 
+  mutate(., doublet_class = case_when(assignment == "multiplet" ~ "doublet", 
+                                  assignment == "negative" ~  "remove", 
+                                  TRUE ~ "singlet"),
+            Barcode_old = rownames(.),
+            Barcode = paste0(Barcode_old, "-1"))
+```
+
+
+```{r}
+meta_sce$doublet_class %>% table()
+```
+
+What does that make the doublet rate (not considering remove section)
+
+```{r}
+
+table(meta_sce$doublet_class)["doublet"]/sum(table(meta_sce$doublet_class)["doublet"] + table(meta_sce$doublet_class)["singlet"])
+
+```
+
+About 10% doublet rate (not including unassigned)
+
+
+# Prepare `cellranger` output
+
+Make `cellranger` output files for barcodes that were detected as non-empty by the original authors (based on their h5ad object).
+
+## Make SCE object and add QC metrics
+
+```{r}
+#change rownames from metadata as they follow the different nomenclature
+#making sure this has rowname ensures that creating SCE object would error out if they're not in the same order
+rownames(meta_sce) <- meta_sce$Barcode
+
+# all(rownames(meta_sce) == colnames(counts_raw[, meta_sce$Barcode]))
+
+export_sce <- SingleCellExperiment(assays = c("counts" = counts_raw[, meta_sce$Barcode]), 
+                                   colData =meta_sce %>% DataFrame())
+  
+#add QC metrics
+is.mito <- grepl(pattern = "^MT", rownames(export_sce))
+is.ribo <- grepl(pattern = "^RP[SL]", rownames(export_sce))
+export_sce <- addPerCellQCMetrics(export_sce, subsets = list(mito = is.mito, ribo=is.ribo))
+
+#clean up
+new_meta <- export_sce@colData %>% as.data.frame() %>%
+  dplyr::rename(.,nfeatures_raw = detected, ncount_raw = sum, subsets_mito_percent_raw = subsets_mito_percent, subsets_ribo_percent_raw=subsets_ribo_percent) %>%
+  select(., -c("subsets_mito_sum", "subsets_mito_detected", "total", "subsets_ribo_sum", "subsets_ribo_detected"))
+
+export_sce@colData <- new_meta %>% DataFrame()
+```
+
+## Export 
+
+Export in `cellranger` output format, including metadata.
+
+```{r, eval=FALSE}
+#export counts
+output_dir <- here("output/data/BrainCortex_nuclei_10x/BrainCortex_nuclei_10x_cellranger/")
+DropletUtils::write10xCounts(path = output_dir,
+                             x = counts(export_sce),
+                             version = "3",
+                             overwrite = T)
+#and export metadata
+write_tsv(x= as.data.frame(export_sce@colData), file = paste0(output_dir, "metadata.tsv"),
+          col_names = T)
+
+```
+
+
+# Prepare *empty droplets* `cellranger` output
+
+Having an object that represent just the empty droplets is very useful when performing ambient RNA correction, so we'll export an empty droplets object in `cellranger` format as well. 
+
+
+We'll use all the barcodes that were not considered non-empty (so empty) by the original authors. 
+
+```{r, eval=FALSE}
+#subset counts
+empty_object <- counts_raw[, !(colnames(counts_raw) %in% export_sce$Barcode)]
+```
+
+
+
+```{r, eval=FALSE}
+#export counts
+output_dir <- here("output/data/BrainCortex_nuclei_10x/BrainCortex_nuclei_10x_emptyObject")
+DropletUtils::write10xCounts(path = output_dir,
+                             x = empty_object,
+                             version = "3",
+                             overwrite = T)
+```
+
+
+

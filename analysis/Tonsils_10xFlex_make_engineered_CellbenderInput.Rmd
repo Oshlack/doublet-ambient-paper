@@ -1,0 +1,164 @@
+---
+title: "Tonsil 10x Flex: Make engineered cellbender input files "
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown will generate `CellBender` appropriate input files. `CellBender` traditionally takes the raw `h5` file produced by cellranger as input and performs both cell-calling as well as ambient removal. For the engineered datasets, we will need to generate equivalent files containing the cells (generated [here](Tonsils_10xFlex_make_engineered_datasets.html)) as well as empty cells (generated [here](Tonsils_10xFlex_make_engineered_emptyObject.html)). 
+
+`CellBender` performs a lot better when provided with the input parameters `expected-cells` and `total-droplets-included`. We can estimate both of these input parameters from the resulting knee plot. In our case, we actually know the number of expected cells is going to be 12,000
+
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(here)
+  library(glue)
+  library(DropletUtils)
+  library(scran)
+  library(scater)
+  library(scuttle)
+  library(scales)
+  library(readr)
+  library(Seurat)
+  library(scDblFinder)
+  library(scMerge)
+  library(ggpubr)
+  library(BiocParallel)
+  library(clustree)
+  library(SingleCellExperiment)
+  library(scMerge)
+  library(Matrix)
+  library(SeuratDisk)
+  library(qs2)
+  library(patchwork)
+})
+
+
+```
+
+## Load data
+
+
+```{r}
+#load empty cells
+sce_empty <- read10xCounts(here("output/data/Tonsils_10xFlex/Engineered/Tonsils_10xFlex_engineered_emptyObject"), 
+                           row.names = "symbol", col.names = T)
+
+#list of paths to all engineered datasets
+list_datasets_paths <- list.dirs(path = here("output/data/Tonsils_10xFlex/Engineered/"), full.names = T)
+list_datasets_paths <- list_datasets_paths[grepl("Tonsils_10xFlex_engineered_12k_0.15p",list_datasets_paths)]
+
+list_datasets <- lapply(list_datasets_paths, function(path) read10xCounts(path,row.names = "symbol", col.names = T))
+
+names(list_datasets) <- basename(list_datasets_paths)
+```
+
+# Combine empty cells + engineered to generate `h5` file output
+
+Write a function to do this. 
+
+```{r}
+
+run_combine_export <- function(cells, 
+                               empties,
+                               name){
+  #make sure genes match
+  gene_universe <- intersect(rownames(cells), rownames(empties))
+  cells <- cells[gene_universe,]
+  empties <- empties[ gene_universe,]
+  #check order 
+  stopifnot(all(rownames(cells) == rownames(empties)))
+  
+  #combine
+  combined <- cbind(counts(cells),counts(empties))
+  
+  #export
+  filename <- sprintf("%s/%s_cellbenderInput_feature_bc_matrix.h5", unique(dirname(list_datasets_paths)), name)
+  write10xCounts(path = filename,
+               x = combined,
+               type = "HDF5",
+               version = "3",
+               barcodes = colnames(combined),
+               gene.symbol = rownames(combined), 
+               overwrite = TRUE)
+  print(filename)
+  return(combined) #keep file name
+}
+
+```
+
+Run for all engineered datasets
+
+```{r, warning=FALSE}
+
+list_out <- sapply(1:length(list_datasets), function(IN){
+  run_combine_export(cells = list_datasets[[IN]],
+                     empties = sce_empty, 
+                     name = names(list_datasets)[IN])
+})
+
+
+names(list_out) <-basename(list_datasets_paths)
+```
+
+```{r, include=FALSE}
+#silent clean up
+rm(list_datasets, sce_empty, list_datasets_paths);gc()
+
+```
+
+
+# Make Kneeplots for engineered datasets
+
+For each of the engineered 'raw' files, let's make a kneeplot and highlight potential thresholds for `-total-droplet-included`. The `-total-droplet-included` does not have to be exact- every droplet/barcode past that threshold will however be treated as an empty droplet. 
+
+Make a function
+
+```{r}
+run_kneeplot <- function(counts, 
+                         label_df, 
+                         name){
+  bcrank <- barcodeRanks(counts) #using DropletUtils function
+  bcrank_filtered <- bcrank[!duplicated(bcrank$rank), ]# only show unique points for plotting speed
+  
+  ggplot(data = bcrank_filtered, aes(x = log10(rank), log10(total))) + geom_point()+
+    geom_vline(data= label_df, mapping = aes(xintercept = log10(num), colour = name)) +
+    theme_bw() +
+    scale_colour_manual(values = unname(Polychrome::alphabet.colors(nrow(label_df))))+
+    theme_bw() + theme(legend.title = element_blank(), legend.text = element_text(size=15), 
+                       legend.spacing.y = unit(0.5, "cm"), legend.key.spacing.y = unit(0.5, "cm"))+
+    guides(colour = guide_legend(override.aes = list(linewidth = 2)))+
+    ggtitle(sprintf('Knee plot:\n%s', name))
+  
+}
+
+```
+
+
+```{r, warning=FALSE}
+#set same test thresholds for all
+label_df <- data.frame(name=c("cells_12k", "droplet_45k"),
+                       num = c(12000, 45000))
+
+plot_list <- sapply(1:length(list_out), function(IN){
+  run_kneeplot(counts = list_out[[IN]], label_df = label_df, name=names(list_out)[IN])
+})
+```
+
+```{r, fig.align='center', fig.height=8, fig.width=15}
+wrap_plots(plot_list, guides = "collect", axes = "collect") 
+```
+
+We can use the same thresholds for all engineered datasets.
+
+
+
+

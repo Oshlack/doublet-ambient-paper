@@ -1,0 +1,3005 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Michelle Meier" />
+
+
+<title>Figure 4: Engineered doublets reveal key features of undetected doublets after ambient RNA correction</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ambient_doublet_singlecell</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Figure 4: Engineered doublets reveal key
+features of undetected doublets after ambient RNA correction</h1>
+<h4 class="author">Michelle Meier</h4>
+<h4 class="date">10. October 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-10-10
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>ambient_doublet_singlecell/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260605code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260605)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260605code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260605)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommichellemeier27ambientdoubletsinglecelltreea897fc983dbc46cabe10d3fa0dd721409685f3e1targetblanka897fc9a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/tree/a897fc983dbc46cabe10d3fa0dd721409685f3e1" target="_blank">a897fc9</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcommichellemeier27ambientdoubletsinglecelltreea897fc983dbc46cabe10d3fa0dd721409685f3e1targetblanka897fc9a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/tree/a897fc983dbc46cabe10d3fa0dd721409685f3e1" target="_blank">a897fc9</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .RData
+    Ignored:    .Renviron
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    CLAUDE.md
+    Ignored:    analysis/figures_v1/
+    Ignored:    analysis/figures_v2/
+    Ignored:    analysis/figures_v3/
+    Ignored:    analysis/obsolete/
+    Ignored:    analysis/qc_filtered_ambient/
+    Ignored:    analysis/untracked_BAL_inflammation_10x_HTO_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BAL_inflammation_10x_HTO_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_QC_filtering_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x__LungCancer_10x_CMO_check_CMO_ADT_distribution.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_evaluate_doublet_calling_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_inspect_SampleOfOrigin_false_singlets.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_run_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_LungCancer_10x_CMO_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_LungCancer_10x_CMO_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_figure_05.Rmd
+    Ignored:    claude_logs/
+    Ignored:    code/TMP_notes.R
+    Ignored:    code/ambient_tools/
+    Ignored:    code/make_figures.R
+    Ignored:    code/useful_scripts/zenodo_export.R
+    Ignored:    output/.DS_Store
+    Ignored:    output/data/
+    Ignored:    output/data_zenodo/
+    Ignored:    output/figures/
+    Ignored:    output/package_refs/
+    Ignored:    output/results/.DS_Store
+    Ignored:    output/results/BAL_inflammation_10x/.DS_Store
+    Ignored:    output/results/BrainCortex_nuclei_10x/.DS_Store
+    Ignored:    output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/.DS_Store
+    Ignored:    output/results/LungCancer_10x/.DS_Store
+    Ignored:    output/results/LungCancer_10x/DoubletCallingPerformance/.DS_Store
+    Ignored:    output/results/Tonsils_10xFlex/.DS_Store
+    Ignored:    output/results/Tonsils_10xFlex/Engineered/.DS_Store
+    Ignored:    renv/
+    Ignored:    scp_file.txt
+
+Untracked files:
+    Untracked:  output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_TESTING_deMULTIplex2_correctAssignments_MCC.csv
+    Untracked:  output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_correctAssignments_MCC_qc_filtered_ambient.csv
+    Untracked:  output/results/LungCancer_10x/DoubletCallingPerformance/LungCancer_10x_correctAssignments_MCC_qc_filtered_ambient.csv
+
+Unstaged changes:
+    Modified:   .gitignore
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/figure_04.Rmd</code>) and HTML
+(<code>docs/figure_04.html</code>) files. If you’ve configured a remote
+Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/2638039c1e394f5614d3dd3498e69eeeb05fcb22/docs/figure_04.html" target="_blank">2638039</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-09
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/7e01a80ece169ba423e325b95b5af42fc22465c0/analysis/figure_04.Rmd" target="_blank">7e01a80</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-09
+</td>
+<td>
+wflow_publish(c("analysis/figure_04.Rmd",
+"analysis/supp_figure_04.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/4cfa89ec349257b7bcbacf9dd8cb3f4c024e62fa/docs/figure_04.html" target="_blank">4cfa89e</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/4683be9969287aeb65be9a93e17b6122568bbbfe/analysis/figure_04.Rmd" target="_blank">4683be9</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-06
+</td>
+<td>
+wflow_publish(c("analysis/figure_01.Rmd", "analysis/figure_03.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/7e87b35cb0a0cf187b2f8d188fa991abb6a0d054/docs/figure_04.html" target="_blank">7e87b35</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/d1afc6a1725c8401ba0ecab85c9457f3b5be75a1/analysis/figure_04.Rmd" target="_blank">d1afc6a</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+wflow_publish(c("analysis/figure_01.Rmd", "analysis/figure_03.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/1f0b137e14a575d739b4de30762a0d2376fb10da/docs/figure_04.html" target="_blank">1f0b137</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/d3aaaa366634f7a58e116d2bf72a1d0ed3027924/analysis/figure_04.Rmd" target="_blank">d3aaaa3</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+wflow_publish("analysis/figure_04.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/2a8dfa5c38f567e555d5c1df9b594f22cb4d059b/docs/figure_04.html" target="_blank">2a8dfa5</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/0415da4d5e4cfe9bd0d5226a4cb2413c4aee3fef/analysis/figure_04.Rmd" target="_blank">0415da4</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-19
+</td>
+<td>
+wflow_publish(c("analysis/figure_02.Rmd", "analysis/figure_04.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/99b99ba6a492e8ceffba3a74c60189b32da7a5bc/docs/figure_04.html" target="_blank">99b99ba</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-12
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/8444a8905382d279517c0735f65dbb89fb951dee/analysis/figure_04.Rmd" target="_blank">8444a89</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-12
+</td>
+<td>
+wflow_publish("analysis/figure_04.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/20f77a0568d22b1edb437d027e4ffa5614ceb90d/docs/figure_04.html" target="_blank">20f77a0</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/5f1e05fb958880e577f4b2443073b1dbbafb5ef2/analysis/figure_04.Rmd" target="_blank">5f1e05f</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-06
+</td>
+<td>
+wflow_publish("analysis/figure_04.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/8450c645c176a2745af33255ceb8ebad35dc3100/docs/figure_04.html" target="_blank">8450c64</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/33b8deb25a639778fd6ba996b9b8dd1c652c8fef/analysis/figure_04.Rmd" target="_blank">33b8deb</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-06
+</td>
+<td>
+wflow_publish("analysis/figure_04.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/319958004c656036a5e0c87898dc7372453bec49/docs/figure_04.html" target="_blank">3199580</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/b8126644609cdd41048dea57b7b63099f0b59562/analysis/figure_04.Rmd" target="_blank">b812664</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-06
+</td>
+<td>
+wflow_publish("analysis/figure_04.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/2e0bccc158d6b77343feb4d689a7d51067ea8703/docs/figure_04.html" target="_blank">2e0bccc</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-24
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/b8ddc436034c83e2d356970945bb84572d9eebc1/analysis/figure_04.Rmd" target="_blank">b8ddc43</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-24
+</td>
+<td>
+wflow_publish("analysis/figure_04.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/8c51d8c43b517c04efcb7ade0e711e2b07a4d2ea/docs/figure_04.html" target="_blank">8c51d8c</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-24
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/ddd745f24e7b9cbe06d1193f1a60229bd3d3a559/analysis/figure_04.Rmd" target="_blank">ddd745f</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-24
+</td>
+<td>
+wflow_publish("analysis/figure_04.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/246662560bf68dac6b9867aeb05b0dc0ff3b6ff8/docs/figure_04.html" target="_blank">2466625</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/96ec0e242885e3960a562af6ea7119115ce4a22d/analysis/figure_04.Rmd" target="_blank">96ec0e2</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+wflow_publish("analysis/figure_04.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/bb9bc202febfd6f2fb451150d8765c9a4ec6f427/docs/figure_04.html" target="_blank">bb9bc20</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/1d5d49ccb983b7eb8d10c740eefd4ba373416759/analysis/figure_04.Rmd" target="_blank">1d5d49c</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+wflow_publish("analysis/figure_04.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/ae56b93f76d22978b62979ad7bed99a7a1da8f3d/docs/figure_04.html" target="_blank">ae56b93</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/7639f5bf646df8d3a62e964690357002a85d81d8/analysis/figure_04.Rmd" target="_blank">7639f5b</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+<td>
+wflow_publish("analysis/figure_04.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/e8fc940243906fd78b7e38dfc1b78d9bee21c47e/docs/figure_04.html" target="_blank">e8fc940</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-14
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/a0892538a07641c925fd040432a7f105f38eccb3/analysis/figure_04.Rmd" target="_blank">a089253</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-14
+</td>
+<td>
+wflow_publish("analysis/figure_04.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/50597dbfcb4b6dc850d504b58d8613459fed3251/docs/figure_04.html" target="_blank">50597db</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/beacdab3db24f83da56aa1955b8f9470735d11dc/analysis/figure_04.Rmd" target="_blank">beacdab</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-01
+</td>
+<td>
+wflow_publish("analysis/figure_04.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="set-up" class="section level1">
+<h1>Set-up</h1>
+<p>This markdown makes the plots for Figure 4: Engineered doublets
+reveal key features of undetected doublets after ambient RNA
+correction.</p>
+<p>In this markdown, we perform an in-depth characterisation of the
+doublets that were mislabeled by <code>scDblFinder.</code></p>
+<div id="load-libraries" class="section level2">
+<h2>Load libraries</h2>
+<pre class="r"><code>suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+  library(patchwork)
+  library(rstatix)
+  library(yardstick)
+  library(caret)
+  library(ComplexHeatmap)
+  library(ggrepel)
+  library(png)
+})</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 4.5.2</code></pre>
+<pre class="r"><code>knitr::opts_chunk$set(fig.align = &quot;center&quot;)</code></pre>
+</div>
+<div id="load-data" class="section level2">
+<h2>Load data</h2>
+<pre class="r"><code>files &lt;- list.dirs(path = here(&quot;output/data/Tonsils_10xFlex/Engineered/&quot;), full.names = T, recursive = F)
+files &lt;- files[grepl(&quot;Tonsils_10xFlex_engineered_12k_0.15p&quot;, files)]</code></pre>
+<pre class="r"><code>run_read_data_all_cells &lt;- function(path){
+  #original metadata (from uncorrected)
+  meta &lt;- read_tsv(paste0(str_match(path, &quot;^(.*?\\d+s)(?:_.*)?$&quot;)[,2], &quot;/metadata.tsv&quot;), show_col_types = F)
+  #doublet calling results
+  doublet_file &lt;- list.files(path = paste0(path, &quot;/doublet_calls/&quot;),
+                             pattern = &quot;scDblFinder&quot;,
+                             full.names = T)
+  dbl_res &lt;- read_csv(doublet_file, show_col_types = F)
+  #combine, full_join to include everything
+  if (&quot;Barcode&quot; %in% names(meta)){
+    combined_res &lt;- full_join(dbl_res, meta)
+  } else {
+    combined_res &lt;- full_join(dbl_res, meta %&gt;% mutate(., Barcode=GEM_barcode))
+  }
+  
+  #metadata for corrected (if applicable)
+  meta_current &lt;- read_tsv(paste0(path, &quot;/metadata.tsv&quot;), show_col_types = F)
+  if (&quot;ncount_frac_removed&quot; %in% colnames(meta_current)){
+    ambient_tool_name &lt;- str_match(basename(path), &quot;\\d+s(?:_(.+))?$&quot;)[,2]
+    meta_current &lt;- meta_current %&gt;% select(., Barcode, ncount, nfeatures_rounded, nfeature_frac_removed, ncount_frac_removed)
+    colnames(meta_current)[2:5] &lt;- paste0(ambient_tool_name, &quot;_&quot;,colnames(meta_current)[2:5])
+    
+    combined_res &lt;- full_join(combined_res, meta_current)
+  }
+
+  #add metadata
+  if (is.na(str_match(basename(path), &quot;\\d+s(?:_(.+))?$&quot;)[,2])){
+    combined_res$ambient_tool &lt;- &quot;uncorrected&quot;
+  } else {
+    combined_res$ambient_tool &lt;- str_match(basename(path), &quot;\\d+s(?:_(.+))?$&quot;)[,2]
+  }
+  combined_res$batch &lt;- stringr::str_extract(basename(path), &quot;\\d+s(?=($|_))&quot;)
+
+  return(combined_res)
+}</code></pre>
+<p>Run for all.</p>
+<pre class="r"><code>list_results &lt;- lapply(files, run_read_data_all_cells) %&gt;% bind_rows()
+
+#replace NAs in doublet calling with &quot;Missing&quot;
+list_results$scDblFinder_DropletType[is.na(list_results$scDblFinder_DropletType)] &lt;- &quot;Missing&quot;</code></pre>
+</div>
+<div id="plotting-shortcuts" class="section level2">
+<h2>Plotting shortcuts</h2>
+<pre class="r"><code>plot_sizing &lt;- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = &quot;black&quot;),
+        plot.title = element_text(size = 22, , face = &quot;italic&quot;),
+         plot.subtitle= element_text(size = 18),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank()) 
+
+
+plot_sizing_keep_legend &lt;- theme_bw() +theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = &quot;black&quot;),
+        plot.title = element_text(size = 22, face = &quot;italic&quot;),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size=16))
+
+rotate_x &lt;- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 18))
+
+strip_fix &lt;- theme(strip.background = element_rect(fill = &quot;white&quot;),
+                   strip.text = element_text(size = 18))
+
+title_size &lt;- theme(plot.title = element_text(size = 22, face = &quot;italic&quot;))</code></pre>
+</div>
+<div id="colours" class="section level2">
+<h2>Colours</h2>
+<pre class="r"><code># method colours
+ambient_tools_colours &lt;- c( &quot;#AD8BC9&quot;, 
+                     &quot;#A8786E&quot;, &quot;#CDCC5D&quot;, &quot;#6DCCDA&quot;, &quot;#67BF5C&quot;
+                     , &quot;grey60&quot; ,&quot;#EB663B&quot; ,&quot;azure&quot;)
+
+names(ambient_tools_colours) &lt;- c(&quot;decontX&quot;, &quot;decontX_BG&quot;, &quot;soupX&quot;, &quot;CellBender&quot;, &quot;uncorrected&quot;, &quot;never detected&quot;, &quot;always detected&quot;, &quot;true singlet&quot;)
+
+#doublet/singlet colours
+doublet_colours &lt;- c(&quot;#2E91E5&quot;, &quot;#EB663B&quot;); names(doublet_colours) &lt;- c(&quot;singlet&quot;, &quot;doublet&quot;)</code></pre>
+</div>
+<div id="directory-names" class="section level2">
+<h2>Directory names</h2>
+<pre class="r"><code>save_dir &lt;- here(&quot;output/figures/v4&quot;)</code></pre>
+</div>
+</div>
+<div id="get-unique-droplets-for-batches" class="section level1">
+<h1>Get unique droplets for batches</h1>
+<div id="unique-doublets-across-batches" class="section level2">
+<h2>Unique doublets across batches</h2>
+<pre class="r"><code>list_doublet_barcodes &lt;- list_results %&gt;%
+  filter(., doublet_class == &quot;doublet&quot;) %&gt;%
+  split(., .$batch) %&gt;%
+  lapply(., function(IN) IN %&gt;% pull(Barcode))
+
+m_dist &lt;- make_comb_mat(list_doublet_barcodes)
+
+all_unique &lt;- comb_name(m_dist)[comb_size(m_dist) &gt; 1000]
+all_extracted_sets &lt;- sapply(all_unique, function(comb) {
+  extract_comb(m_dist, comb)
+}) %&gt;% Reduce(append, .)</code></pre>
+</div>
+<div id="unique-singlets-across-batches" class="section level2">
+<h2>Unique singlets across batches</h2>
+<pre class="r"><code>list_singlet_barcodes &lt;- list_results %&gt;%
+  filter(., doublet_class == &quot;singlet&quot;) %&gt;%
+  split(., .$batch) %&gt;%
+  lapply(., function(IN) IN %&gt;% pull(Barcode))
+
+m_dist &lt;- make_comb_mat(list_singlet_barcodes)
+
+all_unique &lt;- comb_name(m_dist)[comb_size(m_dist) &gt; 900]
+all_unique_singlets &lt;- sapply(all_unique, function(comb) {
+  extract_comb(m_dist, comb)
+}) %&gt;% Reduce(append, .)</code></pre>
+</div>
+</div>
+<div id="define-doublet-sets-of-interest" class="section level1">
+<h1>Define doublet sets of interest</h1>
+<p>First, lets remove any doublets and singlets that were present in
+more than 1 batch. We defined these sets in the previous sections.</p>
+<pre class="r"><code>meta_for_analysis &lt;- list_results %&gt;% 
+  filter(., Barcode %in% c(all_extracted_sets, all_unique_singlets))</code></pre>
+<p>This dataframe currently contains all the metadata information.</p>
+<div id="generally-missed-doublets-consensus-doublets-and-true-singlets"
+class="section level3">
+<h3>generally missed doublets, consensus doublets and true singlets</h3>
+<p>These are sets of doublets (and singlets) that are shared across all
+ambient correction tools:</p>
+<ul>
+<li><p>generally missed doublets (or missed doublets): doublets that are
+not identified in any of the settings, including uncorrected</p></li>
+<li><p>consensus doublets: doublets that are identified in ALL
+settings</p></li>
+<li><p>true singlets: ground true singlets</p></li>
+</ul>
+<pre class="r"><code>#CONSENSUS DOUBLETS
+list_consensus_doublets &lt;- lapply(meta_for_analysis %&gt;% split(., .$ambient_tool), function(entry){
+    entry %&gt;% 
+      filter(., doublet_class == &quot;doublet&quot; &amp; scDblFinder_DropletType == &quot;doublet&quot;) %&gt;% 
+      pull(Barcode)
+  })
+  
+true_doublets_all &lt;- Reduce(intersect,  list_consensus_doublets)
+
+#TRUE SINGLETS
+#we don&#39;t actually have to re-run this, this will be &#39;all_unique_singlets&#39;
+ 
+#get mislabeled doublets in all settings
+list_unidentifed_doublets &lt;- lapply(meta_for_analysis %&gt;% split(., .$ambient_tool), function(entry){
+    entry %&gt;% 
+      filter(., doublet_class == &quot;doublet&quot; &amp; scDblFinder_DropletType != &quot;doublet&quot;) %&gt;% 
+      pull(Barcode)
+  })
+
+
+#get correctly doublets in all settings
+list_corr_identified_doublets &lt;- lapply(meta_for_analysis %&gt;% split(., .$ambient_tool), function(entry){
+    entry %&gt;% 
+      filter(., doublet_class == &quot;doublet&quot; &amp; scDblFinder_DropletType == &quot;doublet&quot;) %&gt;% 
+      pull(Barcode)
+  })</code></pre>
+<p>Use Upset plot to visualise, but also to collect sets of
+doublets.</p>
+<pre class="r"><code>m_dist_doublet &lt;- make_comb_mat(list_unidentifed_doublets) 
+
+top_anno &lt;- HeatmapAnnotation(
+
+    &quot;Intersection size&quot; = anno_barplot(
+        comb_size(m_dist_doublet),
+        add_numbers = TRUE,
+        gp = gpar(fill = &quot;black&quot;),
+        numbers_gp = gpar(fontsize = 13),
+        numbers_rot = 90,
+        border = FALSE
+    ),
+    
+    annotation_height = unit.c(
+        unit(30, &quot;mm&quot;)   # barplot row
+    ),
+    
+    border = FALSE
+)
+
+UpSet(m_dist_doublet, comb_order = order(-comb_size(m_dist_doublet)), top_annotation = top_anno)
+grid.text(&quot;Mislabeled doublets - combinations&quot;, 
+          x = 0.5, 
+          y = 0.95, 
+          gp = gpar(fontsize = 20, fontface = &quot;bold&quot;))</code></pre>
+<p><img src="figure/figure_04.Rmd/unnamed-chunk-12-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
+Past versions of unnamed-chunk-12-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/1f0b137e14a575d739b4de30762a0d2376fb10da/docs/figure/figure_04.Rmd/unnamed-chunk-12-1.png" target="_blank">1f0b137</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/2a8dfa5c38f567e555d5c1df9b594f22cb4d059b/docs/figure/figure_04.Rmd/unnamed-chunk-12-1.png" target="_blank">2a8dfa5</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-19
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/99b99ba6a492e8ceffba3a74c60189b32da7a5bc/docs/figure/figure_04.Rmd/unnamed-chunk-12-1.png" target="_blank">99b99ba</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-12
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/319958004c656036a5e0c87898dc7372453bec49/docs/figure/figure_04.Rmd/unnamed-chunk-12-1.png" target="_blank">3199580</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/e8fc940243906fd78b7e38dfc1b78d9bee21c47e/docs/figure/figure_04.Rmd/unnamed-chunk-12-1.png" target="_blank">e8fc940</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Use this to get set of missed doublets.</p>
+<pre class="r"><code>missed_doublets &lt;- meta_for_analysis %&gt;% 
+  filter(., Barcode %in% extract_comb(m_dist_doublet, &quot;11111&quot;)) %&gt;% 
+  pull(Barcode)</code></pre>
+</div>
+<div id="sets-for-each-ambient-correction-tool---undetected"
+class="section level3">
+<h3>sets for each ambient correction tool - undetected</h3>
+<p>Next, we will define sets specifically for each ambient RNA
+correction tool. These will include all doublets missed by the tool,
+except the ones that are missed in all settings (as we assume they are
+missed because they are difficult to detect in general).</p>
+<pre class="r"><code>decontx_doublets &lt;- meta_for_analysis %&gt;% 
+  filter(., Barcode %in% setdiff(list_unidentifed_doublets$decontX, missed_doublets)) %&gt;% 
+  pull(Barcode)
+
+decontx_bg_doublets &lt;- meta_for_analysis %&gt;% 
+  filter(., Barcode %in% setdiff(list_unidentifed_doublets$decontX_BG, missed_doublets)) %&gt;% 
+  pull(Barcode)
+
+soupx_doublets &lt;- meta_for_analysis %&gt;% 
+  filter(., Barcode %in% setdiff(list_unidentifed_doublets$soupX, missed_doublets)) %&gt;% 
+  pull(Barcode)
+
+cellbender_doublets &lt;- meta_for_analysis %&gt;% 
+  filter(., Barcode %in% setdiff(list_unidentifed_doublets$CellBender, missed_doublets)) %&gt;% 
+  pull(Barcode)
+
+
+uncorrected_only_doublets &lt;- meta_for_analysis %&gt;% 
+  filter(., Barcode %in% setdiff(list_unidentifed_doublets$uncorrected, missed_doublets)) %&gt;% 
+  pull(Barcode)</code></pre>
+</div>
+<div id="sets-for-each-ambient-correction-tool---detected"
+class="section level3">
+<h3>sets for each ambient correction tool - detected</h3>
+<p>Similar to above, this will define sets specifically for each ambient
+RNA correction tool. These will include all doublets that are detected
+by the tool, except the ones that are always detected in all
+settings.</p>
+<pre class="r"><code>decontx_doublets_detected &lt;- meta_for_analysis %&gt;% 
+  filter(., Barcode %in% setdiff(list_corr_identified_doublets$decontX, true_doublets_all)) %&gt;% 
+  pull(Barcode)
+
+decontx_bg_doublets_detected &lt;- meta_for_analysis %&gt;% 
+  filter(., Barcode %in% setdiff(list_corr_identified_doublets$decontX_BG, true_doublets_all)) %&gt;% 
+  pull(Barcode)
+
+soupx_doublets_detected &lt;- meta_for_analysis %&gt;% 
+  filter(., Barcode %in% setdiff(list_corr_identified_doublets$soupX, true_doublets_all)) %&gt;% 
+  pull(Barcode)
+
+cellbender_doublets_detected &lt;- meta_for_analysis %&gt;% 
+  filter(., Barcode %in% setdiff(list_corr_identified_doublets$CellBender, true_doublets_all)) %&gt;% 
+  pull(Barcode)
+
+
+uncorrected_only_doublets_detected &lt;- meta_for_analysis %&gt;% 
+  filter(., Barcode %in% setdiff(list_corr_identified_doublets$uncorrected, true_doublets_all)) %&gt;% 
+  pull(Barcode)</code></pre>
+</div>
+<div id="generate-large-df-for-plotting" class="section level3">
+<h3>Generate large DF for plotting</h3>
+<p>We now need to combine everything into one big dataframe. As a
+doublet can be part of multiple sets, we will need to duplicate some
+entries.</p>
+<pre class="r"><code>list_doublets_meta &lt;- list()
+list_doublets_meta[[1]] &lt;- meta_for_analysis %&gt;% 
+  filter(.,GEM_barcode %in% cellbender_doublets) %&gt;% 
+  mutate(., status = &quot;CellBender undetected&quot;)
+
+list_doublets_meta[[2]] &lt;- meta_for_analysis %&gt;% 
+  filter(.,GEM_barcode %in% cellbender_doublets_detected) %&gt;% 
+  mutate(., status = &quot;CellBender detected&quot;)
+
+list_doublets_meta[[3]] &lt;- meta_for_analysis %&gt;% 
+  filter(.,GEM_barcode %in% decontx_doublets) %&gt;% 
+  mutate(., status = &quot;decontX undetected&quot;)
+
+list_doublets_meta[[4]] &lt;- meta_for_analysis %&gt;% 
+  filter(.,GEM_barcode %in% decontx_doublets_detected) %&gt;% 
+  mutate(., status = &quot;decontX detected&quot;)
+
+list_doublets_meta[[5]] &lt;- meta_for_analysis %&gt;% 
+  filter(.,GEM_barcode %in% decontx_bg_doublets) %&gt;% 
+  mutate(., status = &quot;decontX_BG undetected&quot;)
+
+list_doublets_meta[[6]] &lt;- meta_for_analysis %&gt;% 
+  filter(.,GEM_barcode %in% decontx_bg_doublets_detected) %&gt;% 
+  mutate(., status = &quot;decontX_BG detected&quot;)
+
+list_doublets_meta[[7]] &lt;- meta_for_analysis %&gt;% 
+  filter(.,GEM_barcode %in% soupx_doublets) %&gt;% 
+  mutate(., status = &quot;soupX undetected&quot;)
+
+list_doublets_meta[[8]] &lt;- meta_for_analysis %&gt;% 
+  filter(.,GEM_barcode %in% soupx_doublets_detected) %&gt;% 
+  mutate(., status = &quot;soupX detected&quot;)
+
+list_doublets_meta[[9]] &lt;- meta_for_analysis %&gt;% 
+  filter(.,GEM_barcode %in% uncorrected_only_doublets) %&gt;% 
+  mutate(., status = &quot;uncorrected undetected&quot;)
+
+list_doublets_meta[[10]] &lt;- meta_for_analysis %&gt;% 
+  filter(.,GEM_barcode %in% uncorrected_only_doublets_detected) %&gt;% 
+  mutate(., status = &quot;uncorrected detected&quot;)
+
+
+list_doublets_meta[[11]] &lt;- meta_for_analysis %&gt;%
+  mutate(., status = case_when( doublet_class == &quot;singlet&quot; ~ &quot;true singlet&quot;,
+                                GEM_barcode %in% missed_doublets ~ &quot;never detected&quot;, 
+                                GEM_barcode %in% true_doublets_all ~ &quot;always detected&quot;, 
+                                TRUE ~ &quot;remove&quot;)) %&gt;% 
+  filter(., status != &quot;remove&quot;)
+
+
+meta_total &lt;- bind_rows(list_doublets_meta) %&gt;% 
+  mutate(status = factor(status,levels = c(&quot;uncorrected undetected&quot;, &quot;uncorrected detected&quot;,
+                                               &quot;CellBender undetected&quot;, &quot;CellBender detected&quot;,
+                                               &quot;soupX undetected&quot;, &quot;soupX detected&quot;, 
+                                               &quot;decontX undetected&quot;, &quot;decontX detected&quot;,
+                                               &quot;decontX_BG undetected&quot;, &quot;decontX_BG detected&quot;,
+                                               &quot;always detected&quot;, &quot;never detected&quot;, &quot;true singlet&quot;)))</code></pre>
+<pre class="r"><code>table(meta_total$status , meta_total$ambient_tool )</code></pre>
+<pre><code>                        
+                         CellBender decontX decontX_BG soupX uncorrected
+  uncorrected undetected        342     342        342   342         342
+  uncorrected detected         2358    2358       2358  2358        2358
+  CellBender undetected         390     390        390   390         390
+  CellBender detected          2310    2310       2310  2310        2310
+  soupX undetected              496     496        496   496         496
+  soupX detected               2204    2204       2204  2204        2204
+  decontX undetected           2251    2251       2251  2251        2251
+  decontX detected              449     449        449   449         449
+  decontX_BG undetected        2349    2349       2349  2349        2349
+  decontX_BG detected           351     351        351   351         351
+  always detected              1663    1663       1663  1663        1663
+  never detected                809     809        809   809         809
+  true singlet                 5085    5085       5085  5085        5085</code></pre>
+<p>Just to illustrate that the dataframe contains duplication of
+information, which is why we sometimes need to subset when plotting.</p>
+</div>
+</div>
+<div id="make-plots" class="section level1">
+<h1>Make plots</h1>
+<pre class="r"><code>list_main &lt;- list()</code></pre>
+<div id="stacked-barplot-overview" class="section level2">
+<h2>Stacked barplot overview</h2>
+<p>Shows the proportion missed per setting.</p>
+<pre class="r"><code>#make boxplot df for plotting 
+special &lt;- meta_total %&gt;% 
+  filter(., ambient_tool == &quot;uncorrected&quot;) %&gt;% #we have entries for all 4 so to make sure we only plot once
+  dplyr::count(status)  %&gt;% 
+  filter(grepl(c(&quot;never detected|always detected&quot;), status))
+
+main_counts    &lt;- meta_total %&gt;%
+  filter(., ambient_tool == &quot;uncorrected&quot;) %&gt;% #we have entries for all 4 so to make sure we only plot once
+  dplyr::count(status)  %&gt;%
+  filter(!grepl(c(&quot;never detected|always detected|true singlet&quot;), status)) %&gt;% 
+  mutate(., ambient_tool = gsub(&quot; .*&quot;, &quot;&quot;, status))
+
+result &lt;- map_dfr(main_counts$ambient_tool, function(s) {
+  bind_rows(
+    main_counts %&gt;% filter(ambient_tool == s) %&gt;% select(-ambient_tool),
+    special
+  ) %&gt;%
+    mutate(tool = s, .before = 1)
+})  %&gt;% unique() %&gt;% 
+  mutate(.,  tool = factor(tool, levels = c(&quot;uncorrected&quot;, &quot;CellBender&quot;, &quot;soupX&quot;, &quot;decontX&quot;, &quot;decontX_BG&quot;)),
+             status = factor(status, levels = c(&quot;uncorrected undetected&quot;, &quot;uncorrected detected&quot;,
+                                               &quot;CellBender undetected&quot;, &quot;CellBender detected&quot;,
+                                               &quot;soupX undetected&quot;, &quot;soupX detected&quot;,
+                                               &quot;decontX undetected&quot;, &quot;decontX detected&quot;,
+                                               &quot;decontX_BG undetected&quot;, &quot;decontX_BG detected&quot;,
+                                               &quot;always detected&quot;, &quot;never detected&quot;)))
+
+
+tool_fill_colours &lt;- c(&quot;CellBender undetected&quot;  = &quot;#6DCCDA&quot;,
+                       &quot;CellBender detected&quot;    = &quot;#6DCCDA&quot;,
+                       &quot;soupX undetected&quot;       = &quot;#CDCC5D&quot;,
+                       &quot;soupX detected&quot;         = &quot;#CDCC5D&quot;,
+                       &quot;decontX undetected&quot;     = &quot;#AD8BC9&quot;,
+                       &quot;decontX detected&quot;       = &quot;#AD8BC9&quot;,
+                       &quot;decontX_BG undetected&quot;  = &quot;#A8786E&quot;,
+                       &quot;decontX_BG detected&quot;    = &quot;#A8786E&quot;,
+                       &quot;uncorrected undetected&quot; = &quot;#67BF5C&quot;,
+                       &quot;uncorrected detected&quot;   = &quot;#67BF5C&quot;,
+                       &quot;never detected&quot;         = &quot;grey60&quot;,
+                       &quot;always detected&quot;        = &quot;#EB663B&quot;)
+
+list_main$stacked_barplot_overview &lt;- result %&gt;%
+  mutate(alpha_group = ifelse(grepl(&quot; detected$&quot;, as.character(status)) &amp;
+                              !grepl(&quot;never|always&quot;, as.character(status)),
+                              &quot;detected&quot;, &quot;full&quot;)) %&gt;%
+  ggplot(., aes(x=tool, y=n, fill=status, alpha=alpha_group)) +
+  geom_bar(position = &quot;stack&quot;, stat=&quot;identity&quot;) +
+  geom_text(position=position_stack(vjust=0.5),
+            aes(label=ifelse(grepl(&quot;undetected&quot;, status) &amp; n &gt; 0, n, NA)),
+            fontface=&quot;bold&quot;, alpha=1, size=5, na.rm=TRUE) +
+  plot_sizing +
+  rotate_x +
+  scale_fill_manual(
+    values = tool_fill_colours,
+    breaks = c(&quot;never detected&quot;, &quot;always detected&quot;),
+    name = &quot;&quot;) +
+  scale_alpha_manual(
+    values = c(&quot;detected&quot; = 0.5, &quot;full&quot; = 1),
+    breaks = c(&quot;full&quot;, &quot;detected&quot;),
+    labels = c(&quot;full&quot; = &quot;undetected&quot;, &quot;detected&quot; = &quot;detected&quot;),
+    name   = &quot;&quot;,
+    guide  = guide_legend(override.aes = list(fill = &quot;black&quot;, alpha = c(1, 0.15)))) +
+  ylab(&quot;# doublets&quot;) + xlab(&quot;&quot;) +
+  ggtitle(&quot;Doublets overview&quot;) +
+  theme(legend.position = &quot;right&quot;,
+        legend.justification = c(0, 0.7),
+        panel.grid = element_blank())
+
+
+list_main$stacked_barplot_overview</code></pre>
+<p><img src="figure/figure_04.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/1f0b137e14a575d739b4de30762a0d2376fb10da/docs/figure/figure_04.Rmd/unnamed-chunk-20-1.png" target="_blank">1f0b137</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/e8fc940243906fd78b7e38dfc1b78d9bee21c47e/docs/figure/figure_04.Rmd/unnamed-chunk-20-1.png" target="_blank">e8fc940</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-14
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/50597dbfcb4b6dc850d504b58d8613459fed3251/docs/figure/figure_04.Rmd/unnamed-chunk-20-1.png" target="_blank">50597db</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>As we’ll only need the undetected moving forward, lets make a DF with
+just the undetected.</p>
+<pre class="r"><code>meta_total_undetected &lt;- meta_total %&gt;% 
+  filter(grepl(&quot;undetected|never|always|true&quot;, status)) %&gt;% 
+  mutate(., status_plot = factor(case_when(status == &quot;CellBender undetected&quot; ~ &quot;CellBender&quot;,
+                                    status == &quot;decontX undetected&quot;~ &quot;decontX&quot;,
+                                    status == &quot;decontX_BG undetected&quot;~ &quot;decontX_BG&quot;,
+                                    status == &quot;soupX undetected&quot;~ &quot;soupX&quot;,
+                                    status == &quot;uncorrected undetected&quot;~ &quot;uncorrected&quot;,
+                                    TRUE ~ status),
+                                 levels = c(&quot;uncorrected&quot;, &quot;CellBender&quot;, &quot;soupX&quot;, &quot;decontX&quot;, &quot;decontX_BG&quot;,
+                                            &quot;never detected&quot;, &quot;always detected&quot;, &quot;true singlet&quot;)))</code></pre>
+</div>
+<div id="cosine-similarity" class="section level2">
+<h2>Cosine similarity</h2>
+<pre class="r"><code>means &lt;- meta_total_undetected %&gt;% 
+  filter(., ambient_tool== &quot;uncorrected&quot; &amp; status != &quot;true singlet&quot;) %&gt;% 
+  group_by(status_plot) %&gt;% 
+  summarise(median_cosine = median(cosine_similarity))
+
+list_main$cosine &lt;- meta_total_undetected %&gt;% 
+  filter(., ambient_tool== &quot;uncorrected&quot; &amp; status != &quot;true singlet&quot;) %&gt;% 
+    ggplot(.)+
+    geom_boxplot(aes(x=status_plot, y=cosine_similarity, fill=status_plot), outliers = FALSE)+
+    geom_jitter(aes(x=status_plot, y=cosine_similarity),size=0.2, alpha=0.2, width = 0.25)+
+    geom_label(data=means, aes(x=status_plot, y=median_cosine, label = round(median_cosine, 2))) +
+    plot_sizing + rotate_x + theme(legend.position = &quot;none&quot;) +
+    scale_fill_manual(values = ambient_tools_colours) + xlab(&quot;&quot;) + ylab(&quot;cosine similarity&quot;) + ggtitle(&quot;Cell type similarity&quot;)
+
+list_main$cosine_QR &lt;- meta_total_undetected %&gt;% 
+  filter(., ambient_tool== &quot;uncorrected&quot; &amp; status != &quot;true singlet&quot;) %&gt;% #we have entries for all 4 so to make sure we only plot once
+    ggplot(.)+
+    ggbeeswarm::geom_quasirandom(aes(x=status_plot, y=cosine_similarity,color = status_plot), size = 1, alpha = 0.8)+
+    geom_label(data=means, aes(x=status_plot, y=median_cosine, label = round(median_cosine, 2))) +
+    plot_sizing + rotate_x + theme(legend.position = &quot;none&quot;) +
+    scale_colour_manual(values = ambient_tools_colours) + xlab(&quot;&quot;) + ylab(&quot;cosine similarity&quot;) + ggtitle(&quot;Cell type similarity&quot;)
+
+list_main$cosine  + list_main$cosine_QR</code></pre>
+<p><img src="figure/figure_04.Rmd/unnamed-chunk-22-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-22-1">
+Past versions of unnamed-chunk-22-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-22-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/1f0b137e14a575d739b4de30762a0d2376fb10da/docs/figure/figure_04.Rmd/unnamed-chunk-22-1.png" target="_blank">1f0b137</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/e8fc940243906fd78b7e38dfc1b78d9bee21c47e/docs/figure/figure_04.Rmd/unnamed-chunk-22-1.png" target="_blank">e8fc940</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-14
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/50597dbfcb4b6dc850d504b58d8613459fed3251/docs/figure/figure_04.Rmd/unnamed-chunk-22-1.png" target="_blank">50597db</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>means %&gt;% mutate(., status_plot = gsub(&quot;\nn=*.*&quot;, &quot;&quot;, status_plot)) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">status_plot</th>
+<th align="right">median_cosine</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">uncorrected</td>
+<td align="right">0.4438470</td>
+</tr>
+<tr class="even">
+<td align="left">CellBender</td>
+<td align="right">0.3961185</td>
+</tr>
+<tr class="odd">
+<td align="left">soupX</td>
+<td align="right">0.3819288</td>
+</tr>
+<tr class="even">
+<td align="left">decontX</td>
+<td align="right">-0.1008025</td>
+</tr>
+<tr class="odd">
+<td align="left">decontX_BG</td>
+<td align="right">-0.1034540</td>
+</tr>
+<tr class="even">
+<td align="left">never detected</td>
+<td align="right">0.4460003</td>
+</tr>
+<tr class="odd">
+<td align="left">always detected</td>
+<td align="right">-0.2400641</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="library-size-before-correction" class="section level2">
+<h2>Library size before correction</h2>
+<pre class="r"><code># for supp
+means &lt;- meta_total_undetected %&gt;% 
+  filter(., ambient_tool== &quot;uncorrected&quot;) %&gt;% 
+    group_by(status_plot) %&gt;% 
+    summarise(median_ncount_raw = median(ncount_raw))
+  
+list_main$lib_size_uc &lt;- meta_total_undetected %&gt;% 
+    filter(., ambient_tool== &quot;uncorrected&quot;) %&gt;% 
+    ggplot(.)+
+    geom_boxplot(aes(x=status_plot, y=log10(ncount_raw), fill=status_plot), outliers = FALSE)+
+    geom_jitter(aes(x=status_plot, y=log10(ncount_raw)),size=0.2, alpha=0.2, width = 0.25)+
+    geom_label(data=means, aes(x=status_plot, y=log10(median_ncount_raw), label = round(median_ncount_raw))) +
+    plot_sizing + rotate_x + theme(legend.position = &quot;none&quot;) +
+    scale_fill_manual(values = ambient_tools_colours) + xlab(&quot;&quot;) + ylab(&quot;log10(library size)&quot;) + ggtitle(&quot;Library size prior to correction&quot;)
+
+list_main$lib_size_uc_QR &lt;- meta_total_undetected %&gt;% 
+    filter(., ambient_tool== &quot;uncorrected&quot;) %&gt;% 
+    ggplot(.)+
+    ggbeeswarm::geom_quasirandom(aes(x=status_plot, y=log10(ncount_raw),color = status_plot), size = 1, alpha = 0.8)+
+    geom_label(data=means, aes(x=status_plot, y=log10(median_ncount_raw), label = round(median_ncount_raw))) +
+    plot_sizing + rotate_x + theme(legend.position = &quot;none&quot;) +
+    scale_colour_manual(values = ambient_tools_colours) + xlab(&quot;&quot;) + ylab(&quot;log10(library size)&quot;) + ggtitle(&quot;Library size prior to correction&quot;)
+
+list_main$lib_size_uc + list_main$lib_size_uc_QR</code></pre>
+<p><img src="figure/figure_04.Rmd/unnamed-chunk-24-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/1f0b137e14a575d739b4de30762a0d2376fb10da/docs/figure/figure_04.Rmd/unnamed-chunk-24-1.png" target="_blank">1f0b137</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/e8fc940243906fd78b7e38dfc1b78d9bee21c47e/docs/figure/figure_04.Rmd/unnamed-chunk-24-1.png" target="_blank">e8fc940</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-14
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/50597dbfcb4b6dc850d504b58d8613459fed3251/docs/figure/figure_04.Rmd/unnamed-chunk-24-1.png" target="_blank">50597db</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>means %&gt;% mutate(., status_plot = gsub(&quot;\nn=*.*&quot;, &quot;&quot;, status_plot)) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">status_plot</th>
+<th align="right">median_ncount_raw</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">uncorrected</td>
+<td align="right">4636</td>
+</tr>
+<tr class="even">
+<td align="left">CellBender</td>
+<td align="right">4749</td>
+</tr>
+<tr class="odd">
+<td align="left">soupX</td>
+<td align="right">4795</td>
+</tr>
+<tr class="even">
+<td align="left">decontX</td>
+<td align="right">6431</td>
+</tr>
+<tr class="odd">
+<td align="left">decontX_BG</td>
+<td align="right">6554</td>
+</tr>
+<tr class="even">
+<td align="left">never detected</td>
+<td align="right">4004</td>
+</tr>
+<tr class="odd">
+<td align="left">always detected</td>
+<td align="right">4801</td>
+</tr>
+<tr class="even">
+<td align="left">true singlet</td>
+<td align="right">2456</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="library-size-ratio" class="section level2">
+<h2>Library size ratio</h2>
+<pre class="r"><code>means &lt;- meta_total_undetected %&gt;% 
+  filter(., status != &quot;true singlet&quot; &amp; ambient_tool== &quot;uncorrected&quot;) %&gt;% 
+  group_by(Barcode) %&gt;% 
+  mutate(., ratio = max(CT1_ncounts, CT2_ncounts)/min(CT1_ncounts, CT2_ncounts)) %&gt;% 
+  group_by(status_plot) %&gt;% 
+  summarise(., median_ratio = median(ratio))
+
+list_main$ratio_plot &lt;- meta_total_undetected %&gt;% 
+    filter(., status != &quot;true singlet&quot;&amp; ambient_tool== &quot;uncorrected&quot;) %&gt;% 
+    group_by(Barcode) %&gt;% 
+    mutate(., ratio = max(CT1_ncounts, CT2_ncounts)/min(CT1_ncounts, CT2_ncounts)) %&gt;% 
+    ggplot(.)+
+    geom_boxplot(aes(x=status_plot, y=log(ratio), fill=status_plot), outliers = FALSE)+
+    geom_jitter(aes(x=status_plot, y=log(ratio)),size=0.2, alpha=0.1, width = 0.25)+
+    geom_label(data=means, aes(x=status_plot, y=log(median_ratio), label = round(log(median_ratio),2))) +
+    plot_sizing + rotate_x + theme(legend.position = &quot;none&quot;) +
+    scale_fill_manual(values = ambient_tools_colours) + xlab(&quot;&quot;) + ylab(&quot;log(ratio)&quot;) + ggtitle(&quot;library size ratio&quot;)
+
+list_main$ratio_plot_QR &lt;- meta_total_undetected %&gt;% 
+    filter(., status != &quot;true singlet&quot;&amp; ambient_tool== &quot;uncorrected&quot;) %&gt;% 
+    group_by(Barcode) %&gt;% 
+    mutate(., ratio = max(CT1_ncounts, CT2_ncounts)/min(CT1_ncounts, CT2_ncounts)) %&gt;% 
+    ggplot(.)+
+    ggbeeswarm::geom_quasirandom(aes(x=status_plot, y=log(ratio),color = status_plot), size = 1, alpha = 0.8)+
+    geom_label(data=means, aes(x=status_plot, y=log(median_ratio), label = round(log(median_ratio),2))) +
+    plot_sizing + rotate_x + theme(legend.position = &quot;none&quot;) +
+    scale_colour_manual(values = ambient_tools_colours) + xlab(&quot;&quot;) + ylab(&quot;log(ratio)&quot;) + ggtitle(&quot;library size ratio&quot;)
+
+
+list_main$ratio_plot + list_main$ratio_plot_QR</code></pre>
+<p><img src="figure/figure_04.Rmd/unnamed-chunk-26-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-26-1">
+Past versions of unnamed-chunk-26-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-26-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/1f0b137e14a575d739b4de30762a0d2376fb10da/docs/figure/figure_04.Rmd/unnamed-chunk-26-1.png" target="_blank">1f0b137</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/e8fc940243906fd78b7e38dfc1b78d9bee21c47e/docs/figure/figure_04.Rmd/unnamed-chunk-26-1.png" target="_blank">e8fc940</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-14
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/50597dbfcb4b6dc850d504b58d8613459fed3251/docs/figure/figure_04.Rmd/unnamed-chunk-26-1.png" target="_blank">50597db</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>means %&gt;% mutate(., status_plot = gsub(&quot;\nn=*.*&quot;, &quot;&quot;, status_plot)) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">status_plot</th>
+<th align="right">median_ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">uncorrected</td>
+<td align="right">1.676202</td>
+</tr>
+<tr class="even">
+<td align="left">CellBender</td>
+<td align="right">1.731806</td>
+</tr>
+<tr class="odd">
+<td align="left">soupX</td>
+<td align="right">1.792399</td>
+</tr>
+<tr class="even">
+<td align="left">decontX</td>
+<td align="right">2.264640</td>
+</tr>
+<tr class="odd">
+<td align="left">decontX_BG</td>
+<td align="right">2.269695</td>
+</tr>
+<tr class="even">
+<td align="left">never detected</td>
+<td align="right">1.767391</td>
+</tr>
+<tr class="odd">
+<td align="left">always detected</td>
+<td align="right">1.446324</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="proportion-of-counts-removed" class="section level2">
+<h2>Proportion of counts removed</h2>
+<p>Get ready for plotting, rearrange dataframe.</p>
+<pre class="r"><code>post &lt;- meta_total_undetected %&gt;% 
+  select(., ends_with(&quot;ncount_frac_removed&quot;), status_plot) %&gt;% 
+  pivot_longer(cols=ends_with(&quot;ncount_frac_removed&quot;), names_to = &quot;tool&quot;, values_to = &quot;prop_removed&quot;) %&gt;% 
+  mutate(., tool = case_when(tool == &quot;decontX_ncount_frac_removed&quot; ~ &quot;decontX&quot;,
+                             tool == &quot;decontX_BG_ncount_frac_removed&quot; ~ &quot;decontX_BG&quot;,
+                             tool == &quot;soupX_ncount_frac_removed&quot; ~ &quot;soupX&quot;,
+                             tool == &quot;CellBender_ncount_frac_removed&quot; ~ &quot;CellBender&quot;))
+
+means &lt;- post %&gt;% 
+  group_by(status_plot, tool) %&gt;% 
+  summarise(median_removed = median(prop_removed, na.rm = T))</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;status_plot&#39;. You can override using the
+`.groups` argument.</code></pre>
+<p>Show means.</p>
+<pre class="r"><code>means %&gt;% mutate(., status_plot = gsub(&quot;\nn=*.*&quot;, &quot;&quot;, status_plot)) %&gt;% knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">status_plot</th>
+<th align="left">tool</th>
+<th align="right">median_removed</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">uncorrected</td>
+<td align="left">CellBender</td>
+<td align="right">0.0008666</td>
+</tr>
+<tr class="even">
+<td align="left">uncorrected</td>
+<td align="left">decontX</td>
+<td align="right">0.0265783</td>
+</tr>
+<tr class="odd">
+<td align="left">uncorrected</td>
+<td align="left">decontX_BG</td>
+<td align="right">0.0465749</td>
+</tr>
+<tr class="even">
+<td align="left">uncorrected</td>
+<td align="left">soupX</td>
+<td align="right">0.0243499</td>
+</tr>
+<tr class="odd">
+<td align="left">CellBender</td>
+<td align="left">CellBender</td>
+<td align="right">0.0009605</td>
+</tr>
+<tr class="even">
+<td align="left">CellBender</td>
+<td align="left">decontX</td>
+<td align="right">0.0394247</td>
+</tr>
+<tr class="odd">
+<td align="left">CellBender</td>
+<td align="left">decontX_BG</td>
+<td align="right">0.0731722</td>
+</tr>
+<tr class="even">
+<td align="left">CellBender</td>
+<td align="left">soupX</td>
+<td align="right">0.0249232</td>
+</tr>
+<tr class="odd">
+<td align="left">soupX</td>
+<td align="left">CellBender</td>
+<td align="right">0.0008964</td>
+</tr>
+<tr class="even">
+<td align="left">soupX</td>
+<td align="left">decontX</td>
+<td align="right">0.0451962</td>
+</tr>
+<tr class="odd">
+<td align="left">soupX</td>
+<td align="left">decontX_BG</td>
+<td align="right">0.0890174</td>
+</tr>
+<tr class="even">
+<td align="left">soupX</td>
+<td align="left">soupX</td>
+<td align="right">0.0257170</td>
+</tr>
+<tr class="odd">
+<td align="left">decontX</td>
+<td align="left">CellBender</td>
+<td align="right">0.0009542</td>
+</tr>
+<tr class="even">
+<td align="left">decontX</td>
+<td align="left">decontX</td>
+<td align="right">0.2707276</td>
+</tr>
+<tr class="odd">
+<td align="left">decontX</td>
+<td align="left">decontX_BG</td>
+<td align="right">0.5355817</td>
+</tr>
+<tr class="even">
+<td align="left">decontX</td>
+<td align="left">soupX</td>
+<td align="right">0.0213809</td>
+</tr>
+<tr class="odd">
+<td align="left">decontX_BG</td>
+<td align="left">CellBender</td>
+<td align="right">0.0009261</td>
+</tr>
+<tr class="even">
+<td align="left">decontX_BG</td>
+<td align="left">decontX</td>
+<td align="right">0.2676872</td>
+</tr>
+<tr class="odd">
+<td align="left">decontX_BG</td>
+<td align="left">decontX_BG</td>
+<td align="right">0.5334604</td>
+</tr>
+<tr class="even">
+<td align="left">decontX_BG</td>
+<td align="left">soupX</td>
+<td align="right">0.0214467</td>
+</tr>
+<tr class="odd">
+<td align="left">never detected</td>
+<td align="left">CellBender</td>
+<td align="right">0.0012634</td>
+</tr>
+<tr class="even">
+<td align="left">never detected</td>
+<td align="left">decontX</td>
+<td align="right">0.0332628</td>
+</tr>
+<tr class="odd">
+<td align="left">never detected</td>
+<td align="left">decontX_BG</td>
+<td align="right">0.0584074</td>
+</tr>
+<tr class="even">
+<td align="left">never detected</td>
+<td align="left">soupX</td>
+<td align="right">0.0226335</td>
+</tr>
+<tr class="odd">
+<td align="left">always detected</td>
+<td align="left">CellBender</td>
+<td align="right">0.0009569</td>
+</tr>
+<tr class="even">
+<td align="left">always detected</td>
+<td align="left">decontX</td>
+<td align="right">0.0459210</td>
+</tr>
+<tr class="odd">
+<td align="left">always detected</td>
+<td align="left">decontX_BG</td>
+<td align="right">0.0656636</td>
+</tr>
+<tr class="even">
+<td align="left">always detected</td>
+<td align="left">soupX</td>
+<td align="right">0.0202977</td>
+</tr>
+<tr class="odd">
+<td align="left">true singlet</td>
+<td align="left">CellBender</td>
+<td align="right">0.0052383</td>
+</tr>
+<tr class="even">
+<td align="left">true singlet</td>
+<td align="left">decontX</td>
+<td align="right">0.0270136</td>
+</tr>
+<tr class="odd">
+<td align="left">true singlet</td>
+<td align="left">decontX_BG</td>
+<td align="right">0.0462882</td>
+</tr>
+<tr class="even">
+<td align="left">true singlet</td>
+<td align="left">soupX</td>
+<td align="right">0.0154718</td>
+</tr>
+</tbody>
+</table>
+<p>Overview that shows everything:</p>
+<pre class="r"><code>post %&gt;%
+  ggplot(.)+
+  geom_boxplot(aes(x=status_plot, y=prop_removed, fill=status_plot), outliers = FALSE) +
+  geom_jitter(aes(x=status_plot, y=prop_removed), size=0.3, alpha=0.2, width = 0.2) +
+  plot_sizing + rotate_x +
+  geom_label(data=means, aes(x=status_plot, y=1.2, label = round(median_removed,2), fill=status_plot)) +
+  facet_wrap(~tool) +
+  scale_fill_manual(values = ambient_tools_colours) + xlab(&quot;&quot;) + ylab(&quot;proportion removed&quot;) + ggtitle(&quot;Proportion of counts removed during correction&quot;) +strip_fix + theme(legend.position = &quot;none&quot;)</code></pre>
+<pre><code>Warning: Removed 214160 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+<pre><code>Warning: Removed 214160 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+<p><img src="figure/figure_04.Rmd/unnamed-chunk-30-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-30-1">
+Past versions of unnamed-chunk-30-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-30-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/1f0b137e14a575d739b4de30762a0d2376fb10da/docs/figure/figure_04.Rmd/unnamed-chunk-30-1.png" target="_blank">1f0b137</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/99b99ba6a492e8ceffba3a74c60189b32da7a5bc/docs/figure/figure_04.Rmd/unnamed-chunk-30-1.png" target="_blank">99b99ba</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-12
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/319958004c656036a5e0c87898dc7372453bec49/docs/figure/figure_04.Rmd/unnamed-chunk-30-1.png" target="_blank">3199580</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/246662560bf68dac6b9867aeb05b0dc0ff3b6ff8/docs/figure/figure_04.Rmd/unnamed-chunk-30-1.png" target="_blank">2466625</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/ae56b93f76d22978b62979ad7bed99a7a1da8f3d/docs/figure/figure_04.Rmd/unnamed-chunk-30-1.png" target="_blank">ae56b93</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/e8fc940243906fd78b7e38dfc1b78d9bee21c47e/docs/figure/figure_04.Rmd/unnamed-chunk-30-1.png" target="_blank">e8fc940</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Make plots with only sets of interest.</p>
+<pre class="r"><code>factor_order &lt;- c(&quot;always detected&quot;, &quot;never detected&quot;, &quot;true singlet&quot;)
+
+p_cellbender &lt;-  post %&gt;%
+  filter(., status_plot %in% c(factor_order, &quot;CellBender&quot;) &amp; tool == &quot;CellBender&quot;) %&gt;%
+  mutate(status_plot = factor(status_plot, levels = c(&quot;CellBender&quot;, factor_order))) %&gt;%
+  ggplot(.)+
+  geom_boxplot(aes(x=status_plot, y=prop_removed, fill=status_plot), outliers = FALSE) +
+  geom_jitter(aes(x=status_plot, y=prop_removed), size=0.3, alpha=0.2, width = 0.2) +
+  plot_sizing + rotate_x +
+    facet_wrap(~tool) +
+  scale_fill_manual(values = ambient_tools_colours) +
+  scale_x_discrete(labels = c(&quot;CellBender&quot; = &quot;undetected&quot;)) +
+  xlab(&quot;&quot;) + ylab(&quot;proportion removed&quot;)  +strip_fix+ theme(legend.position = &quot;none&quot;) 
+
+p_decontx_bg &lt;-  post %&gt;%
+  filter(., status_plot %in% c(factor_order, &quot;decontX_BG&quot;) &amp; tool == &quot;decontX_BG&quot;) %&gt;%
+  mutate(status_plot = factor(status_plot, levels = c(&quot;decontX_BG&quot;, factor_order))) %&gt;%
+  ggplot(.)+
+  geom_boxplot(aes(x=status_plot, y=prop_removed, fill=status_plot), outliers = FALSE) +
+  geom_jitter(aes(x=status_plot, y = prop_removed), size=0.3, alpha=0.2, width = 0.2) +
+  plot_sizing + rotate_x +
+    facet_wrap(~tool) +
+  scale_fill_manual(values = ambient_tools_colours) +
+  scale_x_discrete(labels = c(&quot;decontX_BG&quot; = &quot;undetected&quot;)) +
+  xlab(&quot;&quot;) + ylab(&quot;proportion removed&quot;)  +strip_fix+ theme(legend.position = &quot;none&quot;)
+
+p_decontx &lt;-  post %&gt;%
+  filter(., status_plot %in% c(factor_order, &quot;decontX&quot;) &amp; tool == &quot;decontX&quot;) %&gt;%
+  mutate(status_plot = factor(status_plot, levels = c(&quot;decontX&quot;, factor_order))) %&gt;%
+  ggplot(.)+
+  geom_boxplot(aes(x=status_plot, y=prop_removed, fill=status_plot), outliers = FALSE) +
+  geom_jitter(aes(x=status_plot, y=prop_removed), size=0.3, alpha=0.2, width = 0.2) +
+  plot_sizing + rotate_x +
+    facet_wrap(~tool) +
+  scale_fill_manual(values = ambient_tools_colours) +
+  scale_x_discrete(labels = c(&quot;decontX&quot; = &quot;undetected&quot;)) +
+  xlab(&quot;&quot;) + ylab(&quot;proportion removed&quot;)  +strip_fix+ theme(legend.position = &quot;none&quot;)
+
+p_soupx &lt;-  post %&gt;%
+  filter(., status_plot %in% c(factor_order, &quot;soupX&quot;) &amp; tool == &quot;soupX&quot;) %&gt;%
+  mutate(status_plot = factor(status_plot, levels = c(&quot;soupX&quot;, factor_order))) %&gt;%
+  ggplot(.)+
+  geom_boxplot(aes(x=status_plot, y=prop_removed, fill=status_plot), outliers = FALSE) +
+  geom_jitter(aes(x=status_plot, y=prop_removed), size=0.3, alpha=0.2, width = 0.2) +
+  plot_sizing + rotate_x +
+    facet_wrap(~tool) +
+  ylim(c(0,0.15)) + #cut off outliers
+  scale_fill_manual(values = ambient_tools_colours) +
+  scale_x_discrete(labels = c(&quot;soupX&quot; = &quot;undetected&quot;)) +
+  xlab(&quot;&quot;) + ylab(&quot;proportion removed&quot;)  +strip_fix+ theme(legend.position = &quot;none&quot;)
+
+
+list_main$plot_removed_count &lt;- (p_cellbender + p_soupx + p_decontx + p_decontx_bg + plot_layout(axis_titles = &quot;collect&quot;, nrow = 1))
+
+list_main$plot_removed_count</code></pre>
+<pre><code>Warning: Removed 31788 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+<pre><code>Warning: Removed 31788 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+<pre><code>Warning: Removed 32215 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+<pre><code>Warning: Removed 32215 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+<pre><code>Warning: Removed 39232 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+<pre><code>Warning: Removed 39232 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+<pre><code>Warning: Removed 39624 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+<pre><code>Warning: Removed 39624 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+<p><img src="figure/figure_04.Rmd/unnamed-chunk-31-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-31-1">
+Past versions of unnamed-chunk-31-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-31-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/2638039c1e394f5614d3dd3498e69eeeb05fcb22/docs/figure/figure_04.Rmd/unnamed-chunk-31-1.png" target="_blank">2638039</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/4cfa89ec349257b7bcbacf9dd8cb3f4c024e62fa/docs/figure/figure_04.Rmd/unnamed-chunk-31-1.png" target="_blank">4cfa89e</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/1f0b137e14a575d739b4de30762a0d2376fb10da/docs/figure/figure_04.Rmd/unnamed-chunk-31-1.png" target="_blank">1f0b137</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/99b99ba6a492e8ceffba3a74c60189b32da7a5bc/docs/figure/figure_04.Rmd/unnamed-chunk-31-1.png" target="_blank">99b99ba</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-12
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/319958004c656036a5e0c87898dc7372453bec49/docs/figure/figure_04.Rmd/unnamed-chunk-31-1.png" target="_blank">3199580</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/246662560bf68dac6b9867aeb05b0dc0ff3b6ff8/docs/figure/figure_04.Rmd/unnamed-chunk-31-1.png" target="_blank">2466625</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/ae56b93f76d22978b62979ad7bed99a7a1da8f3d/docs/figure/figure_04.Rmd/unnamed-chunk-31-1.png" target="_blank">ae56b93</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-22
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/e8fc940243906fd78b7e38dfc1b78d9bee21c47e/docs/figure/figure_04.Rmd/unnamed-chunk-31-1.png" target="_blank">e8fc940</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-07-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="main-figure" class="section level1">
+<h1>Main Figure</h1>
+<pre class="r"><code>tag_margin &lt;- theme(plot.margin = margin(t = 5.5, r = 5.5, b = 5.5, l = 5.5))
+
+top_row &lt;- list_main$stacked_barplot_overview +
+  (wrap_elements(full = ggplotify::as.grob(list_main$plot_removed_count)) + tag_margin) + plot_layout(design = &quot;ABBBB&quot;)</code></pre>
+<pre><code>Warning: Removed 31788 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+<pre><code>Warning: Removed 31788 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+<pre><code>Warning: Removed 32215 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+<pre><code>Warning: Removed 32215 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+<pre><code>Warning: Removed 39232 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+<pre><code>Warning: Removed 39232 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+<pre><code>Warning: Removed 39624 rows containing non-finite outside the scale range
+(`stat_boxplot()`).</code></pre>
+<pre><code>Warning: Removed 39624 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+<pre class="r"><code>bottom_row &lt;- list_main$cosine +
+  list_main$lib_size_uc +
+  list_main$ratio_plot
+
+main &lt;- wrap_plots(top_row) + wrap_plots(bottom_row) +
+  plot_layout(heights = c(1.25, 1), ncol=1) &amp;
+  plot_annotation(tag_levels =&quot;A&quot;) &amp;
+    title_size &amp;
+  theme(
+    plot.tag = element_text(size = 20, face = &quot;bold&quot;)
+  )
+
+
+ggsave(plot = main,
+       filename = &quot;Figure_04_EngineeredDataset_InDepthCharacterisation.png&quot;,
+       path = save_dir,
+       device = &quot;png&quot;,
+       width = 18,
+       height = 12,
+       dpi = 1200,
+       bg = &quot;transparent&quot;)
+
+main</code></pre>
+<p><img src="figure/figure_04.Rmd/unnamed-chunk-32-1.png" width="1728" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-32-1">
+Past versions of unnamed-chunk-32-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-32-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/2638039c1e394f5614d3dd3498e69eeeb05fcb22/docs/figure/figure_04.Rmd/unnamed-chunk-32-1.png" target="_blank">2638039</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/4cfa89ec349257b7bcbacf9dd8cb3f4c024e62fa/docs/figure/figure_04.Rmd/unnamed-chunk-32-1.png" target="_blank">4cfa89e</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/1f0b137e14a575d739b4de30762a0d2376fb10da/docs/figure/figure_04.Rmd/unnamed-chunk-32-1.png" target="_blank">1f0b137</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.9
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] grid      stats4    stats     graphics  grDevices datasets  utils    
+[8] methods   base     
+
+other attached packages:
+ [1] png_0.1-8                   ggrepel_0.9.6              
+ [3] ComplexHeatmap_2.24.0       caret_7.0-1                
+ [5] lattice_0.22-6              yardstick_1.3.2            
+ [7] rstatix_0.7.2               patchwork_1.3.2            
+ [9] DropletUtils_1.28.0         qs2_0.1.5                  
+[11] scater_1.36.0               scuttle_1.18.0             
+[13] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+[15] sp_2.2-0                    here_1.0.1                 
+[17] lubridate_1.9.4             forcats_1.0.0              
+[19] stringr_1.5.1               dplyr_1.1.4                
+[21] purrr_1.2.0                 readr_2.1.5                
+[23] tidyr_1.3.1                 tibble_3.3.0               
+[25] ggplot2_4.0.3               tidyverse_2.0.0            
+[27] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[29] Biobase_2.68.0              GenomicRanges_1.60.0       
+[31] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[33] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[35] generics_0.1.4              MatrixGenerics_1.20.0      
+[37] matrixStats_1.5.0           workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] fs_2.1.0                  spatstat.sparse_3.1-0    
+  [3] doParallel_1.0.17         httr_1.4.7               
+  [5] RColorBrewer_1.1-3        tools_4.5.0              
+  [7] sctransform_0.4.2         backports_1.5.0          
+  [9] R6_2.6.1                  HDF5Array_1.36.0         
+ [11] lazyeval_0.2.2            uwot_0.2.3               
+ [13] GetoptLong_1.0.5          rhdf5filters_1.20.0      
+ [15] withr_3.0.2               gridExtra_2.3            
+ [17] progressr_0.15.1          textshaping_1.0.1        
+ [19] cli_3.6.6                 Cairo_1.6-2              
+ [21] spatstat.explore_3.4-3    fastDummies_1.7.5        
+ [23] labeling_0.4.3            sass_0.4.10              
+ [25] S7_0.2.1                  spatstat.data_3.1-6      
+ [27] ggridges_0.5.6            pbapply_1.7-2            
+ [29] systemfonts_1.2.3         yulab.utils_0.2.4        
+ [31] R.utils_2.13.0            parallelly_1.45.0        
+ [33] limma_3.64.1              rstudioapi_0.17.1        
+ [35] gridGraphics_0.5-1        shape_1.4.6.1            
+ [37] vroom_1.6.5               ica_1.0-3                
+ [39] spatstat.random_3.4-1     car_3.1-3                
+ [41] Matrix_1.7-3              ggbeeswarm_0.7.2         
+ [43] abind_1.4-8               R.methodsS3_1.8.2        
+ [45] lifecycle_1.0.5           whisker_0.4.1            
+ [47] yaml_2.3.10               edgeR_4.6.2              
+ [49] carData_3.0-5             rhdf5_2.52.1             
+ [51] recipes_1.3.1             SparseArray_1.8.0        
+ [53] Rtsne_0.17                promises_1.3.3           
+ [55] dqrng_0.4.1               crayon_1.5.3             
+ [57] miniUI_0.1.2              beachmat_2.24.0          
+ [59] cowplot_1.1.3             magick_2.9.0             
+ [61] pillar_1.10.2             knitr_1.50               
+ [63] rjson_0.2.23              future.apply_1.20.0      
+ [65] codetools_0.2-20          glue_1.8.0               
+ [67] getPass_0.2-4             spatstat.univar_3.1-3    
+ [69] data.table_1.17.4         vctrs_0.6.5              
+ [71] spam_2.11-1               gtable_0.3.6             
+ [73] cachem_1.1.0              gower_1.0.2              
+ [75] xfun_0.52                 prodlim_2025.04.28       
+ [77] S4Arrays_1.8.1            mime_0.13                
+ [79] survival_3.8-3            timeDate_4041.110        
+ [81] iterators_1.0.14          hardhat_1.4.2            
+ [83] lava_1.8.1                statmod_1.5.0            
+ [85] fitdistrplus_1.2-2        ipred_0.9-15             
+ [87] ROCR_1.0-11               nlme_3.1-168             
+ [89] bit64_4.6.0-1             RcppAnnoy_0.0.22         
+ [91] rprojroot_2.1.1           bslib_0.9.0              
+ [93] irlba_2.3.5.1             rpart_4.1.24             
+ [95] vipor_0.4.7               KernSmooth_2.23-26       
+ [97] colorspace_2.1-1          nnet_7.3-20              
+ [99] tidyselect_1.2.1          processx_3.8.6           
+[101] bit_4.6.0                 compiler_4.5.0           
+[103] git2r_0.36.2              BiocNeighbors_2.2.0      
+[105] h5mread_1.0.1             DelayedArray_0.34.1      
+[107] plotly_4.10.4             stringfish_0.17.0        
+[109] scales_1.4.0              lmtest_0.9-40            
+[111] callr_3.7.6               rappdirs_0.3.3           
+[113] digest_0.6.37             goftest_1.2-3            
+[115] spatstat.utils_3.1-4      rmarkdown_2.29           
+[117] XVector_0.48.0            htmltools_0.5.8.1        
+[119] pkgconfig_2.0.3           sparseMatrixStats_1.20.0 
+[121] fastmap_1.2.0             GlobalOptions_0.1.2      
+[123] rlang_1.3.0               htmlwidgets_1.6.4        
+[125] UCSC.utils_1.4.0          shiny_1.10.0             
+[127] DelayedMatrixStats_1.30.0 farver_2.1.2             
+[129] jquerylib_0.1.4           zoo_1.8-14               
+[131] jsonlite_2.0.0            BiocParallel_1.42.1      
+[133] ModelMetrics_1.2.2.2      R.oo_1.27.1              
+[135] BiocSingular_1.24.0       magrittr_2.0.4           
+[137] ggplotify_0.1.3           Formula_1.2-5            
+[139] GenomeInfoDbData_1.2.14   dotCall64_1.2            
+[141] Rhdf5lib_1.30.0           Rcpp_1.1.2               
+[143] viridis_0.6.5             reticulate_1.42.0        
+[145] pROC_1.18.5               stringi_1.8.7            
+[147] MASS_7.3-65               plyr_1.8.9               
+[149] parallel_4.5.0            listenv_0.9.1            
+[151] deldir_2.0-4              splines_4.5.0            
+[153] tensor_1.5                circlize_0.4.16          
+[155] hms_1.1.3                 locfit_1.5-9.12          
+[157] ps_1.9.1                  igraph_2.1.4             
+[159] spatstat.geom_3.4-1       RcppHNSW_0.6.0           
+[161] reshape2_1.4.4            ScaledMatrix_1.16.0      
+[163] evaluate_1.0.5            RcppParallel_5.1.10      
+[165] renv_1.1.4                BiocManager_1.30.26      
+[167] tzdb_0.5.0                foreach_1.5.2            
+[169] httpuv_1.6.16             RANN_2.6.2               
+[171] polyclip_1.10-7           clue_0.3-66              
+[173] future_1.58.0             scattermore_1.2          
+[175] rsvd_1.0.5                broom_1.0.8              
+[177] xtable_1.8-4              RSpectra_0.16-2          
+[179] later_1.4.2               ragg_1.4.0               
+[181] class_7.3-23              viridisLite_0.4.2        
+[183] beeswarm_0.4.0            cluster_2.1.8.1          
+[185] timechange_0.3.0          globals_0.18.0           </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

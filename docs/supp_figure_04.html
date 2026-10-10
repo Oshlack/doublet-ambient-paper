@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Michelle Meier" />
+
+
+<title>Supplementary Figure 4: Doublet detection performs best on uncorrected or CellBender corrected data</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ambient_doublet_singlecell</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Supplementary Figure 4: Doublet detection
+performs best on uncorrected or CellBender corrected data</h1>
+<h4 class="author">Michelle Meier</h4>
+<h4 class="date">09. October 2026</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-10-09
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>ambient_doublet_singlecell/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260605code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260605)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260605code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260605)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcommichellemeier27ambientdoubletsinglecelltree7e01a80ece169ba423e325b95b5af42fc22465c0targetblank7e01a80a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/tree/7e01a80ece169ba423e325b95b5af42fc22465c0" target="_blank">7e01a80</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcommichellemeier27ambientdoubletsinglecelltree7e01a80ece169ba423e325b95b5af42fc22465c0targetblank7e01a80a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/tree/7e01a80ece169ba423e325b95b5af42fc22465c0" target="_blank">7e01a80</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .RData
+    Ignored:    .Renviron
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    CLAUDE.md
+    Ignored:    analysis/figures_v1/
+    Ignored:    analysis/figures_v2/
+    Ignored:    analysis/figures_v3/
+    Ignored:    analysis/obsolete/
+    Ignored:    analysis/qc_filtered_ambient/
+    Ignored:    analysis/untracked_BAL_inflammation_10x_HTO_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BAL_inflammation_10x_HTO_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_QC_filtering_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x__LungCancer_10x_CMO_check_CMO_ADT_distribution.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_evaluate_doublet_calling_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_inspect_SampleOfOrigin_false_singlets.Rmd
+    Ignored:    analysis/untracked_BrainCortex_nuclei_10x_run_deMULTIplex2.Rmd
+    Ignored:    analysis/untracked_LungCancer_10x_CMO_clean_decontX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_LungCancer_10x_CMO_clean_soupX_different_doublet_settings.Rmd
+    Ignored:    analysis/untracked_figure_05.Rmd
+    Ignored:    claude_logs/
+    Ignored:    output/.DS_Store
+    Ignored:    output/data/
+    Ignored:    output/data_zenodo/
+    Ignored:    output/figures/
+    Ignored:    output/package_refs/
+    Ignored:    output/results/.DS_Store
+    Ignored:    output/results/BAL_inflammation_10x/.DS_Store
+    Ignored:    output/results/BrainCortex_nuclei_10x/.DS_Store
+    Ignored:    output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/.DS_Store
+    Ignored:    output/results/LungCancer_10x/.DS_Store
+    Ignored:    output/results/LungCancer_10x/DoubletCallingPerformance/.DS_Store
+    Ignored:    output/results/Tonsils_10xFlex/.DS_Store
+    Ignored:    output/results/Tonsils_10xFlex/Engineered/.DS_Store
+    Ignored:    renv/
+    Ignored:    scp_file.txt
+
+Untracked files:
+    Untracked:  code/make_figures.R
+    Untracked:  output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_TESTING_deMULTIplex2_correctAssignments_MCC.csv
+    Untracked:  output/results/BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_correctAssignments_MCC_qc_filtered_ambient.csv
+    Untracked:  output/results/LungCancer_10x/DoubletCallingPerformance/LungCancer_10x_correctAssignments_MCC_qc_filtered_ambient.csv
+    Untracked:  tmp.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/supp_figure_04.Rmd</code>) and
+HTML (<code>docs/supp_figure_04.html</code>) files. If you’ve configured
+a remote Git repository (see <code>?wflow_git_remote</code>), click on
+the hyperlinks in the table below to view the files as they were in that
+past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/7e01a80ece169ba423e325b95b5af42fc22465c0/analysis/supp_figure_04.Rmd" target="_blank">7e01a80</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-09
+</td>
+<td>
+wflow_publish(c("analysis/figure_04.Rmd",
+"analysis/supp_figure_04.Rmd"))
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/4cfa89ec349257b7bcbacf9dd8cb3f4c024e62fa/docs/supp_figure_04.html" target="_blank">4cfa89e</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/4683be9969287aeb65be9a93e17b6122568bbbfe/analysis/supp_figure_04.Rmd" target="_blank">4683be9</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-06
+</td>
+<td>
+wflow_publish(c("analysis/figure_01.Rmd", "analysis/figure_03.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/7e87b35cb0a0cf187b2f8d188fa991abb6a0d054/docs/supp_figure_04.html" target="_blank">7e87b35</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/d1afc6a1725c8401ba0ecab85c9457f3b5be75a1/analysis/supp_figure_04.Rmd" target="_blank">d1afc6a</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-20
+</td>
+<td>
+wflow_publish(c("analysis/figure_01.Rmd", "analysis/figure_03.Rmd",
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/michellemeier27/ambient_doublet_singlecell/2a8dfa5c38f567e555d5c1df9b594f22cb4d059b/docs/supp_figure_04.html" target="_blank">2a8dfa5</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/0415da4d5e4cfe9bd0d5226a4cb2413c4aee3fef/analysis/supp_figure_04.Rmd" target="_blank">0415da4</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-19
+</td>
+<td>
+wflow_publish(c("analysis/figure_02.Rmd", "analysis/figure_04.Rmd",
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This markdown makes the plots for Supplementary Figure 4: Doublet
+detection performs best on uncorrected or CellBender corrected data.
+This will contain results from the following three dataset: The lung
+cancer dataset, the BAL dataset and the brain cortex dataset.</p>
+<p>Plots shown in this figure support figure 5.</p>
+</div>
+<div id="set-up" class="section level1">
+<h1>Set-up</h1>
+<div id="load-libraries" class="section level2">
+<h2>Load libraries</h2>
+<pre class="r"><code>suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+  library(patchwork)
+  library(rstatix)
+  library(yardstick)
+  library(caret)
+  library(ComplexHeatmap)
+  library(ggrepel)
+  library(png)
+})</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 4.5.2</code></pre>
+</div>
+</div>
+<div id="dataset-configuration" class="section level1">
+<h1>Dataset configuration</h1>
+<pre class="r"><code>dataset_config &lt;- function(data_dir,
+                           uncorrected_dir,
+                           sample_grep = uncorrected_dir,
+                           performance_file,
+                           dataset_label = data_dir,
+                           filter_remove = FALSE) {
+
+  list(data_dir         = data_dir,
+       uncorrected_dir  = uncorrected_dir,
+       sample_grep      = sample_grep,
+       performance_file = performance_file,
+       dataset_label    = dataset_label
+  )
+}</code></pre>
+<pre class="r"><code>dataset_registry &lt;- list(
+  dataset_config(
+    data_dir         = &quot;LungCancer_10x&quot;,
+    uncorrected_dir  = &quot;LungCancer_10x_cellranger_allmultiplets&quot;,
+    performance_file = &quot;LungCancer_10x/DoubletCallingPerformance/LungCancer_10x_correctAssignments_MCC.csv&quot;,
+    dataset_label    = &quot;Lung Cancer Dataset&quot;
+  ),
+  dataset_config(
+    data_dir         = &quot;BAL_inflammation_10x&quot;,
+    uncorrected_dir  = &quot;BAL_inflammation_10x_cellranger&quot;,
+    performance_file = &quot;BAL_inflammation_10x/DoubletCallingPerformance/BAL_inflammation_10x_correctAssignments_MCC.csv&quot;,
+    dataset_label    = &quot;BAL Dataset&quot;
+  ),
+  dataset_config(
+    data_dir         = &quot;BrainCortex_nuclei_10x&quot;,
+    uncorrected_dir  = &quot;BrainCortex_nuclei_10x_cellranger&quot;,
+    performance_file = &quot;BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_correctAssignments_MCC.csv&quot;,
+    dataset_label    = &quot;Brain Cortex Dataset&quot;
+  )
+)
+
+names(dataset_registry) &lt;- vapply(dataset_registry, function(x) x$dataset_label, character(1))</code></pre>
+</div>
+<div id="data-loading-functions" class="section level1">
+<h1>Data loading functions</h1>
+<pre class="r"><code># Read+combine one ambient-tool subfolder&#39;s doublet calls with the dataset&#39;s ground-truth metadata.
+load_ambient_results &lt;- function(path, uncorrected_dir, filter_remove = FALSE) {
+
+  # ground-truth metadata always comes from the uncorrected/base folder for this dataset,
+  # regardless of which ambient-tool subfolder is currently being processed
+  meta &lt;- read_tsv(file.path(dirname(path), uncorrected_dir, &quot;metadata.tsv&quot;), show_col_types = FALSE)
+  meta$doublet_class[meta$doublet_class == &quot;multiplet&quot;] &lt;- &quot;doublet&quot;
+  
+  #filter metadata based on uncorrected qc filtered barcodes - these are droplets that pass QC (based on RNA reads) AND have a doublet/singlet assignment based on demultiplexing
+  barcodes_to_keep &lt;- read_tsv(file.path(dirname(path), uncorrected_dir, &quot;filtered_qc_barcodes.tsv&quot;), show_col_types = F) %&gt;% pull(.)
+  
+  meta &lt;- meta %&gt;% 
+    filter(., Barcode %in% barcodes_to_keep)
+
+  # doublet calling results for this ambient-tool setting
+  doublet_file &lt;- list.files(path = file.path(path, &quot;doublet_calls&quot;),
+                             pattern = &quot;consensus&quot;, full.names = TRUE)
+  dbl_res &lt;- read_csv(doublet_file, show_col_types = FALSE)
+  combined_res &lt;- right_join(dbl_res, meta)
+
+  #replace missing doublet (NAs) labels with &quot;removed_cell&quot;- using scDblFinder to guide but will be the same with all tools
+  combined_res$cells_kept &lt;- ifelse(is.na(combined_res$scDblFinder_DropletType), &quot;removed_cell&quot;, &quot;kept_cell&quot;)
+
+  #if this setting is ambient-corrected, bring in its ncount/nfeature &quot;removed&quot; columns too,
+  # prefixed with the tool name so they sit side by side once every setting is combined
+  meta_current &lt;- read_tsv(file.path(path, &quot;metadata.tsv&quot;), show_col_types = FALSE)
+  if (&quot;ncount_frac_removed&quot; %in% colnames(meta_current)) {
+    ambient_tool_name &lt;- gsub(paste0(uncorrected_dir, &quot;_&quot;), &quot;&quot;, basename(path), fixed = TRUE)
+    meta_current &lt;- meta_current %&gt;%
+      select(Barcode, ncount, nfeatures_rounded, nfeature_frac_removed, ncount_frac_removed)
+    colnames(meta_current)[2:5] &lt;- paste0(ambient_tool_name, &quot;_&quot;, colnames(meta_current)[2:5])
+    combined_res &lt;- left_join(combined_res, meta_current)
+  }
+
+  combined_res$ambient_tool &lt;- if (basename(path) == uncorrected_dir) {
+    &quot;uncorrected&quot;
+  } else {
+    gsub(paste0(uncorrected_dir, &quot;_&quot;), &quot;&quot;, basename(path), fixed = TRUE)
+  }
+
+  return(combined_res)
+}
+
+
+load_dataset_results &lt;- function(cfg) {
+  files &lt;- list.dirs(path = here(&quot;output/data&quot;, cfg$data_dir), full.names = TRUE, recursive = FALSE)
+  files &lt;- files[grepl(cfg$sample_grep, files)]
+
+  list_results &lt;- lapply(files, load_ambient_results,
+                         uncorrected_dir = cfg$uncorrected_dir)
+  names(list_results) &lt;- basename(files)
+
+  df &lt;- bind_rows(list_results)
+  df$dataset &lt;- cfg$dataset_label
+  return(df)
+}
+
+# Load a dataset&#39;s precomputed doublet-calling performance metrics (see *_evaluate_doublet_calling.Rmd).
+load_performance_results &lt;- function(cfg) {
+  perf &lt;- read_csv(here(&quot;output/results&quot;, cfg$performance_file),
+                   show_col_types = FALSE, col_types = c(&quot;ccnnnnnnnnnnnn&quot;))
+  # perf[is.na(perf)] &lt;- 0
+
+  perf &lt;- perf %&gt;%
+    mutate(doublet_tool = factor(doublet_tool,
+                                 levels = c(&quot;scDblFinder&quot;, &quot;scds&quot;, &quot;cxds&quot;, &quot;bcds&quot;, &quot;scrublet&quot;, &quot;DoubletDetection&quot;)),
+           ambient_tool = factor(ambient_tool,
+                                 levels = rev(c(&quot;uncorrected&quot;, &quot;CellBender&quot;, &quot;soupX&quot;, &quot;decontX&quot;, &quot;decontX_BG&quot;))))
+  perf$dataset &lt;- cfg$dataset_label
+  return(perf)
+}</code></pre>
+</div>
+<div id="plotting-shortcuts" class="section level1">
+<h1>Plotting shortcuts</h1>
+<pre class="r"><code>plot_sizing &lt;- theme_bw() + theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = &quot;black&quot;),
+        plot.title = element_text(size = 22),
+        plot.subtitle = element_text(size = 18),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank())
+
+plot_sizing_keep_legend &lt;- theme_bw() + theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = &quot;black&quot;),
+        plot.title = element_text(size = 22),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size = 16))
+
+rotate_x &lt;- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+strip_fix &lt;- theme(strip.background = element_rect(fill = &quot;white&quot;),
+                   strip.text = element_text(size = 14))
+
+title_size &lt;- theme(plot.title = element_text(size = 22, face = &quot;italic&quot;),
+                    plot.subtitle = element_text(size = 18, face = &quot;bold.italic&quot;))</code></pre>
+</div>
+<div id="colours" class="section level1">
+<h1>Colours</h1>
+<pre class="r"><code>ambient_tools_colours &lt;- c(&quot;#67BF5C&quot;, &quot;#AD8BC9&quot;,
+                            &quot;#A8786E&quot;, &quot;#CDCC5D&quot;, &quot;#6DCCDA&quot;, &quot;#EB663B&quot;, &quot;grey80&quot;)
+names(ambient_tools_colours) &lt;- c(&quot;uncorrected&quot;, &quot;decontX&quot;, &quot;decontX_BG&quot;,
+                                  &quot;soupX&quot;, &quot;CellBender&quot;, &quot;consensus doublet&quot;, &quot;missed all&quot;)
+
+doublet_colours &lt;- c(&quot;#2E91E5&quot;, &quot;#EB663B&quot;); names(doublet_colours) &lt;- c(&quot;singlet&quot;, &quot;doublet&quot;)</code></pre>
+</div>
+<div id="directories" class="section level1">
+<h1>Directories</h1>
+<pre class="r"><code>save_dir &lt;- here(&quot;output/figures/v4&quot;)</code></pre>
+</div>
+<div id="plotting-functions" class="section level1">
+<h1>Plotting functions</h1>
+<pre class="r"><code>run_assignment_evaluation_heatmap &lt;- function(results_df,
+                                      plotting_metric,
+                                      name_metric,
+                                      name_scale,
+                                      dataset_label,
+                                      limits = NULL) {
+  results_df &lt;- results_df %&gt;%
+    dplyr::rename(plotting_metric = plotting_metric)
+
+  heatmap &lt;- results_df %&gt;%
+    ggplot() +
+    geom_tile(aes(x = doublet_tool, y = ambient_tool, fill = plotting_metric), color = &quot;black&quot;, size = 0.1) +
+    geom_text(aes(x = doublet_tool, y = ambient_tool, label = round(plotting_metric, 2)), size = 5) +
+    theme_bw() + plot_sizing_keep_legend + rotate_x + title_size +
+    ylab(&quot;ambient setting&quot;) + xlab(&quot;doublet tool&quot;) +
+    scale_fill_distiller(palette = &quot;RdBu&quot;, direction = -1, name = name_scale, limits = limits) +
+    ggtitle(dataset_label, subtitle = name_metric) + title_size
+
+  return(heatmap)
+}
+
+analyse_mislabelled_doublets &lt;- function(df_plot,
+                                         ambient_tools = setdiff(unique(df_plot$ambient_tool), &quot;uncorrected&quot;),
+                                         doublet_tool,
+                                         dataset_label) {
+  doublet_tool_column &lt;- paste0(doublet_tool, &quot;_DropletType&quot;)
+  list_unidentified_doublets &lt;- lapply(split(df_plot, df_plot$ambient_tool), function(entry) {
+    entry %&gt;% dplyr::rename(doublet_tool_column = doublet_tool_column) %&gt;%
+      filter(doublet_class == &quot;doublet&quot;, doublet_tool_column != &quot;doublet&quot;) %&gt;% pull(Barcode)
+  })
+
+  m_dist &lt;- make_comb_mat(list_unidentified_doublets)
+  full_comb &lt;- paste(rep(&quot;1&quot;, length(list_unidentified_doublets)), collapse = &quot;&quot;)
+  missed_doublets &lt;- extract_comb(m_dist, full_comb)
+
+  list_missed_doublets_meta &lt;- lapply(ambient_tools, function(TOOL) {
+    only_here &lt;- setdiff(list_unidentified_doublets[[TOOL]], missed_doublets)
+    df_plot %&gt;% filter(Barcode %in% only_here) %&gt;% mutate(status = TOOL)
+  })
+
+  overview &lt;- df_plot %&gt;%
+    mutate(status = case_when(Barcode %in% missed_doublets ~ &quot;never detected&quot;,
+                              TRUE ~ &quot;remove&quot;)) %&gt;%
+    filter(status != &quot;remove&quot;)
+
+  meta_total &lt;- bind_rows(list_missed_doublets_meta, overview)
+
+  # ---- stacked barplot ----
+  missed_all_n &lt;- sum(meta_total$status[meta_total$ambient_tool == &quot;uncorrected&quot;] == &quot;never detected&quot;)
+  missed_all_label &lt;- paste0(&quot;never detected\nn=&quot;, missed_all_n)
+
+  ambient_tools_colours_nocounts &lt;- c(&quot;grey80&quot;, &quot;tan&quot;)
+  names(ambient_tools_colours_nocounts) &lt;- c(missed_all_label, &quot;in setting&quot;)
+
+  special &lt;- meta_total %&gt;% filter(., ambient_tool == &quot;uncorrected&quot;) %&gt;% dplyr::count(status) %&gt;% filter(status == &quot;never detected&quot;)
+  main    &lt;- meta_total %&gt;% filter(., ambient_tool == &quot;uncorrected&quot;) %&gt;% dplyr::count(status) %&gt;% filter(status %in% ambient_tools)
+
+  result &lt;- map_dfr(main$status, function(s) {
+    bind_rows(main %&gt;% filter(status == s), special) %&gt;% mutate(tool = s, .before = 1)
+  }) %&gt;%
+    mutate(status = factor(case_when(status == &quot;never detected&quot; ~ missed_all_label, TRUE ~ &quot;in setting&quot;),
+                           levels = rev(c(missed_all_label, &quot;in setting&quot;))),
+           label = ifelse(status == &quot;in setting&quot;, n, NA))
+
+  stacked_barplot &lt;- result %&gt;%
+    ggplot(aes(x = tool, y = n, fill = status)) +
+    geom_bar(position = &quot;stack&quot;, stat = &quot;identity&quot;) +
+    geom_text(position = position_stack(vjust = 0.5), aes(label = label), size = 5) +
+    plot_sizing + rotate_x +
+    scale_fill_manual(values = ambient_tools_colours_nocounts) +
+    ylab(&quot;# doublets&quot;) +
+    theme(legend.position = &quot;bottom&quot;) +
+    ggtitle(dataset_label, subtitle = paste0(&quot;Undetected doublets\n&quot;, doublet_tool)) + title_size
+
+  # ---- per-tool boxplots: single facet_wrap with free y-axes and shared title ----
+
+  prop_long &lt;- map_dfr(ambient_tools, function(TOOL) {
+    prop_removed_name &lt;- paste0(TOOL, &quot;_ncount_frac_removed&quot;)
+    meta_total %&gt;%
+      filter(status %in% c(TOOL, &quot;never detected&quot;)) %&gt;%
+      dplyr::rename(prop_removed = all_of(prop_removed_name)) %&gt;%
+      mutate(facet_label = factor(paste0(&quot;corrected using\n&quot;, TOOL),
+                                  levels = paste0(&quot;corrected using\n&quot;, ambient_tools))) %&gt;%
+      select(status, prop_removed, facet_label)
+  }) %&gt;%
+    # &quot;never detected&quot; first, then tools in ambient_tools order — applied after
+    # bind_rows so all rows share consistent factor levels
+    mutate(status = factor(status, levels = c(&quot;never detected&quot;, ambient_tools)))
+
+  per_tool_combined &lt;- prop_long %&gt;%
+    ggplot(aes(x = status, y = prop_removed, fill = status)) +
+    geom_boxplot( outliers = FALSE) +
+    geom_jitter(aes(x = status, y = prop_removed), size = 0.3, alpha = 0.2, width = 0.2) +
+    facet_wrap(~facet_label, scales = &quot;free&quot;, nrow = 1) +
+    plot_sizing + strip_fix + rotate_x +
+    scale_fill_manual(values = ambient_tools_colours) +
+    xlab(&quot;&quot;) + ylab(&quot;proportion removed&quot;) + theme(legend.position = &quot;none&quot;,
+                                                  strip.text = element_text(size = 18))
+
+  per_tool_plot &lt;- per_tool_combined +
+    plot_annotation(title = dataset_label,
+                    subtitle = paste0(&quot;Ambient correction in undetected doublets\n&quot;, doublet_tool),
+                    theme = title_size)
+
+  list(stacked_barplot    = stacked_barplot,
+       per_tool_plot      = per_tool_plot,
+       per_tool_plot_list = list(per_tool_combined))
+}
+
+generate_dataset_figures &lt;- function(cfg) {
+  df_plot            &lt;- load_dataset_results(cfg)
+  performance_results &lt;- load_performance_results(cfg)
+
+  mislabeled_doublets_scdblfinder &lt;- analyse_mislabelled_doublets(
+    df_plot       = df_plot,
+    doublet_tool  = &quot;scDblFinder&quot;,
+    dataset_label = cfg$dataset_label
+  )
+
+  list(
+    dataset_label          = cfg$dataset_label,
+    performance_results    = performance_results,
+    performance_plot_mcc   = run_assignment_evaluation_heatmap(
+      results_df     = performance_results,
+      plotting_metric = &quot;mcc&quot;,
+      name_metric    = &quot;MCC&quot;,
+      name_scale     = &quot;MCC&quot;,
+      dataset_label  = cfg$dataset_label
+    ),
+    undetected_stacked       = mislabeled_doublets_scdblfinder$stacked_barplot,
+    undetected_per_tool      = mislabeled_doublets_scdblfinder$per_tool_plot,
+    undetected_per_tool_list = mislabeled_doublets_scdblfinder$per_tool_plot_list
+  )
+}</code></pre>
+</div>
+<div id="generate-data" class="section level1">
+<h1>Generate data</h1>
+<pre class="r"><code>results_by_dataset &lt;- lapply(dataset_registry, generate_dataset_figures)</code></pre>
+<pre><code>Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.
+ℹ Please use `all_of()` or `any_of()` instead.
+  # Was:
+  data %&gt;% select(doublet_tool_column)
+
+  # Now:
+  data %&gt;% select(all_of(doublet_tool_column))
+
+See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.
+This warning is displayed once per session.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+generated.</code></pre>
+<pre><code>Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.
+ℹ Please use `all_of()` or `any_of()` instead.
+  # Was:
+  data %&gt;% select(plotting_metric)
+
+  # Now:
+  data %&gt;% select(all_of(plotting_metric))
+
+See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.
+This warning is displayed once per session.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+generated.</code></pre>
+<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.
+This warning is displayed once per session.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+generated.</code></pre>
+<pre class="r"><code># Shared MCC colour scale across datasets
+all_perf   &lt;- lapply(results_by_dataset, `[[`, &quot;performance_results&quot;) %&gt;% bind_rows()
+limits_mcc &lt;- range(all_perf$mcc, na.rm = TRUE)
+
+results_by_dataset &lt;- lapply(results_by_dataset, function(res) {
+  res$performance_plot_mcc &lt;- run_assignment_evaluation_heatmap(
+    results_df      = res$performance_results,
+    plotting_metric = &quot;mcc&quot;,
+    name_metric     = &quot;MCC&quot;,
+    name_scale      = &quot;MCC&quot;,
+    dataset_label   = res$dataset_label,
+    limits          = limits_mcc
+  )
+  res
+})</code></pre>
+</div>
+<div id="make-supp-figure" class="section level1">
+<h1>Make supp figure</h1>
+<pre class="r"><code>make_row_label_supp &lt;- function(label, fill = &quot;#CFE2F3&quot;) {
+  ggplot() +
+    annotate(&quot;text&quot;, x = 0.5, y = 0.15, label = label,
+             size = 8, fontface = &quot;bold&quot;, hjust = 0.5, vjust = 0.5, angle = 90) +
+    scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+    theme_void() +
+    theme(plot.background = element_rect(fill = fill, color = NA),
+          plot.margin     = margin(0, 0, 0, 0)) +
+    coord_cartesian(clip = &quot;off&quot;)
+}
+
+close_title &lt;- theme(
+  plot.title.position = &quot;plot&quot;,
+  plot.title          = element_text(margin = margin(b = 2))
+)
+
+n         &lt;- length(results_by_dataset)
+tag_theme &lt;- theme(plot.tag = element_text(size = 18, face = &quot;bold&quot;, margin = margin(t = 6, r = 10, b = 6, l = 6)))
+
+dataset_rows &lt;- lapply(seq_along(results_by_dataset), function(idx) {
+  res &lt;- results_by_dataset[[idx]]
+  stacked_clean &lt;- res$undetected_stacked +
+    labs(title = &quot;Undetected doublets&quot;, subtitle = &quot;scDblFinder&quot;,
+         tag = LETTERS[n + idx]) +
+    close_title +
+    theme(plot.tag = element_text(size = 18, face = &quot;bold&quot;,
+                                  margin = margin(t = 6, r = 10, b = 6, l = 6)))
+  per_tool_list &lt;- res$undetected_per_tool_list
+  per_tool_list[[1]] &lt;- per_tool_list[[1]] +
+    labs(title = &quot;Proportion of counts removed during correction&quot;,
+         tag   = LETTERS[2 * n + idx]) +
+    close_title + title_size +
+    theme(plot.tag = element_text(size = 18, face = &quot;bold&quot;,
+                                  margin = margin(t = 6, r = 10, b = 6, l = 6)))
+  # axis_titles = &quot;collect&quot; interferes with per-facet tick rendering when
+  # per_tool_list contains a single faceted ggplot; omit it so patchwork
+  # leaves the facet&#39;s internal axes untouched (the faceted ggplot already
+  # shows &quot;proportion removed&quot; exactly once on the left by itself).
+  per_tool_clean &lt;- wrap_plots(per_tool_list, nrow = 1)
+  undetected_titled &lt;- wrap_elements(full =
+    wrap_elements(stacked_clean) + wrap_elements(per_tool_clean) +
+    plot_layout(widths = c(1.1, 3)))
+  list(
+    make_row_label_supp(res$dataset_label),
+    res$performance_plot_mcc + labs(title = &quot;MCC&quot;, subtitle = NULL, tag = LETTERS[idx]) + close_title,
+    undetected_titled
+  )
+})
+
+spacer_row &lt;- replicate(3, plot_spacer(), simplify = FALSE)
+all_plots &lt;- unlist(
+  lapply(seq_len(n), function(i) {
+    if (i &lt; n) c(dataset_rows[[i]], spacer_row) else dataset_rows[[i]]
+  }),
+  recursive = FALSE
+)
+
+row_heights &lt;- rep(c(1, 0.08), n)
+row_heights &lt;- row_heights[seq_len(2 * n - 1)]
+
+supp_figure &lt;- wrap_plots(all_plots, ncol = 3, byrow = TRUE) +
+  plot_layout(widths = c(0.2, 1, 5), heights = row_heights) &amp;
+  tag_theme
+
+ggsave(plot = supp_figure,
+       filename = &quot;Supp_Figure_04_MCC_proportion_removed_complex_datasets.png&quot;,
+       path = save_dir,
+       device = &quot;png&quot;,
+       width = 25,
+       height = 18,
+       dpi = 900,
+       bg = &quot;transparent&quot;)
+
+supp_figure</code></pre>
+<p><img src="figure/supp_figure_04.Rmd/unnamed-chunk-10-1.png" width="2688" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/4cfa89ec349257b7bcbacf9dd8cb3f4c024e62fa/docs/figure/supp_figure_04.Rmd/unnamed-chunk-10-1.png" target="_blank">4cfa89e</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-10-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/michellemeier27/ambient_doublet_singlecell/blob/2a8dfa5c38f567e555d5c1df9b594f22cb4d059b/docs/figure/supp_figure_04.Rmd/unnamed-chunk-10-1.png" target="_blank">2a8dfa5</a>
+</td>
+<td>
+Michelle Meier
+</td>
+<td>
+2026-08-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="make-supp-table" class="section level1">
+<h1>Make supp table</h1>
+<p>Exporting a excel spreadsheet with all performance metrics for all
+datasets.</p>
+<pre class="r"><code>writexl::write_xlsx(
+  list(Sheet1 = all_perf),   # list names become the sheet names
+  path = here(save_dir ,&quot;SupplementaryTable_02_allPerformanceMetrics_datasets.xlsx&quot;)
+)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.5.0 (2025-04-11)
+Platform: aarch64-apple-darwin20
+Running under: macOS Sequoia 15.7.9
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Australia/Melbourne
+tzcode source: internal
+
+attached base packages:
+[1] grid      stats4    stats     graphics  grDevices datasets  utils    
+[8] methods   base     
+
+other attached packages:
+ [1] png_0.1-8                   ggrepel_0.9.6              
+ [3] ComplexHeatmap_2.24.0       caret_7.0-1                
+ [5] lattice_0.22-6              yardstick_1.3.2            
+ [7] rstatix_0.7.2               patchwork_1.3.2            
+ [9] DropletUtils_1.28.0         qs2_0.1.5                  
+[11] scater_1.36.0               scuttle_1.18.0             
+[13] Seurat_5.3.1.0000           SeuratObject_5.1.0         
+[15] sp_2.2-0                    here_1.0.1                 
+[17] lubridate_1.9.4             forcats_1.0.0              
+[19] stringr_1.5.1               dplyr_1.1.4                
+[21] purrr_1.2.0                 readr_2.1.5                
+[23] tidyr_1.3.1                 tibble_3.3.0               
+[25] ggplot2_4.0.3               tidyverse_2.0.0            
+[27] SingleCellExperiment_1.30.1 SummarizedExperiment_1.38.1
+[29] Biobase_2.68.0              GenomicRanges_1.60.0       
+[31] GenomeInfoDb_1.44.0         IRanges_2.42.0             
+[33] S4Vectors_0.46.0            BiocGenerics_0.54.0        
+[35] generics_0.1.4              MatrixGenerics_1.20.0      
+[37] matrixStats_1.5.0           workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+  [1] fs_2.1.0                  spatstat.sparse_3.1-0    
+  [3] doParallel_1.0.17         httr_1.4.7               
+  [5] RColorBrewer_1.1-3        tools_4.5.0              
+  [7] sctransform_0.4.2         backports_1.5.0          
+  [9] R6_2.6.1                  HDF5Array_1.36.0         
+ [11] lazyeval_0.2.2            uwot_0.2.3               
+ [13] GetoptLong_1.0.5          rhdf5filters_1.20.0      
+ [15] withr_3.0.2               gridExtra_2.3            
+ [17] progressr_0.15.1          textshaping_1.0.1        
+ [19] cli_3.6.6                 spatstat.explore_3.4-3   
+ [21] fastDummies_1.7.5         labeling_0.4.3           
+ [23] sass_0.4.10               S7_0.2.1                 
+ [25] spatstat.data_3.1-6       ggridges_0.5.6           
+ [27] pbapply_1.7-2             systemfonts_1.2.3        
+ [29] R.utils_2.13.0            parallelly_1.45.0        
+ [31] limma_3.64.1              rstudioapi_0.17.1        
+ [33] shape_1.4.6.1             vroom_1.6.5              
+ [35] ica_1.0-3                 spatstat.random_3.4-1    
+ [37] car_3.1-3                 Matrix_1.7-3             
+ [39] ggbeeswarm_0.7.2          abind_1.4-8              
+ [41] R.methodsS3_1.8.2         lifecycle_1.0.5          
+ [43] whisker_0.4.1             yaml_2.3.10              
+ [45] edgeR_4.6.2               carData_3.0-5            
+ [47] rhdf5_2.52.1              recipes_1.3.1            
+ [49] SparseArray_1.8.0         Rtsne_0.17               
+ [51] promises_1.3.3            dqrng_0.4.1              
+ [53] crayon_1.5.3              miniUI_0.1.2             
+ [55] beachmat_2.24.0           cowplot_1.1.3            
+ [57] pillar_1.10.2             knitr_1.50               
+ [59] rjson_0.2.23              future.apply_1.20.0      
+ [61] codetools_0.2-20          glue_1.8.0               
+ [63] getPass_0.2-4             spatstat.univar_3.1-3    
+ [65] data.table_1.17.4         vctrs_0.6.5              
+ [67] spam_2.11-1               gtable_0.3.6             
+ [69] cachem_1.1.0              gower_1.0.2              
+ [71] xfun_0.52                 prodlim_2025.04.28       
+ [73] S4Arrays_1.8.1            mime_0.13                
+ [75] survival_3.8-3            timeDate_4041.110        
+ [77] iterators_1.0.14          hardhat_1.4.2            
+ [79] lava_1.8.1                statmod_1.5.0            
+ [81] fitdistrplus_1.2-2        ipred_0.9-15             
+ [83] ROCR_1.0-11               nlme_3.1-168             
+ [85] bit64_4.6.0-1             RcppAnnoy_0.0.22         
+ [87] rprojroot_2.1.1           bslib_0.9.0              
+ [89] irlba_2.3.5.1             rpart_4.1.24             
+ [91] vipor_0.4.7               KernSmooth_2.23-26       
+ [93] colorspace_2.1-1          nnet_7.3-20              
+ [95] tidyselect_1.2.1          processx_3.8.6           
+ [97] bit_4.6.0                 compiler_4.5.0           
+ [99] git2r_0.36.2              BiocNeighbors_2.2.0      
+[101] h5mread_1.0.1             DelayedArray_0.34.1      
+[103] plotly_4.10.4             stringfish_0.17.0        
+[105] scales_1.4.0              lmtest_0.9-40            
+[107] callr_3.7.6               digest_0.6.37            
+[109] goftest_1.2-3             spatstat.utils_3.1-4     
+[111] rmarkdown_2.29            XVector_0.48.0           
+[113] htmltools_0.5.8.1         pkgconfig_2.0.3          
+[115] sparseMatrixStats_1.20.0  fastmap_1.2.0            
+[117] GlobalOptions_0.1.2       rlang_1.3.0              
+[119] htmlwidgets_1.6.4         UCSC.utils_1.4.0         
+[121] shiny_1.10.0              DelayedMatrixStats_1.30.0
+[123] farver_2.1.2              jquerylib_0.1.4          
+[125] zoo_1.8-14                jsonlite_2.0.0           
+[127] BiocParallel_1.42.1       ModelMetrics_1.2.2.2     
+[129] R.oo_1.27.1               BiocSingular_1.24.0      
+[131] magrittr_2.0.4            Formula_1.2-5            
+[133] GenomeInfoDbData_1.2.14   dotCall64_1.2            
+[135] Rhdf5lib_1.30.0           Rcpp_1.1.2               
+[137] viridis_0.6.5             reticulate_1.42.0        
+[139] pROC_1.18.5               stringi_1.8.7            
+[141] MASS_7.3-65               plyr_1.8.9               
+[143] parallel_4.5.0            listenv_0.9.1            
+[145] deldir_2.0-4              splines_4.5.0            
+[147] tensor_1.5                circlize_0.4.16          
+[149] hms_1.1.3                 locfit_1.5-9.12          
+[151] ps_1.9.1                  igraph_2.1.4             
+[153] spatstat.geom_3.4-1       RcppHNSW_0.6.0           
+[155] reshape2_1.4.4            ScaledMatrix_1.16.0      
+[157] evaluate_1.0.5            RcppParallel_5.1.10      
+[159] renv_1.1.4                BiocManager_1.30.26      
+[161] tzdb_0.5.0                foreach_1.5.2            
+[163] httpuv_1.6.16             RANN_2.6.2               
+[165] polyclip_1.10-7           clue_0.3-66              
+[167] future_1.58.0             scattermore_1.2          
+[169] rsvd_1.0.5                broom_1.0.8              
+[171] xtable_1.8-4              RSpectra_0.16-2          
+[173] later_1.4.2               ragg_1.4.0               
+[175] class_7.3-23              viridisLite_0.4.2        
+[177] beeswarm_0.4.0            writexl_2.0.1            
+[179] cluster_2.1.8.1           timechange_0.3.0         
+[181] globals_0.18.0           </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

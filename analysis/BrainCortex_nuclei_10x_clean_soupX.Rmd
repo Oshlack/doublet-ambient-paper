@@ -1,0 +1,133 @@
+---
+title: "BrainCortex nuclei 10x: Clean dataset with soupX"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown will apply soupX to the BrainCortex nuclei dataset (capture 1 only) (generated [here](BrainCortex_nuclei_10x_prepare_for_analysis.html)).
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(SoupX)
+  library(qs2)
+  library(DropletUtils)
+})
+```
+
+
+## Load data
+
+```{r}
+# BACKGROUND
+counts_raw <- Read10X(here("output/data/BrainCortex_nuclei_10x/BrainCortex_nuclei_10x_emptyObject"))
+background <- SingleCellExperiment(assays = c("counts" = counts_raw))
+
+# CELLS
+counts_in <- Read10X(here("output/data/BrainCortex_nuclei_10x/BrainCortex_nuclei_10x_cellranger/"))
+meta_cells <- read_tsv(here("output/data/BrainCortex_nuclei_10x/BrainCortex_nuclei_10x_cellranger/metadata.tsv"), show_col_types = F) 
+all(meta_cells$Barcode == colnames(counts_in))
+rownames(meta_cells) <- meta_cells$Barcode
+
+#make sce
+cells_in  <- SingleCellExperiment(assays = c("counts" = counts_in), colData =meta_cells %>% DataFrame())
+
+```
+
+```{r, include=FALSE}
+#secret cleanup
+rm(counts_raw, counts_in, meta_cells);gc()
+
+```
+
+
+
+# Run soupX
+
+## Write function
+
+```{r}
+run_soupx <- function(cells, empties, name){
+  #ensure matching gene universe
+  gene_universe <- intersect(rownames(cells), rownames(empties))
+  cells <- cells[gene_universe, ]
+  empties <- empties[gene_universe,]
+  
+  
+  #clustering information is needed. Run basic workflow.
+  cells <- logNormCounts(cells) %>%
+  runPCA() %>%
+  runUMAP()
+  
+  #run clustering (with seurat because its easier)
+  seu <- as.Seurat(cells, counts = "counts", data = "logcounts") #convert to seurat
+  # run clustering for multiple solutions
+  seu <- FindNeighbors(seu, reduction = "PCA", dims = 1:30, verbose = F) %>%
+    FindClusters(resolution = 0.8, verbose = F)
+  
+  cells$clustering_soupx <- seu$originalexp_snn_res.0.8
+  
+  rm(seu); gc()
+  
+  #start soupX
+  soupchannel <- SoupChannel(tod = counts(empties), toc = counts(cells)) #prepare soupchannel
+  soupchannel <- setClusters(soupchannel, setNames(cells$clustering_soupx, colnames(cells)))
+  soupchannel <- setDR(soupchannel, reducedDim(cells, type = "UMAP", withDimnames=TRUE))
+  
+  print(paste("Showing results for", name))
+  soupchannel <- autoEstCont(soupchannel) #using automated contamination method
+  out <- adjustCounts(soupchannel) #remove background
+  
+  #make sce
+  sce_soupx <- SingleCellExperiment(list(counts=out), colData = cells@colData)
+  
+  #add mitochondrial and ribo genes content
+  is.mito <- grepl(pattern = "^MT", rownames(sce_soupx))
+  is.ribo <- grepl(pattern = "^RP[SL]", rownames(sce_soupx))
+  sce_soupx <- addPerCellQCMetrics(sce_soupx, subsets = list(mito = is.mito,ribo=is.ribo))
+  #clean
+  new_meta <- sce_soupx@colData %>% as.data.frame() %>%
+    dplyr::rename(., ncount =sum ,  nfeatures =detected) %>%
+    select(., -c("total", "subsets_mito_detected", "subsets_mito_sum", "subsets_ribo_sum", "subsets_ribo_detected"))
+  sce_soupx@colData <- new_meta %>% DataFrame()
+
+  #add rounded nfeatures
+  sce_soupx$nfeatures_rounded <- colSums(assay(sce_soupx, "counts") > 0.5)
+  #add info on how many ngenes were removed (fraction)
+  sce_soupx$nfeature_frac_removed <- (sce_soupx$nfeatures_raw  - sce_soupx$nfeatures_rounded)/sce_soupx$nfeatures_raw
+  sce_soupx$ncount_frac_removed <- (sce_soupx$ncount_raw  - sce_soupx$ncount)/sce_soupx$ncount_raw
+  
+  #export file
+  out_file <- sprintf("%s/%s_soupX", 
+                      here("output/data/BrainCortex_nuclei_10x/"),
+                      name)
+  DropletUtils::write10xCounts(path = out_file,
+                             x = counts(sce_soupx),
+                             version = "3", 
+                             overwrite = TRUE)
+  write_tsv(x = sce_soupx@colData %>% as.data.frame(),
+          file = sprintf("%s/metadata.tsv", out_file))
+  
+  return(sce_soupx)
+
+}
+```
+
+## Run function
+
+```{r, warning=FALSE, fig.align='center'}
+run_soupx(cells = cells_in, empties = background, name = "BrainCortex_nuclei_10x_cellranger")
+```
+

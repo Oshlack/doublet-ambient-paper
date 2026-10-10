@@ -1,0 +1,457 @@
+---
+title: "Supplementary Figure 4: Doublet detection performs best on uncorrected or CellBender corrected data"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Introduction
+
+This markdown makes the plots for Supplementary Figure 4: Doublet detection performs best on uncorrected or CellBender corrected data. This will contain results from the following three dataset: The lung cancer dataset, the BAL dataset and the brain cortex dataset.
+
+Plots shown in this figure support figure 5.
+
+
+# Set-up
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+  library(patchwork)
+  library(rstatix)
+  library(yardstick)
+  library(caret)
+  library(ComplexHeatmap)
+  library(ggrepel)
+  library(png)
+})
+```
+
+# Dataset configuration
+
+```{r}
+dataset_config <- function(data_dir,
+                           uncorrected_dir,
+                           sample_grep = uncorrected_dir,
+                           performance_file,
+                           dataset_label = data_dir,
+                           filter_remove = FALSE) {
+
+  list(data_dir         = data_dir,
+       uncorrected_dir  = uncorrected_dir,
+       sample_grep      = sample_grep,
+       performance_file = performance_file,
+       dataset_label    = dataset_label
+  )
+}
+```
+
+```{r}
+dataset_registry <- list(
+  dataset_config(
+    data_dir         = "LungCancer_10x",
+    uncorrected_dir  = "LungCancer_10x_cellranger_allmultiplets",
+    performance_file = "LungCancer_10x/DoubletCallingPerformance/LungCancer_10x_correctAssignments_MCC.csv",
+    dataset_label    = "Lung Cancer Dataset"
+  ),
+  dataset_config(
+    data_dir         = "BAL_inflammation_10x",
+    uncorrected_dir  = "BAL_inflammation_10x_cellranger",
+    performance_file = "BAL_inflammation_10x/DoubletCallingPerformance/BAL_inflammation_10x_correctAssignments_MCC.csv",
+    dataset_label    = "BAL Dataset"
+  ),
+  dataset_config(
+    data_dir         = "BrainCortex_nuclei_10x",
+    uncorrected_dir  = "BrainCortex_nuclei_10x_cellranger",
+    performance_file = "BrainCortex_nuclei_10x/DoubletCallingPerformance/BrainCortex_nuclei_10x_correctAssignments_MCC.csv",
+    dataset_label    = "Brain Cortex Dataset"
+  )
+)
+
+names(dataset_registry) <- vapply(dataset_registry, function(x) x$dataset_label, character(1))
+```
+
+# Data loading functions
+
+```{r}
+# Read+combine one ambient-tool subfolder's doublet calls with the dataset's ground-truth metadata.
+load_ambient_results <- function(path, uncorrected_dir, filter_remove = FALSE) {
+
+  # ground-truth metadata always comes from the uncorrected/base folder for this dataset,
+  # regardless of which ambient-tool subfolder is currently being processed
+  meta <- read_tsv(file.path(dirname(path), uncorrected_dir, "metadata.tsv"), show_col_types = FALSE)
+  meta$doublet_class[meta$doublet_class == "multiplet"] <- "doublet"
+  
+  #filter metadata based on uncorrected qc filtered barcodes - these are droplets that pass QC (based on RNA reads) AND have a doublet/singlet assignment based on demultiplexing
+  barcodes_to_keep <- read_tsv(file.path(dirname(path), uncorrected_dir, "filtered_qc_barcodes.tsv"), show_col_types = F) %>% pull(.)
+  
+  meta <- meta %>% 
+    filter(., Barcode %in% barcodes_to_keep)
+
+  # doublet calling results for this ambient-tool setting
+  doublet_file <- list.files(path = file.path(path, "doublet_calls"),
+                             pattern = "consensus", full.names = TRUE)
+  dbl_res <- read_csv(doublet_file, show_col_types = FALSE)
+  combined_res <- right_join(dbl_res, meta)
+
+  #replace missing doublet (NAs) labels with "removed_cell"- using scDblFinder to guide but will be the same with all tools
+  combined_res$cells_kept <- ifelse(is.na(combined_res$scDblFinder_DropletType), "removed_cell", "kept_cell")
+
+  #if this setting is ambient-corrected, bring in its ncount/nfeature "removed" columns too,
+  # prefixed with the tool name so they sit side by side once every setting is combined
+  meta_current <- read_tsv(file.path(path, "metadata.tsv"), show_col_types = FALSE)
+  if ("ncount_frac_removed" %in% colnames(meta_current)) {
+    ambient_tool_name <- gsub(paste0(uncorrected_dir, "_"), "", basename(path), fixed = TRUE)
+    meta_current <- meta_current %>%
+      select(Barcode, ncount, nfeatures_rounded, nfeature_frac_removed, ncount_frac_removed)
+    colnames(meta_current)[2:5] <- paste0(ambient_tool_name, "_", colnames(meta_current)[2:5])
+    combined_res <- left_join(combined_res, meta_current)
+  }
+
+  combined_res$ambient_tool <- if (basename(path) == uncorrected_dir) {
+    "uncorrected"
+  } else {
+    gsub(paste0(uncorrected_dir, "_"), "", basename(path), fixed = TRUE)
+  }
+
+  return(combined_res)
+}
+
+
+load_dataset_results <- function(cfg) {
+  files <- list.dirs(path = here("output/data", cfg$data_dir), full.names = TRUE, recursive = FALSE)
+  files <- files[grepl(cfg$sample_grep, files)]
+
+  list_results <- lapply(files, load_ambient_results,
+                         uncorrected_dir = cfg$uncorrected_dir)
+  names(list_results) <- basename(files)
+
+  df <- bind_rows(list_results)
+  df$dataset <- cfg$dataset_label
+  return(df)
+}
+
+# Load a dataset's precomputed doublet-calling performance metrics (see *_evaluate_doublet_calling.Rmd).
+load_performance_results <- function(cfg) {
+  perf <- read_csv(here("output/results", cfg$performance_file),
+                   show_col_types = FALSE, col_types = c("ccnnnnnnnnnnnn"))
+  # perf[is.na(perf)] <- 0
+
+  perf <- perf %>%
+    mutate(doublet_tool = factor(doublet_tool,
+                                 levels = c("scDblFinder", "scds", "cxds", "bcds", "scrublet", "DoubletDetection")),
+           ambient_tool = factor(ambient_tool,
+                                 levels = rev(c("uncorrected", "CellBender", "soupX", "decontX", "decontX_BG"))))
+  perf$dataset <- cfg$dataset_label
+  return(perf)
+}
+```
+
+# Plotting shortcuts
+
+```{r}
+plot_sizing <- theme_bw() + theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = "black"),
+        plot.title = element_text(size = 22),
+        plot.subtitle = element_text(size = 18),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank())
+
+plot_sizing_keep_legend <- theme_bw() + theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16, colour = "black"),
+        plot.title = element_text(size = 22),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size = 16))
+
+rotate_x <- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+strip_fix <- theme(strip.background = element_rect(fill = "white"),
+                   strip.text = element_text(size = 14))
+
+title_size <- theme(plot.title = element_text(size = 22, face = "italic"),
+                    plot.subtitle = element_text(size = 18, face = "bold.italic"))
+```
+
+# Colours
+
+```{r}
+ambient_tools_colours <- c("#67BF5C", "#AD8BC9",
+                            "#A8786E", "#CDCC5D", "#6DCCDA", "#EB663B", "grey80")
+names(ambient_tools_colours) <- c("uncorrected", "decontX", "decontX_BG",
+                                  "soupX", "CellBender", "consensus doublet", "missed all")
+
+doublet_colours <- c("#2E91E5", "#EB663B"); names(doublet_colours) <- c("singlet", "doublet")
+```
+
+# Directories
+
+```{r}
+save_dir <- here("output/figures/v4")
+```
+
+# Plotting functions
+
+```{r}
+run_assignment_evaluation_heatmap <- function(results_df,
+                                      plotting_metric,
+                                      name_metric,
+                                      name_scale,
+                                      dataset_label,
+                                      limits = NULL) {
+  results_df <- results_df %>%
+    dplyr::rename(plotting_metric = plotting_metric)
+
+  heatmap <- results_df %>%
+    ggplot() +
+    geom_tile(aes(x = doublet_tool, y = ambient_tool, fill = plotting_metric), color = "black", size = 0.1) +
+    geom_text(aes(x = doublet_tool, y = ambient_tool, label = round(plotting_metric, 2)), size = 5) +
+    theme_bw() + plot_sizing_keep_legend + rotate_x + title_size +
+    ylab("ambient setting") + xlab("doublet tool") +
+    scale_fill_distiller(palette = "RdBu", direction = -1, name = name_scale, limits = limits) +
+    ggtitle(dataset_label, subtitle = name_metric) + title_size
+
+  return(heatmap)
+}
+
+analyse_mislabelled_doublets <- function(df_plot,
+                                         ambient_tools = setdiff(unique(df_plot$ambient_tool), "uncorrected"),
+                                         doublet_tool,
+                                         dataset_label) {
+  doublet_tool_column <- paste0(doublet_tool, "_DropletType")
+  list_unidentified_doublets <- lapply(split(df_plot, df_plot$ambient_tool), function(entry) {
+    entry %>% dplyr::rename(doublet_tool_column = doublet_tool_column) %>%
+      filter(doublet_class == "doublet", doublet_tool_column != "doublet") %>% pull(Barcode)
+  })
+
+  m_dist <- make_comb_mat(list_unidentified_doublets)
+  full_comb <- paste(rep("1", length(list_unidentified_doublets)), collapse = "")
+  missed_doublets <- extract_comb(m_dist, full_comb)
+
+  list_missed_doublets_meta <- lapply(ambient_tools, function(TOOL) {
+    only_here <- setdiff(list_unidentified_doublets[[TOOL]], missed_doublets)
+    df_plot %>% filter(Barcode %in% only_here) %>% mutate(status = TOOL)
+  })
+
+  overview <- df_plot %>%
+    mutate(status = case_when(Barcode %in% missed_doublets ~ "never detected",
+                              TRUE ~ "remove")) %>%
+    filter(status != "remove")
+
+  meta_total <- bind_rows(list_missed_doublets_meta, overview)
+
+  # ---- stacked barplot ----
+  missed_all_n <- sum(meta_total$status[meta_total$ambient_tool == "uncorrected"] == "never detected")
+  missed_all_label <- paste0("never detected\nn=", missed_all_n)
+
+  ambient_tools_colours_nocounts <- c("grey80", "tan")
+  names(ambient_tools_colours_nocounts) <- c(missed_all_label, "in setting")
+
+  special <- meta_total %>% filter(., ambient_tool == "uncorrected") %>% dplyr::count(status) %>% filter(status == "never detected")
+  main    <- meta_total %>% filter(., ambient_tool == "uncorrected") %>% dplyr::count(status) %>% filter(status %in% ambient_tools)
+
+  result <- map_dfr(main$status, function(s) {
+    bind_rows(main %>% filter(status == s), special) %>% mutate(tool = s, .before = 1)
+  }) %>%
+    mutate(status = factor(case_when(status == "never detected" ~ missed_all_label, TRUE ~ "in setting"),
+                           levels = rev(c(missed_all_label, "in setting"))),
+           label = ifelse(status == "in setting", n, NA))
+
+  stacked_barplot <- result %>%
+    ggplot(aes(x = tool, y = n, fill = status)) +
+    geom_bar(position = "stack", stat = "identity") +
+    geom_text(position = position_stack(vjust = 0.5), aes(label = label), size = 5) +
+    plot_sizing + rotate_x +
+    scale_fill_manual(values = ambient_tools_colours_nocounts) +
+    ylab("# doublets") +
+    theme(legend.position = "bottom") +
+    ggtitle(dataset_label, subtitle = paste0("Undetected doublets\n", doublet_tool)) + title_size
+
+  # ---- per-tool boxplots: single facet_wrap with free y-axes and shared title ----
+
+  prop_long <- map_dfr(ambient_tools, function(TOOL) {
+    prop_removed_name <- paste0(TOOL, "_ncount_frac_removed")
+    meta_total %>%
+      filter(status %in% c(TOOL, "never detected")) %>%
+      dplyr::rename(prop_removed = all_of(prop_removed_name)) %>%
+      mutate(facet_label = factor(paste0("corrected using\n", TOOL),
+                                  levels = paste0("corrected using\n", ambient_tools))) %>%
+      select(status, prop_removed, facet_label)
+  }) %>%
+    # "never detected" first, then tools in ambient_tools order — applied after
+    # bind_rows so all rows share consistent factor levels
+    mutate(status = factor(status, levels = c("never detected", ambient_tools)))
+
+  per_tool_combined <- prop_long %>%
+    ggplot(aes(x = status, y = prop_removed, fill = status)) +
+    geom_boxplot( outliers = FALSE) +
+    geom_jitter(aes(x = status, y = prop_removed), size = 0.3, alpha = 0.2, width = 0.2) +
+    facet_wrap(~facet_label, scales = "free", nrow = 1) +
+    plot_sizing + strip_fix + rotate_x +
+    scale_fill_manual(values = ambient_tools_colours) +
+    xlab("") + ylab("proportion removed") + theme(legend.position = "none",
+                                                  strip.text = element_text(size = 18))
+
+  per_tool_plot <- per_tool_combined +
+    plot_annotation(title = dataset_label,
+                    subtitle = paste0("Ambient correction in undetected doublets\n", doublet_tool),
+                    theme = title_size)
+
+  list(stacked_barplot    = stacked_barplot,
+       per_tool_plot      = per_tool_plot,
+       per_tool_plot_list = list(per_tool_combined))
+}
+
+generate_dataset_figures <- function(cfg) {
+  df_plot            <- load_dataset_results(cfg)
+  performance_results <- load_performance_results(cfg)
+
+  mislabeled_doublets_scdblfinder <- analyse_mislabelled_doublets(
+    df_plot       = df_plot,
+    doublet_tool  = "scDblFinder",
+    dataset_label = cfg$dataset_label
+  )
+
+  list(
+    dataset_label          = cfg$dataset_label,
+    performance_results    = performance_results,
+    performance_plot_mcc   = run_assignment_evaluation_heatmap(
+      results_df     = performance_results,
+      plotting_metric = "mcc",
+      name_metric    = "MCC",
+      name_scale     = "MCC",
+      dataset_label  = cfg$dataset_label
+    ),
+    undetected_stacked       = mislabeled_doublets_scdblfinder$stacked_barplot,
+    undetected_per_tool      = mislabeled_doublets_scdblfinder$per_tool_plot,
+    undetected_per_tool_list = mislabeled_doublets_scdblfinder$per_tool_plot_list
+  )
+}
+```
+
+# Generate data
+
+```{r, message=FALSE}
+results_by_dataset <- lapply(dataset_registry, generate_dataset_figures)
+
+# Shared MCC colour scale across datasets
+all_perf   <- lapply(results_by_dataset, `[[`, "performance_results") %>% bind_rows()
+limits_mcc <- range(all_perf$mcc, na.rm = TRUE)
+
+results_by_dataset <- lapply(results_by_dataset, function(res) {
+  res$performance_plot_mcc <- run_assignment_evaluation_heatmap(
+    results_df      = res$performance_results,
+    plotting_metric = "mcc",
+    name_metric     = "MCC",
+    name_scale      = "MCC",
+    dataset_label   = res$dataset_label,
+    limits          = limits_mcc
+  )
+  res
+})
+```
+
+# Make supp figure
+
+```{r, fig.align='center', fig.height=20, fig.width=28, warning=FALSE}
+make_row_label_supp <- function(label, fill = "#CFE2F3") {
+  ggplot() +
+    annotate("text", x = 0.5, y = 0.15, label = label,
+             size = 8, fontface = "bold", hjust = 0.5, vjust = 0.5, angle = 90) +
+    scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
+    theme_void() +
+    theme(plot.background = element_rect(fill = fill, color = NA),
+          plot.margin     = margin(0, 0, 0, 0)) +
+    coord_cartesian(clip = "off")
+}
+
+close_title <- theme(
+  plot.title.position = "plot",
+  plot.title          = element_text(margin = margin(b = 2))
+)
+
+n         <- length(results_by_dataset)
+tag_theme <- theme(plot.tag = element_text(size = 18, face = "bold", margin = margin(t = 6, r = 10, b = 6, l = 6)))
+
+dataset_rows <- lapply(seq_along(results_by_dataset), function(idx) {
+  res <- results_by_dataset[[idx]]
+  stacked_clean <- res$undetected_stacked +
+    labs(title = "Undetected doublets", subtitle = "scDblFinder",
+         tag = LETTERS[n + idx]) +
+    close_title +
+    theme(plot.tag = element_text(size = 18, face = "bold",
+                                  margin = margin(t = 6, r = 10, b = 6, l = 6)))
+  per_tool_list <- res$undetected_per_tool_list
+  per_tool_list[[1]] <- per_tool_list[[1]] +
+    labs(title = "Proportion of counts removed during correction",
+         tag   = LETTERS[2 * n + idx]) +
+    close_title + title_size +
+    theme(plot.tag = element_text(size = 18, face = "bold",
+                                  margin = margin(t = 6, r = 10, b = 6, l = 6)))
+  # axis_titles = "collect" interferes with per-facet tick rendering when
+  # per_tool_list contains a single faceted ggplot; omit it so patchwork
+  # leaves the facet's internal axes untouched (the faceted ggplot already
+  # shows "proportion removed" exactly once on the left by itself).
+  per_tool_clean <- wrap_plots(per_tool_list, nrow = 1)
+  undetected_titled <- wrap_elements(full =
+    wrap_elements(stacked_clean) + wrap_elements(per_tool_clean) +
+    plot_layout(widths = c(1.1, 3)))
+  list(
+    make_row_label_supp(res$dataset_label),
+    res$performance_plot_mcc + labs(title = "MCC", subtitle = NULL, tag = LETTERS[idx]) + close_title,
+    undetected_titled
+  )
+})
+
+spacer_row <- replicate(3, plot_spacer(), simplify = FALSE)
+all_plots <- unlist(
+  lapply(seq_len(n), function(i) {
+    if (i < n) c(dataset_rows[[i]], spacer_row) else dataset_rows[[i]]
+  }),
+  recursive = FALSE
+)
+
+row_heights <- rep(c(1, 0.08), n)
+row_heights <- row_heights[seq_len(2 * n - 1)]
+
+supp_figure <- wrap_plots(all_plots, ncol = 3, byrow = TRUE) +
+  plot_layout(widths = c(0.2, 1, 5), heights = row_heights) &
+  tag_theme
+
+ggsave(plot = supp_figure,
+       filename = "Supp_Figure_04_MCC_proportion_removed_complex_datasets.png",
+       path = save_dir,
+       device = "png",
+       width = 25,
+       height = 18,
+       dpi = 900,
+       bg = "transparent")
+
+supp_figure
+```
+
+# Make supp table 
+
+Exporting a excel spreadsheet with all performance metrics for all datasets. 
+
+```{r}
+writexl::write_xlsx(
+  list(Sheet1 = all_perf),   # list names become the sheet names
+  path = here(save_dir ,"SupplementaryTable_02_allPerformanceMetrics_datasets.xlsx")
+)
+
+```
+
+
+

@@ -1,0 +1,220 @@
+---
+title: "BAL inflammation 10x HTO, capture 1: prepare for analysis"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown prepares the BAL inflammation dataset for analysis. The dataset was downloaded from the [Zenodod](https://zenodo.org/records/19364848). We selected batch 9 for this analysis as this batch contained 8 samples, each from different donors. Batch 3 was sequenced in two captures (each of which contains all samples), which are referred to as `C133_batch3_1` and `C133_batch3_`. Here, we only focus on `C133_batch3_1`.
+
+The files downloaded are 
+
+- raw feature_bc_matrix.h5 file (C133_batch3_1)
+
+- processed SCE object for all of batch 3 (C133_batch3_1+C133_batch3_2) - the code for how this object was produced can be found [here](https://oshlacklab.com/paediatric-cf-inflammation-citeseq/01.3_preprocess_batch3.html). Note that the metadata for this object includes HTO and vireo results for doublet/singlet calls. We will need to filter out barcodes from the second capture. 
+
+We will export a `cellranger` like output structure that contains both singlets and doublets. 
+
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(here)
+  library(glue)
+  library(DropletUtils)
+  library(scran)
+  library(scater)
+  library(scuttle)
+  library(scales)
+  library(readr)
+  library(Seurat)
+  library(scDblFinder)
+  library(scMerge)
+  library(ggpubr)
+  library(BiocParallel)
+  library(clustree)
+  library(SingleCellExperiment)
+  library(scMerge)
+  library(Matrix)
+  library(SeuratDisk)
+  library(qs2)
+  library(patchwork)
+})
+
+
+```
+
+## General plotting themes
+
+```{r}
+plot_sizing <- theme_bw()+
+  theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14, colour = "black"),
+        plot.title = element_text(size = 18),
+        plot.subtitle = element_text(size = 16),
+        legend.text = element_text(size = 14),
+        legend.title = element_blank()) 
+
+plot_sizing_keep_title <- theme(axis.title = element_text(size = 16),
+        axis.text = element_text(size = 14, colour = "black"),
+        plot.title = element_text(size = 18),
+        plot.subtitle = element_text(size = 16),
+        legend.text = element_text(size = 14),
+        legend.title = element_text(size = 14) )
+
+rotate_x <- theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+strip_fix <- theme(strip.background = element_rect(fill = "white"), 
+                   strip.text = element_text(size = 14))
+
+```
+
+
+
+## Load data
+
+```{r}
+# load raw counts
+counts_raw <- Read10X_h5(here("data/BAL_inflammation_10x/C133_batch3_1/raw_feature_bc_matrix.h5"))$`Gene Expression`
+
+#load count filtered SCE (provided by authors)
+sce <- readRDS(here("data/BAL_inflammation_10x/C133_Neeland_batch3.preprocess.SCE.rds"))
+
+
+#this wil contain both captures from batch 3 -> filter to only include 3_1
+batch_3_1_cells <- sce[,sce$Capture == "C133_batch3_1"]
+
+```
+
+
+# Inspect genetic vs HTO demultiplexing
+
+For both batches
+
+```{r, fig.align='center', fig.height=6, fig.width=6}
+p <- scater::plotColData(
+  sce,
+  "dmmHTO", 
+  "GeneticDonor", 
+  colour_by = "GeneticDonor", 
+  other_fields = "Capture") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+  guides(colour = "none")
+p / (p + facet_grid(~Capture))
+```
+
+How many are considered doublets in both genetic as well as HTO (capture 3_1 only)
+
+```{r}
+
+batch_3_1_cells@colData %>% as.data.frame() %>% 
+  filter(., dmmHTO == "Doublet" & GeneticDonor == "Doublet") %>% 
+  nrow()
+
+```
+
+
+# Prepare metadata 
+
+According to the original authors, the genetic demultiplexing was much more reliable and we therefore consider it the ground truth labels.
+
+```{r}
+#tidy up metadata a bit
+meta_batch_3_1 <- batch_3_1_cells@colData %>% as.data.frame() %>% 
+  select(., Barcode, GeneticDonor, dmmHTO) %>% 
+  mutate(., doublet_class = case_when(!GeneticDonor %in% c("Unknown", "Doublet") ~ "singlet", #to match style
+                                      GeneticDonor == "Doublet" ~ "doublet",
+                                      GeneticDonor == "Unknown" ~ "remove")) 
+```
+
+```{r}
+meta_batch_3_1$doublet_class %>% table()
+```
+
+What does that make the doublet rate (not considering remove section)
+
+```{r}
+
+table(meta_batch_3_1$doublet_class)["doublet"]/sum(table(meta_batch_3_1$doublet_class)["doublet"] + table(meta_batch_3_1$doublet_class)["singlet"])
+
+```
+
+About 20% doublet rate. 
+
+
+
+# Prepare `cellranger` output
+
+Make `cellranger` output files for barcodes that were detected as non-empty by the original authors (based on their SCE object).
+
+## Make SCE object and add QC metrics
+
+```{r}
+#change rownames from metadata as they follow the old nomenclature that is no longer relevant
+rownames(meta_batch_3_1) <- meta_batch_3_1$Barcode
+
+export_sce <- SingleCellExperiment(assays = c("counts" = counts_raw[, meta_batch_3_1$Barcode]), 
+                                   colData =meta_batch_3_1 %>% DataFrame())
+  
+#add QC metrics
+is.mito <- grepl(pattern = "^MT", rownames(export_sce))
+is.ribo <- grepl(pattern = "^RP[SL]", rownames(export_sce))
+export_sce <- addPerCellQCMetrics(export_sce, subsets = list(mito = is.mito, ribo=is.ribo))
+
+#clean up
+new_meta <- export_sce@colData %>% as.data.frame() %>%
+  dplyr::rename(.,nfeatures_raw = detected, ncount_raw = sum, subsets_mito_percent_raw = subsets_mito_percent, subsets_ribo_percent_raw=subsets_ribo_percent) %>%
+  select(., -c("subsets_mito_sum", "subsets_mito_detected", "total", "subsets_ribo_sum", "subsets_ribo_detected", starts_with("altexps")))
+
+export_sce@colData <- new_meta %>% DataFrame()
+```
+
+## Export 
+
+Export in `cellranger` output format, including metadata.
+
+```{r}
+#export counts
+output_dir <- here("output/data/BAL_inflammation_10x/BAL_inflammation_10x_cellranger/")
+DropletUtils::write10xCounts(path = output_dir,
+                             x = counts(export_sce),
+                             version = "3",
+                             overwrite = T)
+#and export metadata
+write_tsv(x= as.data.frame(export_sce@colData), file = paste0(output_dir, "metadata.tsv"),
+          col_names = T)
+
+```
+
+
+# Prepare *empty droplets* `cellranger` output
+
+Having an object that represent just the empty droplets is very useful when performing ambient RNA correction, so we'll export an empty droplets object in `cellranger` format as well. 
+
+
+We'll use all the barcodes that were not considered non-empty (so empty) by the original authors. 
+
+```{r}
+#subset counts
+empty_object <- counts_raw[, !(colnames(counts_raw) %in% export_sce$Barcode)]
+```
+
+
+
+```{r}
+#export counts
+output_dir <- here("output/data/BAL_inflammation_10x/BAL_inflammation_10x_emptyObject")
+DropletUtils::write10xCounts(path = output_dir,
+                             x = empty_object,
+                             version = "3",
+                             overwrite = T)
+```
+
+
+

@@ -1,0 +1,200 @@
+---
+title: "Tonsil 10x Flex: Clean engineered datasets with CellBender"
+author: "Michelle Meier"
+date: "`r format(Sys.time(), '%d. %B %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+# Set-up
+
+This markdown contains the code used to apply `CellBender` to all of the engineered datasets (generated [here](Tonsils_10xFlex_make_engineered_datasets.html)). For each of the engineered datasets, an input file for `CellBender` was generated [here](Tonsils_10xFlex_make_engineered_CellbenderInput.html)
+
+## Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(SingleCellExperiment)
+  library(tidyverse)
+  library(readr)
+  library(here)
+  library(Seurat)
+  library(scater)
+  library(qs2)
+  library(DropletUtils)
+})
+
+```
+
+
+
+# Running `CellBender` using GPU
+
+`CellBender` is run through an sbatch script which can be found here: `code/Tonsil_10xFlex/Engineered/run_CellBender_EngineeredDatasets.sbatch`. This code was run using our HPC system to access GPU. 
+
+To make the code accessible via workflowR website, we've pasted the content of the sbatch script in the code chunk below:
+
+```{bash, eval=FALSE}
+#!/bin/bash
+#SBATCH --partition=rhel_gpu
+#SBATCH --gres=gpu:T4:1
+#SBATCH --cpus-per-task=1
+#SBATCH --ntasks=1
+#SBATCH --mem=48G
+#SBATCH --time=00-04:00:00
+
+set -euo pipefail
+
+# INPUT
+INPUT_H5="${1}"
+SAMPLE="${2}"
+SAMPLE_OUT="${SAMPLE}_CellBender"
+
+# Paths
+OUTPUT_DIR="$(dirname "${INPUT_H5}")/${SAMPLE_OUT}"
+
+# make output
+mkdir -p "${OUTPUT_DIR}"
+
+# Change to output directory
+cd "${OUTPUT_DIR}"
+
+# Load required modules
+module load cuda/12.4.0-gcc-13.2.0   # for RHEL9
+module load miniconda3/24.3.0-gcc-13.2.0   # for RHEL9
+
+# Activate CellBender conda environment
+source /config/spack/v0.22.1/opt/spack/linux-rhel9-haswell/gcc-13.2.0/miniconda3-24.3.0-re4lxkwqjaazi6ckedtfhnzrjiefmhei/etc/profile.d/conda.sh
+conda activate cellbender_v3.0.2
+
+# Run CellBender remove‑background
+cellbender remove-background \
+    --input  "${INPUT_H5}" \
+    --output "${OUTPUT_DIR}/${SAMPLE_OUT}.h5" \
+    --expected-cells 12000 \
+    --total-droplets-included 45000 \
+    --cuda \
+    --learning-rate 0.000001
+
+# Make compatible with seurat
+ptrepack --complevel 5 ${SAMPLE_OUT}.h5:/matrix ${SAMPLE_OUT}_seurat.h5:/matrix
+
+echo "✅ CellBender completed for ${SAMPLE}. Outputs in ${OUTPUT_DIR}"
+
+```
+
+
+For each of the generated `h5` input files, a run script was submitted:
+
+```{bash, eval=FALSE}
+#!/bin/bash
+
+INPUT_DIR="/oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/output/data/Tonsils_10xFlex/Engineered/"
+
+for INPUT_H5 in "${INPUT_DIR}"/Tonsils_10xFlex_engineered_12k_0.15p_*s_cellbenderInput_feature_bc_matrix.h5
+do
+    SAMPLE=$(basename "${INPUT_H5}" \
+        "_cellbenderInput_feature_bc_matrix.h5")
+
+    sbatch \
+        --job-name="run_cellbender_${SAMPLE}" \
+        --output="/oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/code/Tonsil_10xFlex/Engineered/cellbender_logs/run_CellBender_${SAMPLE}_%j.out" \
+        --error="/oshlack_lab/michelle.meier/projects/ambient_doublet_singlecell/code/Tonsil_10xFlex/Engineered/cellbender_logs/run_CellBender_${SAMPLE}_%j.err" \
+        run_CellBender_EngineeredDatasets.sbatch "${INPUT_H5}" "${SAMPLE}"
+
+done
+```
+
+The error and log files for each job can be found in this folder: `code/Tonsil_10xFlex/Engineered/cellbender_logs`
+
+
+# Preparing output for further analysis
+
+Next, we will reformat the `CellBender` output to match the 10X output directory structure. In addition, we will only be considering barcodes for the orignal 12k cells are cells, and not use `CellBender`'s cell calling algorithm. 
+
+Set directories for `CellBender` outputs. 
+
+```{r}
+cellbender_outs <- list.files(path = here("output/data/Tonsils_10xFlex/Engineered/cellbender_output_files"),
+                              full.names = T)
+
+#uncorrected objects
+uncorrected_paths <- list.files(path = here("output/data/Tonsils_10xFlex/Engineered/"),
+                              pattern = "Tonsils_10xFlex*.*s$",
+                              full.names = T)
+
+```
+
+
+
+## Write function
+
+Write a function that reads in `.h5` file, subsets to relevant barcodes and writes output in 10X folder format. We also need to get the uncorrected data to determine how much RNA was removed. 
+
+```{r}
+run_makeCellBenderOutput <- function(INDEX){
+  #raw metadata
+  uncorrected <- read_tsv(paste0(uncorrected_paths[[INDEX]],"/metadata.tsv"), show_col_types = F)
+  
+  #load cellbender unfiltered counts
+  counts <- Read10X_h5(cellbender_outs[[INDEX]])
+  counts_f <- counts[, colnames(counts) %in% uncorrected$GEM_barcode]
+  
+  #add QC metrics to cellbender objects
+  sce <- SingleCellExperiment(assays = list(counts=counts_f))
+  is.mito <- grepl(pattern = "^MT", rownames(sce))
+  sce <- addPerCellQCMetrics(sce, subsets = list(mito = is.mito))
+  sce$nfeatures_rounded <- colSums(assay(sce, "counts") > 0.5)
+  
+  rm(counts, counts_f);gc()
+  
+  #clean
+  new_meta <- sce@colData %>% as.data.frame() %>%
+    mutate(., GEM_barcode = rownames(.)) %>% 
+    dplyr::rename(., ncount =sum ,  nfeatures =detected) %>%
+    left_join(.,uncorrected , by="GEM_barcode") %>% 
+    mutate(., nfeature_frac_removed = (nfeatures_raw-nfeatures_rounded)/nfeatures_raw,
+              ncount_frac_removed = (ncount_raw-ncount)/ncount_raw,
+              Barcode = GEM_barcode) %>%
+    select(., -c("total", "subsets_mito_detected", "subsets_mito_sum"))
+  
+  #reorder to match SCE order
+  rownames(new_meta) <- new_meta$GEM_barcode
+  new_meta <- new_meta[match(colnames(sce), new_meta$GEM_barcode),]
+  stopifnot(all(rownames(new_meta) == colnames(sce)))
+  
+  #export
+  out_file <- sprintf("%s/%s_CellBender", 
+                      here("output/data/Tonsils_10xFlex/Engineered"),
+                      basename(uncorrected_paths[[INDEX]]))
+  print("out_file")
+  
+  DropletUtils::write10xCounts(path = out_file,
+                             x = counts(sce),
+                             version = "3", 
+                             overwrite = TRUE)
+  write_tsv(x = new_meta,
+          file = sprintf("%s/metadata.tsv", out_file))
+}
+```
+
+
+## Run for all engineered datasets
+
+
+```{r, warning=FALSE, fig.align='center'}
+
+corrected <- sapply(1:length(cellbender_outs), function(IN){
+  run_makeCellBenderOutput(INDEX = IN)
+})
+
+```
+
+
+
+
+
+
+
+
