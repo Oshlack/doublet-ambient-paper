@@ -175,7 +175,7 @@ plot_list <- lapply(unique(performance_results$batch), function(BATCH){
     scale_fill_manual(values = ambient_tools_colours) + theme(legend.position = "none")
 })
 
-supp_figure$batch_retained_doublet <-wrap_plots(plot_list, guides = "collect", axis_titles = "collect", nrow=1) + plot_annotation("Proportion of true doublets setection (doublet sensitivity) per batch", theme = theme(plot.title = element_text(hjust = 0.05))) & title_size
+supp_figure$batch_retained_doublet <-wrap_plots(plot_list, guides = "collect", axis_titles = "collect", nrow=1) + plot_annotation("Proportion of true doublets detected (doublet sensitivity) per batch", theme = theme(plot.title = element_text(hjust = 0.05))) & title_size
 
 supp_figure$batch_retained_doublet
 ```
